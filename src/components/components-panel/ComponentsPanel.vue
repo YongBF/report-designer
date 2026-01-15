@@ -66,6 +66,9 @@ import {
   PieChart,
   Coin,
   Crop,
+  TrendCharts,
+  Odometer,
+  Filter,
 } from '@element-plus/icons-vue'
 import type { ComponentType } from '../../types'
 
@@ -82,7 +85,12 @@ const basicComponents: ComponentItem[] = [
 ]
 
 const chartComponents: ComponentItem[] = [
-  { type: 'chart', label: '图表', icon: DataAnalysis },
+  { type: 'bar-chart', label: '柱状图', icon: Histogram },
+  { type: 'line-chart', label: '折线图', icon: TrendCharts },
+  { type: 'pie-chart', label: '饼图', icon: PieChart },
+  { type: 'scatter-chart', label: '散点图', icon: DataAnalysis },
+  { type: 'gauge-chart', label: '仪表盘', icon: Odometer },
+  { type: 'funnel-chart', label: '漏斗图', icon: Filter },
 ]
 
 const shapeComponents: ComponentItem[] = [

@@ -90,15 +90,63 @@
         </template>
 
         <!-- 图表组件属性 -->
-        <template v-if="selectedComponent.type === 'chart'">
+        <template v-if="selectedComponent && selectedComponent.type === 'chart'">
           <div class="property-section">
             <div class="section-title">图表属性</div>
             <ChartProperties :component="selectedComponent" @update="handleUpdate" />
           </div>
         </template>
 
+        <!-- 柱状图组件属性 -->
+        <template v-if="selectedComponent && selectedComponent.type === 'bar-chart'">
+          <div class="property-section">
+            <div class="section-title">柱状图属性</div>
+            <BarChartProperties :component="selectedComponent" @update="handleUpdate" />
+          </div>
+        </template>
+
+        <!-- 折线图组件属性 -->
+        <template v-if="selectedComponent && selectedComponent.type === 'line-chart'">
+          <div class="property-section">
+            <div class="section-title">折线图属性</div>
+            <LineChartProperties :component="selectedComponent" @update="handleUpdate" />
+          </div>
+        </template>
+
+        <!-- 饼图组件属性 -->
+        <template v-if="selectedComponent && selectedComponent.type === 'pie-chart'">
+          <div class="property-section">
+            <div class="section-title">饼图属性</div>
+            <PieChartProperties :component="selectedComponent" @update="handleUpdate" />
+          </div>
+        </template>
+
+        <!-- 散点图组件属性 -->
+        <template v-if="selectedComponent && selectedComponent.type === 'scatter-chart'">
+          <div class="property-section">
+            <div class="section-title">散点图属性</div>
+            <ScatterChartProperties :component="selectedComponent" @update="handleUpdate" />
+          </div>
+        </template>
+
+        <!-- 仪表盘组件属性 -->
+        <template v-if="selectedComponent && selectedComponent.type === 'gauge-chart'">
+          <div class="property-section">
+            <div class="section-title">仪表盘属性</div>
+            <GaugeChartProperties :component="selectedComponent" @update="handleUpdate" />
+          </div>
+        </template>
+
+        <!-- 漏斗图组件属性 -->
+        <template v-if="selectedComponent && selectedComponent.type === 'funnel-chart'">
+          <div class="property-section">
+            <div class="section-title">漏斗图属性</div>
+            <FunnelChartProperties :component="selectedComponent" @update="handleUpdate" />
+          </div>
+        </template>
+
         <!-- 矩形组件属性 -->
-        <template v-if="selectedComponent.type === 'rectangle'">
+        <template v-if="selectedComponent && selectedComponent.type === 'rectangle'">
           <div class="property-section">
             <div class="section-title">矩形属性</div>
             <RectangleProperties :component="selectedComponent" @update="handleUpdate" />
@@ -106,7 +154,7 @@
         </template>
 
         <!-- 线条组件属性 -->
-        <template v-if="selectedComponent.type === 'line'">
+        <template v-if="selectedComponent && selectedComponent.type === 'line'">
           <div class="property-section">
             <div class="section-title">线条属性</div>
             <LineProperties :component="selectedComponent" @update="handleUpdate" />
@@ -126,9 +174,21 @@ import TableProperties from './properties/TableProperties.vue'
 import ChartProperties from './properties/ChartProperties.vue'
 import RectangleProperties from './properties/RectangleProperties.vue'
 import LineProperties from './properties/LineProperties.vue'
+import BarChartProperties from './properties/BarChartProperties.vue'
+import LineChartProperties from './properties/LineChartProperties.vue'
+import PieChartProperties from './properties/PieChartProperties.vue'
+import ScatterChartProperties from './properties/ScatterChartProperties.vue'
+import GaugeChartProperties from './properties/GaugeChartProperties.vue'
+import FunnelChartProperties from './properties/FunnelChartProperties.vue'
 import type { Component } from '../../types'
 
-const selectedComponent = computed(() => singleSelectedComponent.value as Component | null)
+const selectedComponent = computed(() => {
+  const comp = singleSelectedComponent.value as Component | null
+  if (comp) {
+    console.log('Selected component:', comp.type, comp)
+  }
+  return comp
+})
 
 function handleUpdate() {
   if (selectedComponent.value) {

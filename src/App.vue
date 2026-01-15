@@ -723,19 +723,19 @@
                 <el-collapse-item title="基础配置" name="basic">
                   <el-form label-width="100px" size="small">
                     <el-form-item label="标题">
-                      <el-input id="bar-title" v-model="selectedComponent.config.title" />
+                      <el-input id="bar-title" v-model="selectedComponent.config.title" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标题字号">
-                      <el-input-number id="bar-title-font-size" v-model="selectedComponent.config.titleFontSize" :min="12" :max="36" />
+                      <el-input-number id="bar-title-font-size" v-model="selectedComponent.config.titleFontSize" :min="12" :max="36" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标题颜色">
-                      <el-color-picker id="bar-title-color" v-model="selectedComponent.config.titleColor" />
+                      <el-color-picker id="bar-title-color" v-model="selectedComponent.config.titleColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="显示图例">
-                      <el-switch id="bar-show-legend" v-model="selectedComponent.config.showLegend" />
+                      <el-switch id="bar-show-legend" v-model="selectedComponent.config.showLegend" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="图例位置">
-                      <el-select id="bar-legend-position" v-model="selectedComponent.config.legendPosition">
+                      <el-select id="bar-legend-position" v-model="selectedComponent.config.legendPosition" @change="handleChartUpdate">
                         <el-option label="顶部" value="top" />
                         <el-option label="底部" value="bottom" />
                         <el-option label="左侧" value="left" />
@@ -743,20 +743,20 @@
                       </el-select>
                     </el-form-item>
                     <el-form-item label="主题">
-                      <el-select id="bar-theme" v-model="selectedComponent.config.theme">
+                      <el-select id="bar-theme" v-model="selectedComponent.config.theme" @change="handleChartUpdate">
                         <el-option label="默认" value="default" />
                         <el-option label="亮色" value="light" />
                         <el-option label="暗色" value="dark" />
                       </el-select>
                     </el-form-item>
                     <el-form-item label="背景颜色">
-                      <el-color-picker id="bar-bg-color" v-model="selectedComponent.config.backgroundColor" show-alpha />
+                      <el-color-picker id="bar-bg-color" v-model="selectedComponent.config.backgroundColor" show-alpha @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="启用动画">
-                      <el-switch id="bar-animation" v-model="selectedComponent.config.animation" />
+                      <el-switch id="bar-animation" v-model="selectedComponent.config.animation" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="动画时长">
-                      <el-input-number id="bar-animation-duration" v-model="selectedComponent.config.animationDuration" :min="0" :max="5000" :step="100" />
+                      <el-input-number id="bar-animation-duration" v-model="selectedComponent.config.animationDuration" :min="0" :max="5000" :step="100" @change="handleChartUpdate" />
                     </el-form-item>
                   </el-form>
                 </el-collapse-item>
@@ -765,28 +765,28 @@
                 <el-collapse-item title="X轴配置" name="xaxis">
                   <el-form label-width="100px" size="small">
                     <el-form-item label="显示X轴">
-                      <el-switch id="bar-x-show" v-model="selectedComponent.xAxis.show" />
+                      <el-switch id="bar-x-show" v-model="selectedComponent.xAxis.show" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="轴名称">
-                      <el-input id="bar-x-name" v-model="selectedComponent.xAxis.name" />
+                      <el-input id="bar-x-name" v-model="selectedComponent.xAxis.name" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="名称字号">
-                      <el-input-number id="bar-x-name-font-size" v-model="selectedComponent.xAxis.nameFontSize" :min="10" :max="24" />
+                      <el-input-number id="bar-x-name-font-size" v-model="selectedComponent.xAxis.nameFontSize" :min="10" :max="24" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="名称颜色">
-                      <el-color-picker id="bar-x-name-color" v-model="selectedComponent.xAxis.nameColor" />
+                      <el-color-picker id="bar-x-name-color" v-model="selectedComponent.xAxis.nameColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标签字号">
-                      <el-input-number id="bar-x-label-font-size" v-model="selectedComponent.xAxis.axisLabelFontSize" :min="8" :max="20" />
+                      <el-input-number id="bar-x-label-font-size" v-model="selectedComponent.xAxis.axisLabelFontSize" :min="8" :max="20" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标签颜色">
-                      <el-color-picker id="bar-x-label-color" v-model="selectedComponent.xAxis.axisLabelColor" />
+                      <el-color-picker id="bar-x-label-color" v-model="selectedComponent.xAxis.axisLabelColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="轴线颜色">
-                      <el-color-picker id="bar-x-line-color" v-model="selectedComponent.xAxis.axisLineColor" />
+                      <el-color-picker id="bar-x-line-color" v-model="selectedComponent.xAxis.axisLineColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="轴线宽度">
-                      <el-input-number id="bar-x-line-width" v-model="selectedComponent.xAxis.axisLineWidth" :min="0" :max="10" :step="0.5" />
+                      <el-input-number id="bar-x-line-width" v-model="selectedComponent.xAxis.axisLineWidth" :min="0" :max="10" :step="0.5" @change="handleChartUpdate" />
                     </el-form-item>
                   </el-form>
                 </el-collapse-item>
@@ -795,28 +795,28 @@
                 <el-collapse-item title="Y轴配置" name="yaxis">
                   <el-form label-width="100px" size="small">
                     <el-form-item label="显示Y轴">
-                      <el-switch id="bar-y-show" v-model="selectedComponent.yAxis.show" />
+                      <el-switch id="bar-y-show" v-model="selectedComponent.yAxis.show" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="轴名称">
-                      <el-input id="bar-y-name" v-model="selectedComponent.yAxis.name" />
+                      <el-input id="bar-y-name" v-model="selectedComponent.yAxis.name" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="名称字号">
-                      <el-input-number id="bar-y-name-font-size" v-model="selectedComponent.yAxis.nameFontSize" :min="10" :max="24" />
+                      <el-input-number id="bar-y-name-font-size" v-model="selectedComponent.yAxis.nameFontSize" :min="10" :max="24" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="名称颜色">
-                      <el-color-picker id="bar-y-name-color" v-model="selectedComponent.yAxis.nameColor" />
+                      <el-color-picker id="bar-y-name-color" v-model="selectedComponent.yAxis.nameColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标签字号">
-                      <el-input-number id="bar-y-label-font-size" v-model="selectedComponent.yAxis.axisLabelFontSize" :min="8" :max="20" />
+                      <el-input-number id="bar-y-label-font-size" v-model="selectedComponent.yAxis.axisLabelFontSize" :min="8" :max="20" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标签颜色">
-                      <el-color-picker id="bar-y-label-color" v-model="selectedComponent.yAxis.axisLabelColor" />
+                      <el-color-picker id="bar-y-label-color" v-model="selectedComponent.yAxis.axisLabelColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="轴线颜色">
-                      <el-color-picker id="bar-y-line-color" v-model="selectedComponent.yAxis.axisLineColor" />
+                      <el-color-picker id="bar-y-line-color" v-model="selectedComponent.yAxis.axisLineColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="轴线宽度">
-                      <el-input-number id="bar-y-line-width" v-model="selectedComponent.yAxis.axisLineWidth" :min="0" :max="10" :step="0.5" />
+                      <el-input-number id="bar-y-line-width" v-model="selectedComponent.yAxis.axisLineWidth" :min="0" :max="10" :step="0.5" @change="handleChartUpdate" />
                     </el-form-item>
                   </el-form>
                 </el-collapse-item>
@@ -825,10 +825,10 @@
                 <el-collapse-item title="系列配置" name="series">
                   <el-form label-width="100px" size="small">
                     <el-form-item label="显示标签">
-                      <el-switch id="bar-series-label-show" v-model="selectedComponent.series.labelShow" />
+                      <el-switch id="bar-series-label-show" v-model="selectedComponent.series.labelShow" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标签位置">
-                      <el-select id="bar-series-label-position" v-model="selectedComponent.series.labelPosition">
+                      <el-select id="bar-series-label-position" v-model="selectedComponent.series.labelPosition" @change="handleChartUpdate">
                         <el-option label="顶部" value="top" />
                         <el-option label="内部" value="inside" />
                         <el-option label="内部顶部" value="insideTop" />
@@ -837,19 +837,37 @@
                       </el-select>
                     </el-form-item>
                     <el-form-item label="标签字号">
-                      <el-input-number id="bar-series-label-font-size" v-model="selectedComponent.series.labelFontSize" :min="8" :max="24" />
+                      <el-input-number id="bar-series-label-font-size" v-model="selectedComponent.series.labelFontSize" :min="8" :max="24" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="标签颜色">
-                      <el-color-picker id="bar-series-label-color" v-model="selectedComponent.series.labelColor" />
+                      <el-color-picker id="bar-series-label-color" v-model="selectedComponent.series.labelColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="边框宽度">
-                      <el-input-number id="bar-series-border-width" v-model="selectedComponent.series.itemStyleBorderWidth" :min="0" :max="10" />
+                      <el-input-number id="bar-series-border-width" v-model="selectedComponent.series.itemStyleBorderWidth" :min="0" :max="10" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="边框颜色">
-                      <el-color-picker id="bar-series-border-color" v-model="selectedComponent.series.itemStyleBorderColor" />
+                      <el-color-picker id="bar-series-border-color" v-model="selectedComponent.series.itemStyleBorderColor" @change="handleChartUpdate" />
                     </el-form-item>
                     <el-form-item label="圆角">
-                      <el-input-number id="bar-series-border-radius" v-model="selectedComponent.series.itemStyleBorderRadius" :min="0" :max="50" />
+                      <el-input-number id="bar-series-border-radius" v-model="selectedComponent.series.itemStyleBorderRadius" :min="0" :max="50" @change="handleChartUpdate" />
+                    </el-form-item>
+                  </el-form>
+                </el-collapse-item>
+
+                <!-- 柱状图特有配置 -->
+                <el-collapse-item title="柱状图特有配置" name="bar">
+                  <el-form label-width="100px" size="small">
+                    <el-form-item label="柱宽度">
+                      <el-input-number id="bar-width" v-model="selectedComponent.barWidth" :min="10" :max="100" @change="handleChartUpdate" />
+                    </el-form-item>
+                    <el-form-item label="柱间距">
+                      <el-input id="bar-gap" v-model="selectedComponent.barGap" placeholder="如: 30%" @change="handleChartUpdate" />
+                    </el-form-item>
+                    <el-form-item label="显示背景">
+                      <el-switch id="bar-show-background" v-model="selectedComponent.showBackground" @change="handleChartUpdate" />
+                    </el-form-item>
+                    <el-form-item label="背景颜色">
+                      <el-color-picker id="bar-background-color" v-model="selectedComponent.backgroundColor" @change="handleChartUpdate" />
                     </el-form-item>
                   </el-form>
                 </el-collapse-item>
@@ -912,6 +930,36 @@
                   </el-form>
                 </el-collapse-item>
               </el-collapse>
+            </template>
+
+            <!-- 折线图额外属性 -->
+            <template v-if="selectedComponent.type === 'line-chart'">
+              <el-divider>折线图属性</el-divider>
+              <LineChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+            </template>
+
+            <!-- 饼图额外属性 -->
+            <template v-if="selectedComponent.type === 'pie-chart'">
+              <el-divider>饼图属性</el-divider>
+              <PieChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+            </template>
+
+            <!-- 散点图额外属性 -->
+            <template v-if="selectedComponent.type === 'scatter-chart'">
+              <el-divider>散点图属性</el-divider>
+              <ScatterChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+            </template>
+
+            <!-- 仪表盘额外属性 -->
+            <template v-if="selectedComponent.type === 'gauge-chart'">
+              <el-divider>仪表盘属性</el-divider>
+              <GaugeChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+            </template>
+
+            <!-- 漏斗图额外属性 -->
+            <template v-if="selectedComponent.type === 'funnel-chart'">
+              <el-divider>漏斗图属性</el-divider>
+              <FunnelChartProperties :component="selectedComponent" @update="handleChartUpdate" />
             </template>
 
             <el-divider />
@@ -1266,6 +1314,13 @@ import { ElMessage } from 'element-plus'
 import type { Component, ComponentType } from './types'
 import * as echarts from 'echarts'
 import TableRenderer from './components/canvas/renderers/TableRenderer.vue'
+// 图表属性面板组件
+import BarChartProperties from './components/properties-panel/properties/BarChartProperties.vue'
+import LineChartProperties from './components/properties-panel/properties/LineChartProperties.vue'
+import PieChartProperties from './components/properties-panel/properties/PieChartProperties.vue'
+import ScatterChartProperties from './components/properties-panel/properties/ScatterChartProperties.vue'
+import GaugeChartProperties from './components/properties-panel/properties/GaugeChartProperties.vue'
+import FunnelChartProperties from './components/properties-panel/properties/FunnelChartProperties.vue'
 
 interface ComponentItem {
   type: ComponentType
@@ -1458,6 +1513,20 @@ function handleSave() {
 
 function handlePreview() {
   ElMessage.info('预览功能开发中...')
+}
+
+// 处理图表配置更新
+function handleChartUpdate() {
+  if (!selectedComponent.value) return
+  // 使用深拷贝更新组件，确保触发响应式更新
+  updateComponent(selectedComponent.value.id, JSON.parse(JSON.stringify(selectedComponent.value)))
+  // 立即更新图表显示
+  nextTick(() => {
+    const updatedComponent = currentDesign.value.components.find(c => c.id === selectedComponent.value!.id)
+    if (updatedComponent && ['chart', 'bar-chart', 'line-chart', 'pie-chart', 'scatter-chart', 'gauge-chart', 'funnel-chart'].includes(updatedComponent.type)) {
+      updateChart(updatedComponent)
+    }
+  })
 }
 
 function handleDragStart(item: ComponentItem, e: DragEvent) {
@@ -2980,7 +3049,6 @@ function createComponent(type: ComponentType): Component | null {
         ...baseConfig,
         type: 'bar-chart',
         height: 400,
-        dataSource: null,
         config: {
           title: '柱状图',
           titleFontSize: 18,
@@ -3044,7 +3112,6 @@ function createComponent(type: ComponentType): Component | null {
         ...baseConfig,
         type: 'line-chart',
         height: 400,
-        dataSource: null,
         config: {
           title: '折线图',
           titleFontSize: 18,
@@ -3093,13 +3160,24 @@ function createComponent(type: ComponentType): Component | null {
         lineStyleWidth: 2,
         lineStyleType: 'solid',
         areaStyle: false,
+        // 默认静态数据源
+        dataSource: {
+          id: `ds-${Date.now()}`,
+          name: '折线图数据源',
+          type: 'static',
+          staticData: {
+            categories: ['一月', '二月', '三月', '四月', '五月', '六月'],
+            series: [
+              { name: '销售额', data: [120, 200, 150, 80, 70, 110] }
+            ]
+          }
+        }
       }
     case 'pie-chart':
       return {
         ...baseConfig,
         type: 'pie-chart',
         height: 400,
-        dataSource: null,
         config: {
           title: '饼图',
           titleFontSize: 18,
@@ -3126,13 +3204,27 @@ function createComponent(type: ComponentType): Component | null {
         center: ['50%', '50%'],
         emphasisScale: true,
         minAngle: 0,
+        // 默认静态数据源
+        dataSource: {
+          id: `ds-${Date.now()}`,
+          name: '饼图数据源',
+          type: 'static',
+          staticData: {
+            data: [
+              { name: '直接访问', value: 335 },
+              { name: '邮件营销', value: 310 },
+              { name: '联盟广告', value: 234 },
+              { name: '视频广告', value: 135 },
+              { name: '搜索引擎', value: 1548 }
+            ]
+          }
+        }
       }
     case 'scatter-chart':
       return {
         ...baseConfig,
         type: 'scatter-chart',
         height: 400,
-        dataSource: null,
         config: {
           title: '散点图',
           titleFontSize: 18,
@@ -3178,13 +3270,25 @@ function createComponent(type: ComponentType): Component | null {
         symbol: 'circle',
         showEffect: false,
         effectType: 'ripple',
+        // 默认静态数据源
+        dataSource: {
+          id: `ds-${Date.now()}`,
+          name: '散点图数据源',
+          type: 'static',
+          staticData: {
+            data: [
+              [10, 20], [30, 40], [50, 35], [70, 50], [90, 65],
+              [25, 30], [45, 55], [65, 45], [85, 70], [15, 25],
+              [35, 50], [55, 40], [75, 60], [95, 75], [20, 35]
+            ]
+          }
+        }
       }
     case 'gauge-chart':
       return {
         ...baseConfig,
         type: 'gauge-chart',
         height: 400,
-        dataSource: null,
         config: {
           title: '仪表盘',
           titleFontSize: 18,
@@ -3217,13 +3321,21 @@ function createComponent(type: ComponentType): Component | null {
           length: '70%',
           width: 6,
         },
+        // 默认静态数据源
+        dataSource: {
+          id: `ds-${Date.now()}`,
+          name: '仪表盘数据源',
+          type: 'static',
+          staticData: {
+            value: 75
+          }
+        }
       }
     case 'funnel-chart':
       return {
         ...baseConfig,
         type: 'funnel-chart',
         height: 400,
-        dataSource: null,
         config: {
           title: '漏斗图',
           titleFontSize: 18,
@@ -3254,6 +3366,21 @@ function createComponent(type: ComponentType): Component | null {
         width: '80%',
         height: '80%',
         labelAlign: 'center',
+        // 默认静态数据源
+        dataSource: {
+          id: `ds-${Date.now()}`,
+          name: '漏斗图数据源',
+          type: 'static',
+          staticData: {
+            data: [
+              { name: '展示', value: 100 },
+              { name: '点击', value: 80 },
+              { name: '访问', value: 60 },
+              { name: '咨询', value: 40 },
+              { name: '订单', value: 20 }
+            ]
+          }
+        }
       }
     case 'rectangle':
       return {

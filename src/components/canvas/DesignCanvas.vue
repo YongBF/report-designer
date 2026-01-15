@@ -64,6 +64,12 @@ import TableRenderer from './renderers/TableRenderer.vue'
 import ChartRenderer from './renderers/ChartRenderer.vue'
 import RectangleRenderer from './renderers/RectangleRenderer.vue'
 import LineRenderer from './renderers/LineRenderer.vue'
+import BarChartRenderer from './renderers/BarChartRenderer.vue'
+import LineChartRenderer from './renderers/LineChartRenderer.vue'
+import PieChartRenderer from './renderers/PieChartRenderer.vue'
+import ScatterChartRenderer from './renderers/ScatterChartRenderer.vue'
+import GaugeChartRenderer from './renderers/GaugeChartRenderer.vue'
+import FunnelChartRenderer from './renderers/FunnelChartRenderer.vue'
 
 const canvasRef = ref<HTMLElement>()
 
@@ -100,6 +106,12 @@ function getComponentRenderer(type: Component['type']) {
     image: ImageRenderer,
     table: TableRenderer,
     chart: ChartRenderer,
+    'bar-chart': BarChartRenderer,
+    'line-chart': LineChartRenderer,
+    'pie-chart': PieChartRenderer,
+    'scatter-chart': ScatterChartRenderer,
+    'gauge-chart': GaugeChartRenderer,
+    'funnel-chart': FunnelChartRenderer,
     rectangle: RectangleRenderer,
     line: LineRenderer,
   }
@@ -380,6 +392,233 @@ function createComponent(
         strokeWidth: 2,
         strokeStyle: 'solid',
       }
+    case 'bar-chart':
+    case 'line-chart': {
+      const defaultAxisConfig = {
+        show: true,
+        name: '',
+        nameFontSize: 12,
+        nameColor: '#666',
+        axisLabelFontSize: 12,
+        axisLabelColor: '#666',
+        axisLineColor: '#ccc',
+        axisLineWidth: 1,
+      }
+      const defaultSeriesConfig = {
+        labelShow: false,
+        labelPosition: 'top' as const,
+        labelFontSize: 12,
+        labelColor: '#333',
+        itemStyleBorderWidth: 0,
+        itemStyleBorderColor: '#fff',
+        itemStyleBorderRadius: 0,
+        areaStyleOpacity: 0.3,
+      }
+      const defaultConfig = {
+        title: '图表标题',
+        titleFontSize: 16,
+        titleColor: '#333',
+        showLegend: true,
+        legendPosition: 'top' as const,
+        theme: 'default' as const,
+        backgroundColor: '#fff',
+        animation: true,
+        animationDuration: 1000,
+      }
+      return {
+        ...baseConfig,
+        type: type === 'bar-chart' ? 'bar-chart' : 'line-chart',
+        width: 400,
+        height: 300,
+        dataSource: null,
+        config: defaultConfig,
+        xAxis: defaultAxisConfig,
+        yAxis: defaultAxisConfig,
+        series: defaultSeriesConfig,
+        ...(type === 'bar-chart' ? {
+          barWidth: 20,
+          barGap: '20%',
+          showBackground: false,
+          backgroundColor: '#eee',
+        } : {
+          smooth: false,
+          step: false,
+          showSymbol: true,
+          symbolSize: 6,
+          lineStyleWidth: 2,
+          lineStyleType: 'solid' as const,
+          areaStyle: false,
+        }),
+      }
+    }
+    case 'pie-chart': {
+      const defaultConfig = {
+        title: '饼图标题',
+        titleFontSize: 16,
+        titleColor: '#333',
+        showLegend: true,
+        legendPosition: 'bottom' as const,
+        theme: 'default' as const,
+        backgroundColor: '#fff',
+        animation: true,
+        animationDuration: 1000,
+      }
+      const defaultSeriesConfig = {
+        labelShow: true,
+        labelPosition: 'outside' as const,
+        labelFontSize: 12,
+        labelColor: '#333',
+        itemStyleBorderWidth: 0,
+        itemStyleBorderColor: '#fff',
+        itemStyleBorderRadius: 0,
+        areaStyleOpacity: 0.3,
+      }
+      return {
+        ...baseConfig,
+        type: 'pie-chart',
+        width: 400,
+        height: 300,
+        dataSource: null,
+        config: defaultConfig,
+        series: defaultSeriesConfig,
+        roseType: false,
+        radius: ['0%', '70%'],
+        center: ['50%', '50%'],
+        emphasisScale: true,
+        minAngle: 0,
+      }
+    }
+    case 'scatter-chart': {
+      const defaultAxisConfig = {
+        show: true,
+        name: '',
+        nameFontSize: 12,
+        nameColor: '#666',
+        axisLabelFontSize: 12,
+        axisLabelColor: '#666',
+        axisLineColor: '#ccc',
+        axisLineWidth: 1,
+      }
+      const defaultSeriesConfig = {
+        labelShow: false,
+        labelPosition: 'top' as const,
+        labelFontSize: 12,
+        labelColor: '#333',
+        itemStyleBorderWidth: 0,
+        itemStyleBorderColor: '#fff',
+        itemStyleBorderRadius: 0,
+        areaStyleOpacity: 0.3,
+      }
+      const defaultConfig = {
+        title: '散点图标题',
+        titleFontSize: 16,
+        titleColor: '#333',
+        showLegend: true,
+        legendPosition: 'top' as const,
+        theme: 'default' as const,
+        backgroundColor: '#fff',
+        animation: true,
+        animationDuration: 1000,
+      }
+      return {
+        ...baseConfig,
+        type: 'scatter-chart',
+        width: 400,
+        height: 300,
+        dataSource: null,
+        config: defaultConfig,
+        xAxis: defaultAxisConfig,
+        yAxis: defaultAxisConfig,
+        series: defaultSeriesConfig,
+        symbolSize: 8,
+        symbol: 'circle' as const,
+        showEffect: false,
+        effectType: 'ripple' as const,
+      }
+    }
+    case 'gauge-chart': {
+      const defaultConfig = {
+        title: '仪表盘标题',
+        titleFontSize: 16,
+        titleColor: '#333',
+        showLegend: false,
+        legendPosition: 'top' as const,
+        theme: 'default' as const,
+        backgroundColor: '#fff',
+        animation: true,
+        animationDuration: 1000,
+      }
+      return {
+        ...baseConfig,
+        type: 'gauge-chart',
+        width: 300,
+        height: 300,
+        dataSource: null,
+        config: defaultConfig,
+        min: 0,
+        max: 100,
+        startAngle: 225,
+        endAngle: -45,
+        radius: '75%',
+        axisLine: {
+          show: true,
+          lineStyleWidth: 30,
+        },
+        splitNumber: 10,
+        detail: {
+          show: true,
+          fontSize: 20,
+          color: '#333',
+          formatter: '{value}',
+        },
+        pointer: {
+          show: true,
+          length: '70%',
+          width: 6,
+        },
+      }
+    }
+    case 'funnel-chart': {
+      const defaultConfig = {
+        title: '漏斗图标题',
+        titleFontSize: 16,
+        titleColor: '#333',
+        showLegend: true,
+        legendPosition: 'top' as const,
+        theme: 'default' as const,
+        backgroundColor: '#fff',
+        animation: true,
+        animationDuration: 1000,
+      }
+      const defaultSeriesConfig = {
+        labelShow: true,
+        labelPosition: 'outside' as const,
+        labelFontSize: 12,
+        labelColor: '#333',
+        itemStyleBorderWidth: 0,
+        itemStyleBorderColor: '#fff',
+        itemStyleBorderRadius: 0,
+        areaStyleOpacity: 0.3,
+      }
+      return {
+        ...baseConfig,
+        type: 'funnel-chart',
+        width: 400,
+        height: 300,
+        dataSource: null,
+        config: defaultConfig,
+        series: defaultSeriesConfig,
+        sort: 'descending' as const,
+        gap: 0,
+        left: '10%',
+        top: 60,
+        right: '10%',
+        bottom: 60,
+        width: '80%',
+        height: '80%',
+        labelAlign: 'center' as const,
+      }
+    }
     default:
       return null
   }

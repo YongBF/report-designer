@@ -118,7 +118,7 @@ export interface AxisConfig {
 // 系列配置
 export interface SeriesConfig {
   labelShow: boolean
-  labelPosition: 'top' | 'inside' | 'insideTop' | 'insideLeft' | 'insideRight' | 'insideBottom' | 'outside'
+  labelPosition: string // 使用 string 类型以支持所有图表的不同选项
   labelFontSize: number
   labelColor: string
   itemStyleBorderWidth: number

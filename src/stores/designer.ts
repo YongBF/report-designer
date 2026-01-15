@@ -182,7 +182,11 @@ export function addComponent(component: Component) {
 export function updateComponent(id: string, updates: Partial<Component>) {
   const index = currentDesign.value.components.findIndex((c) => c.id === id)
   if (index !== -1) {
-    Object.assign(currentDesign.value.components[index], updates)
+    // 使用深拷贝替换整个组件对象，确保触发响应式更新
+    currentDesign.value.components[index] = JSON.parse(JSON.stringify({
+      ...currentDesign.value.components[index],
+      ...updates
+    }))
     currentDesign.value.updatedAt = new Date().toISOString()
   }
 }
