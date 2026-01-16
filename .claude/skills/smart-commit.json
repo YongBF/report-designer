@@ -1,0 +1,17 @@
+{
+  "name": "smart-commit",
+  "description": "智能总结修改并提交 git，并自动推送到远程仓库",
+  "prompt": "请帮我完成以下任务：
+
+1. 查看 git status 了解有哪些文件被修改/添加/删除
+2. 查看 git diff 了解具体的修改内容
+3. 根据修改内容，生成一个简洁的 commit message（中文，不超过50字）
+4. 将修改的文件添加到暂存区并提交，commit message 格式为：\"<生成的描述>\\n\\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\"
+5. 提交成功后，自动推送到远程仓库（使用 git push）
+
+注意：
+- 如果没有任何修改需要提交，直接告知用户
+- commit message 应该简洁明了地说明修改的目的，而不是具体修改了什么
+- 不要使用 emoji
+- 必须推送到远程仓库"
+}
