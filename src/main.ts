@@ -1,16 +1,22 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 import App from './App.vue';
-import { initDesigner } from './stores/designer';
-
-// 初始化设计器
-initDesigner();
+import { useDesignerStore } from './stores/designer';
 
 const app = createApp(App);
+
+// 创建 Pinia 实例
+const pinia = createPinia();
+app.use(pinia);
+
+// 初始化设计器 store
+const designerStore = useDesignerStore();
+designerStore.initDesigner();
 
 // 注册 Element Plus
 app.use(ElementPlus, {

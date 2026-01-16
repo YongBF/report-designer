@@ -17,7 +17,6 @@
   <div class="report-designer">
     <!-- 工具栏 -->
     <div class="toolbar">
-      <el-button type="primary" @click="handleTest">测试按钮</el-button>
       <el-button :icon="DocumentAdd" @click="handleNew">新建</el-button>
       <el-button :disabled="!canUndo" :icon="Back" @click="handleUndo">撤销</el-button>
       <el-button :disabled="!canRedo" :icon="Right" @click="handleRedo">重做</el-button>
@@ -1429,8 +1428,12 @@ import {
   Delete,
   Rank,
 } from '@element-plus/icons-vue';
-import { selectedIds, canUndo, canRedo, updateComponent, currentDesign } from './stores/designer';
+import { useDesignerStore } from './stores/designer';
 import type { Component } from './types';
+
+// 使用 Pinia store
+const designerStore = useDesignerStore();
+const { selectedIds, canUndo, canRedo, updateComponent, currentDesign } = designerStore;
 import TableRenderer from './components/canvas/renderers/TableRenderer.vue';
 // 图表属性面板组件
 import BarChartProperties from './components/properties-panel/properties/BarChartProperties.vue';
@@ -1587,7 +1590,7 @@ function handleChartUpdate() {
 }
 
 // ============ 工具栏方法 ============
-const { handleTest, handleNew, handleUndo, handleRedo, handleSave, handlePreview } = toolbar;
+const { handleNew, handleUndo, handleRedo, handleSave, handlePreview } = toolbar;
 
 // ============ 拖拽和调整大小方法 ============
 const {

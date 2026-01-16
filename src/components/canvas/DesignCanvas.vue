@@ -47,7 +47,7 @@ import {
   clearSelection,
   selectAll,
   setHoveredId,
-} from '../../stores/designer';
+} from '../stores/pinia';
 import type { Component } from '../../types';
 import TextRenderer from './renderers/TextRenderer.vue';
 import ImageRenderer from './renderers/ImageRenderer.vue';

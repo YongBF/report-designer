@@ -159,7 +159,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { currentDesign, singleSelectedComponent, updateComponent } from '../../stores/designer';
+import { currentDesign, singleSelectedComponent, updateComponent } from '../stores/pinia';
 import TextProperties from './properties/TextProperties.vue';
 import ImageProperties from './properties/ImageProperties.vue';
 import TableProperties from './properties/TableProperties.vue';

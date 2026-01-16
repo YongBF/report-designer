@@ -18,29 +18,24 @@
 
 import { nextTick } from 'vue';
 import { ElMessage } from 'element-plus';
-import {
-  currentDesign,
-  selectedIds,
-  createNewDesign,
-  undo,
-  redo,
-  canUndo,
-  canRedo,
-  updateComponent,
-} from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
 import type { Component } from '../types';
 
 /**
  * 工具栏操作 composable
  */
 export function useToolbar() {
-  /**
-   * 测试按钮
-   */
-  function handleTest() {
-    ElMessage.success('测试成功！Element Plus 正常工作');
-  }
-
+  const designerStore = useDesignerStore();
+  const {
+    currentDesign,
+    selectedIds,
+    createNewDesign,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    updateComponent,
+  } = designerStore;
   /**
    * 新建设计
    */
@@ -128,7 +123,6 @@ export function useToolbar() {
     canUndo,
     canRedo,
     // 方法
-    handleTest,
     handleNew,
     handleUndo,
     handleRedo,

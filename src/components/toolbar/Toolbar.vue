@@ -153,7 +153,7 @@ import {
   importDesign,
   setScale,
   updateCanvasSize,
-} from '../../stores/designer';
+} from '../stores/pinia';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import DataSourceManager from '../DataSourceManager.vue';
 import PreviewDialog from '../PreviewDialog.vue';

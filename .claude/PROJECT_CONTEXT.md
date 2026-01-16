@@ -10,10 +10,11 @@
 2. [技术栈](#技术栈)
 3. [Playwright 测试最佳实践](#playwright-测试最佳实践)
 4. [已知问题和解决方案](#已知问题和解决方案)
-5. [UI 结构说明](#ui-结构说明)
-6. [代码示例库](#代码示例库)
-7. [检查清单](#检查清单)
-8. [新会话快速开始](#新会话快速开始)
+5. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践) ⭐ 新增
+6. [UI 结构说明](#ui-结构说明)
+7. [代码示例库](#代码示例库)
+8. [检查清单](#检查清单)
+9. [新会话快速开始](#新会话快速开始)
 
 ---
 
@@ -37,6 +38,11 @@ report-designer/
 │   │   ├── toolbar/         # 工具栏
 │   │   └── common/          # 通用组件
 │   ├── composables/         # Vue 组合式函数
+│   ├── stores/
+│   │   ├── pinia/           # Pinia 状态管理 ⭐ 新增
+│   │   │   ├── designerStore.ts  # 设计器 store
+│   │   │   └── index.ts           # Store 导出
+│   │   └── designer.ts      # 兼容层(向后兼容)
 │   ├── types/              # TypeScript 类型定义
 │   └── utils/              # 工具函数
 ├── e2e/                    # Playwright E2E 测试
@@ -49,6 +55,7 @@ report-designer/
 - ✅ **组件联动功能**: 完整实现，支持多种联动模式
 - ✅ **Mock Server**: 10个API端点
 - ✅ **加载状态**: Loading/Empty/Error 状态展示
+- ✅ **Pinia 状态管理**: 统一的状态管理,支持渐进式迁移 ⭐ **2026-01-16**
 
 ---
 
@@ -58,6 +65,11 @@ report-designer/
 - **Vue 3.5** - Composition API
 - **TypeScript 5.9** - 类型安全
 - **Vite 5.4** - 构建工具
+
+### 状态管理
+- **Pinia 2.2** - 统一状态管理 ⭐ **2026-01-16 新增**
+- **兼容层** - 支持旧的导入方式,渐进式迁移
+- **Store 文件**: `src/stores/pinia/designerStore.ts`
 
 ### UI 组件库
 - **Element Plus 2.13** - 主要UI组件
@@ -72,7 +84,7 @@ report-designer/
 - **Chromium** - 测试浏览器
 
 ### 开发服务器
-- **Vite Dev Server**: http://localhost:5173
+- **Vite Dev Server**: http://localhost:5173 (或 5174,如果5173被占用)
 - **Mock Server**: http://localhost:3001
 
 ---
@@ -346,6 +358,283 @@ expect(hasBorder).toBe(true);
 
 **相关文件**:
 - `e2e/tests/complex-scenarios-v2.spec.js:101`
+
+---
+
+## Pinia 状态管理最佳实践 ⭐ 2026-01-16 新增
+
+### ✅ DO - 正确做法
+
+#### 1. 使用 Pinia Store
+
+```javascript
+// ✅ 方案1: 直接使用 Pinia store (推荐新代码)
+import { useDesignerStore } from '@/stores/pinia';
+
+const designerStore = useDesignerStore();
+const { currentDesign, selectedIds, updateComponent } = designerStore;
+
+// 更新组件
+designerStore.updateComponent(componentId, { content: '新内容' });
+
+// ✅ 方案2: 使用兼容层 (旧代码,无需修改)
+import { currentDesign, selectedIds, updateComponent } from '@/stores/designer';
+
+// 仍然可以正常工作,内部使用 Pinia
+updateComponent(componentId, { content: '新内容' });
+```
+
+#### 2. 在组件中使用 Store
+
+```vue
+<script setup lang="ts">
+import { useDesignerStore } from '@/stores/pinia';
+
+// ✅ 在组件顶层调用 store
+const designerStore = useDesignerStore();
+
+// ✅ 解构需要的属性和方法
+const {
+  currentDesign,
+  selectedIds,
+  canUndo,
+  canRedo,
+  updateComponent,
+  selectComponent,
+} = designerStore;
+
+// ✅ 直接使用
+function handleComponentClick(componentId: string) {
+  selectComponent(componentId);
+}
+</script>
+
+<template>
+  <div>
+    <!-- ✅ 在模板中使用 -->
+    <span>组件数: {{ currentDesign.components.length }}</span>
+    <button :disabled="!canUndo" @click="designerStore.undo()">撤销</button>
+  </div>
+</template>
+```
+
+#### 3. 在 Composables 中使用 Store
+
+```typescript
+// ✅ 正确: 在 composable 函数中使用 store
+import { useDesignerStore } from '@/stores/pinia';
+
+export function useComponentOperations() {
+  const designerStore = useDesignerStore();
+  const { currentDesign, selectedIds } = designerStore;
+
+  function deleteSelectedComponents() {
+    designerStore.removeComponents(selectedIds.value);
+  }
+
+  function duplicateSelectedComponents() {
+    designerStore.duplicateComponents(selectedIds.value);
+  }
+
+  return {
+    deleteSelectedComponents,
+    duplicateSelectedComponents,
+  };
+}
+```
+
+#### 4. Store 初始化
+
+```typescript
+// src/main.ts
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import App from './App.vue';
+import { useDesignerStore } from './stores/pinia';
+
+const app = createApp(App);
+
+// ✅ 创建并安装 Pinia
+const pinia = createPinia();
+app.use(pinia);
+
+// ✅ 初始化 store
+const designerStore = useDesignerStore();
+designerStore.initDesigner();
+
+app.mount('#app');
+```
+
+### ❌ DON'T - 常见错误
+
+#### 1. 不要在函数内部调用 store
+
+```javascript
+// ❌ 错误: 在事件处理函数中调用 store
+function handleClick() {
+  const store = useDesignerStore();  // ❌ 每次都创建新实例
+  store.updateComponent(id, data);
+}
+
+// ✅ 正确: 在组件顶层调用 store
+const store = useDesignerStore();
+
+function handleClick() {
+  store.updateComponent(id, data);
+}
+```
+
+#### 2. 不要解构 actions
+
+```javascript
+// ❌ 错误: 解构会丢失 this 上下文
+const { updateComponent, undo } = designerStore;
+
+function handleUpdate() {
+  updateComponent(id, data);  // ❌ this 上下文丢失
+}
+
+// ✅ 正确: 直接使用 store
+function handleUpdate() {
+  designerStore.updateComponent(id, data);  // ✅ 保持 this 上下文
+}
+
+// ✅ 或者: 解构 state 和 getters,保留方法
+const { currentDesign, selectedIds } = designerStore;
+
+function handleUpdate() {
+  designerStore.updateComponent(id, data);
+}
+```
+
+#### 3. 不要混合使用旧的和新的导入方式
+
+```javascript
+// ❌ 混乱: 混合使用
+import { useDesignerStore } from '@/stores/pinia';
+import { currentDesign } from '@/stores/designer';
+
+const store = useDesignerStore();
+const design = currentDesign;  // ❌ 不一致
+
+// ✅ 一致: 统一使用一种方式
+// 方案A: 全部使用 Pinia
+import { useDesignerStore } from '@/stores/pinia';
+const store = useDesignerStore();
+const design = store.currentDesign;
+
+// 方案B: 全部使用兼容层(渐进式迁移)
+import { currentDesign, updateComponent } from '@/stores/designer';
+// 继续使用旧的导入方式
+```
+
+#### 4. 不要直接修改 store 内部状态
+
+```javascript
+// ❌ 错误: 直接修改 state
+designerStore.currentDesign.components.push(newComponent);
+
+// ✅ 正确: 使用 action
+designerStore.addComponent(newComponent);
+
+// ✅ 正确: 使用暴露的方法
+designerStore.updateComponent(id, updates);
+```
+
+### Store 架构说明
+
+```
+┌─────────────────────────────────────┐
+│       应用组件和 Composables         │
+│    (使用任一导入方式)                │
+└──────────────┬──────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────┐
+│   兼容层 (src/stores/designer.ts)    │
+│   - 保持旧 API 不变                  │
+│   - 内部委托给 Pinia store           │
+└──────────────┬──────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────┐
+│  Pinia Store (designerStore)         │
+│  - 统一的状态管理                     │
+│  - 类型安全                          │
+│  - DevTools 支持                     │
+└─────────────────────────────────────┘
+```
+
+### 渐进式迁移策略
+
+1. **阶段1: 继续使用兼容层**
+   ```javascript
+   // 现有代码无需修改
+   import { currentDesign, updateComponent } from '@/stores/designer';
+   ```
+
+2. **阶段2: 新代码使用 Pinia**
+   ```javascript
+   // 新组件和功能直接使用 Pinia
+   import { useDesignerStore } from '@/stores/pinia';
+   const store = useDesignerStore();
+   ```
+
+3. **阶段3: 逐步迁移现有代码**
+   - 按模块逐个迁移
+   - 先迁移简单模块
+   - 最后迁移核心模块
+
+### Store 可用属性和方法
+
+```typescript
+// State
+currentDesign      // 当前设计对象
+history           // 历史记录
+selectedIds       // 选中的组件ID数组
+hoveredId         // 悬停的组件ID
+scale             // 画布缩放比例
+gridSize          // 网格大小
+showGrid          // 是否显示网格
+snapToGrid        // 是否吸附网格
+
+// Getters (Computed)
+selectedComponents     // 选中的组件数组
+singleSelectedComponent // 单个选中组件
+hoveredComponent       // 悬停的组件
+canUndo               // 可以撤销
+canRedo               // 可以重做
+
+// Actions
+initDesigner()              // 初始化设计器
+saveHistory(desc)           // 保存历史记录
+undo()                      // 撤销
+redo()                      // 重做
+createNewDesign()           // 创建新设计
+loadDesign(design)          // 加载设计
+exportDesign()              // 导出设计
+importDesign(design)        // 导入设计
+addComponent(comp)          // 添加组件
+updateComponent(id, updates) // 更新组件
+removeComponents(ids)       // 删除组件
+duplicateComponents(ids)    // 复制组件
+changeComponentOrder(id, dir) // 调整顺序
+selectComponent(id)         // 选择组件
+clearSelection()            // 清除选择
+selectAll()                 // 全选
+addDataSource(source)       // 添加数据源
+updateDataSource(id, updates) // 更新数据源
+removeDataSource(id)        // 删除数据源
+updateCanvasSize(w, h)      // 更新画布大小
+updateCanvasStyle(updates)  // 更新画布样式
+```
+
+### 相关文件
+
+- `src/stores/pinia/designerStore.ts` - Pinia store 实现
+- `src/stores/designer.ts` - 兼容层
+- `src/main.ts` - Pinia 初始化
+- `src/App.vue` - Store 使用示例
 
 ---
 
@@ -704,6 +993,56 @@ test('测试预览功能', async ({ page }) => {
   - 图表需要 1500ms 渲染
   - 组件需要 800ms 初始化
 
+### Pinia 状态管理检查清单 ⭐ 2026-01-16 新增
+
+#### 在新组件中使用 Store
+
+- [ ] **选择导入方式**
+  - [ ] 新代码: `import { useDesignerStore } from '@/stores/pinia'`
+  - [ ] 旧代码: 继续使用 `import { ... } from '@/stores/designer'`
+
+- [ ] **正确初始化**
+  - [ ] 在 `<script setup>` 顶层调用 `useDesignerStore()`
+  - [ ] 不要在函数内部调用
+
+- [ ] **解构模式**
+  - [ ] ✅ 可以解构 state 和 getters: `const { currentDesign, selectedIds } = store`
+  - [ ] ❌ 不要解构 actions: 保持 `store.updateComponent()`
+
+- [ ] **类型安全**
+  - [ ] 使用 TypeScript 类型定义
+  - [ ] 享受 IDE 自动补全
+
+#### 迁移现有代码到 Pinia
+
+- [ ] **评估迁移优先级**
+  - [ ] 简单组件优先
+  - [ ] 核心功能最后迁移
+  - [ ] 可以保持兼容层不变
+
+- [ ] **测试迁移**
+  - [ ] 迁移后运行测试套件
+  - [ ] 验证功能正常
+  - [ ] 检查控制台无错误
+
+- [ ] **保持一致性**
+  - [ ] 同一模块使用统一导入方式
+  - [ ] 不要混用新旧导入
+
+#### Store 使用最佳实践
+
+- [ ] **使用 Actions 而非直接修改**
+  - [ ] ✅ `store.updateComponent(id, data)`
+  - [ ] ❌ `store.currentDesign.components.push(...)`
+
+- [ ] **利用响应式**
+  - [ ] State 和 getters 自动响应变化
+  - [ ] 模板中直接使用即可
+
+- [ ] **性能优化**
+  - [ ] 只解构需要的属性
+  - [ ] 避免不必要的响应式开销
+
 ---
 
 ## 新会话快速开始
@@ -923,9 +1262,17 @@ e2e/package.json                    # 测试依赖
 ## 📝 文档信息
 
 **文件**: `.claude/PROJECT_CONTEXT.md`
-**版本**: 1.0
+**版本**: 2.0
 **创建日期**: 2026-01-16
+**最后更新**: 2026-01-16
 **维护者**: Claude Code + 用户
+
+**更新内容**:
+- ✅ v2.0: 添加 Pinia 状态管理系统
+- ✅ v2.0: 添加状态管理最佳实践
+- ✅ v2.0: 添加 Pinia 检查清单
+- ✅ v2.0: 更新项目结构和架构说明
+- ✅ v2.0: 移除测试按钮,统一状态管理
 
 **用途**: 为新 Claude Code 会话提供项目上下文，避免重复错误，加速开发。
 
