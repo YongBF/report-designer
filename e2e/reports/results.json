@@ -1,0 +1,1875 @@
+{
+  "config": {
+    "configFile": "/Users/yongbinfan/work/report-designer/e2e/playwright.config.js",
+    "rootDir": "/Users/yongbinfan/work/report-designer/e2e/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "reports/html-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "reports/results.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yongbinfan/work/report-designer/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yongbinfan/work/report-designer/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/yongbinfan/work/report-designer/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/yongbinfan/work/report-designer/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/yongbinfan/work/report-designer/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/yongbinfan/work/report-designer/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "basic-setup.spec.js",
+      "file": "basic-setup.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "基础环境",
+          "file": "basic-setup.spec.js",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "应该能够访问开发服务器",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 719,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:17.254Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-6f7c3f22af02d7b8218c",
+              "file": "basic-setup.spec.js",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "应用标题应该正确",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 724,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:17.253Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-6f9c3cd2c1e13664f4b8",
+              "file": "basic-setup.spec.js",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "应用应该正常加载，无严重错误",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 955,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:17.266Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-f0aabb9617e8fc8bc584",
+              "file": "basic-setup.spec.js",
+              "line": 20,
+              "column": 3
+            },
+            {
+              "title": "主要UI元素应该存在",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1183,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:17.256Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-c2cdc02261a1cba3f6d1",
+              "file": "basic-setup.spec.js",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "Mock Server应该可用",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1340,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:18.128Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-c7b8fc4555adbbd5b321",
+              "file": "basic-setup.spec.js",
+              "line": 65,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "性能测试",
+          "file": "basic-setup.spec.js",
+          "line": 85,
+          "column": 6,
+          "specs": [
+            {
+              "title": "页面初始加载时间应该合理",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 828,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "页面加载时间: 705ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:18.135Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-7f2e1cfbc17a684977ca",
+              "file": "basic-setup.spec.js",
+              "line": 86,
+              "column": 3
+            },
+            {
+              "title": "组件库面板应该快速响应",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 839,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "组件库加载时间: 24ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:18.372Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-8f6fd2412e40e06197cd",
+              "file": "basic-setup.spec.js",
+              "line": 100,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "面板布局测试",
+          "file": "basic-setup.spec.js",
+          "line": 118,
+          "column": 6,
+          "specs": [
+            {
+              "title": "左侧面板应该显示组件库标题",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 831,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:18.598Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-404bbc1b5d28a9bd060c",
+              "file": "basic-setup.spec.js",
+              "line": 119,
+              "column": 3
+            },
+            {
+              "title": "右侧面板应该显示属性面板标题",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 804,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:18.972Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-50bd15a69abd2b5b2b67",
+              "file": "basic-setup.spec.js",
+              "line": 127,
+              "column": 3
+            },
+            {
+              "title": "未选中组件时应该显示空状态提示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 781,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:19.220Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-8042e400b4e409ec0829",
+              "file": "basic-setup.spec.js",
+              "line": 135,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "组件库元素测试",
+          "file": "basic-setup.spec.js",
+          "line": 144,
+          "column": 6,
+          "specs": [
+            {
+              "title": "基础组件应该全部可见",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 800,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:19.435Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-60d8ecc8e2c37446a493",
+              "file": "basic-setup.spec.js",
+              "line": 145,
+              "column": 3
+            },
+            {
+              "title": "图表组件应该全部可见",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 888,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:19.475Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-210c41f8e1ad9181cbaa",
+              "file": "basic-setup.spec.js",
+              "line": 157,
+              "column": 3
+            },
+            {
+              "title": "形状组件应该全部可见",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 810,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:19.782Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-6398bbbcde75f29700a1",
+              "file": "basic-setup.spec.js",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "组件应该是可拖拽的",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 801,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:20.007Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eaf3caa5dc3e3fec1f64-820cfe674b618b5d01ed",
+              "file": "basic-setup.spec.js",
+              "line": 181,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "complex-scenarios-v2.spec.js",
+      "file": "complex-scenarios-v2.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "场景1: 创建销售数据报表",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "完整的报表创建流程",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5478,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功创建包含标题、表格和图表的报表\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:20.251Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-8056b75de9080ed347fc",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 10,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景2: 表单设计与配置",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 61,
+          "column": 6,
+          "specs": [
+            {
+              "title": "配置表单布局和样式",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3097,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功配置表单布局和样式\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:20.383Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-9c0c9ec6055e6f7de6e9",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 62,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景3: 图表组件测试",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 106,
+          "column": 6,
+          "specs": [
+            {
+              "title": "添加多个图表并验证渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6029,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功添加并渲染3个图表组件\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:20.604Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-86e26e4d2eb119b57222",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 107,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景4: 表格配置测试",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 139,
+          "column": 6,
+          "specs": [
+            {
+              "title": "配置表格基础样式",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3283,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功配置表格样式\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:20.824Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-3aa9ec9d309d1f96528f",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 140,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景5: 工具栏操作",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 186,
+          "column": 6,
+          "specs": [
+            {
+              "title": "新建和预览功能",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5712,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "预览模式class: null\n"
+                        },
+                        {
+                          "text": "✅ 成功测试新建和预览功能\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:23.488Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-8c8ad657b5342da54e5f",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 187,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景6: 仪表板布局",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 231,
+          "column": 6,
+          "specs": [
+            {
+              "title": "创建多行布局的仪表板",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 6828,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功创建仪表板布局并截图\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:24.116Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-5e4eb8bcee7f2b5b5cb0",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 232,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景7: 组件管理",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 281,
+          "column": 6,
+          "specs": [
+            {
+              "title": "批量添加和删除组件",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 8526,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功添加5个组件\n"
+                        },
+                        {
+                          "text": "✅ 删除3个组件后剩余2个\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:25.736Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-03b090217c0928944c69",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 282,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景8: 文本样式定制",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 319,
+          "column": 6,
+          "specs": [
+            {
+              "title": "自定义文本组件样式",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2544,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "字体大小: 36px\n"
+                        },
+                        {
+                          "text": "✅ 成功自定义文本样式\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:26.641Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-61e29ae2be799d42e35a",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 320,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景9: 表单与表格组合",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 362,
+          "column": 6,
+          "specs": [
+            {
+              "title": "创建表单查询+数据表格场景",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3953,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 成功创建表单+表格组合场景\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:29.193Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-158b7bafc9d5c6657503",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 363,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景10: 拖拽排序测试",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 409,
+          "column": 6,
+          "specs": [
+            {
+              "title": "组件拖拽移动和排序",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4742,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "初始顺序: [ 'text', 'table', 'chart' ]\n"
+                        },
+                        {
+                          "text": "拖拽手柄文本: 拖拽\n"
+                        },
+                        {
+                          "text": "✅ 成功测试组件拖拽排序功能\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:29.209Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-330e30a21a92c214fb21",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 410,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景11: 响应式布局",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 463,
+          "column": 6,
+          "specs": [
+            {
+              "title": "不同尺寸的组件布局",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3688,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "组件0的class: canvas-component\n"
+                        },
+                        {
+                          "text": "组件1的class: canvas-component\n"
+                        },
+                        {
+                          "text": "组件2的class: canvas-component selected\n"
+                        },
+                        {
+                          "text": "✅ 成功测试响应式布局\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:30.952Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-97999dbfad9c42b818d5",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 464,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景12: 压力测试",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 492,
+          "column": 6,
+          "specs": [
+            {
+              "title": "连续操作稳定性测试",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5536,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ 连续操作稳定性测试通过\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:33.154Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-dbe5db0a09ea41b3e1a4",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 493,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "场景13: 完整工作流",
+          "file": "complex-scenarios-v2.spec.js",
+          "line": 537,
+          "column": 6,
+          "specs": [
+            {
+              "title": "从零开始创建完整报表",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 9347,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "=== 开始创建报表 ===\n"
+                        },
+                        {
+                          "text": "1. 添加标题...\n"
+                        },
+                        {
+                          "text": "2. 添加3个KPI卡片...\n"
+                        },
+                        {
+                          "text": "3. 添加图表...\n"
+                        },
+                        {
+                          "text": "4. 添加数据表格...\n"
+                        },
+                        {
+                          "text": "✅ 成功创建包含6个组件的完整报表\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:33.959Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6217219ce80ad62cede6-15e780a6244409ad67d9",
+              "file": "complex-scenarios-v2.spec.js",
+              "line": 538,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "drag-drop.spec.js",
+      "file": "drag-drop.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "拖拽添加组件",
+          "file": "drag-drop.spec.js",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "应该能够拖拽文本组件到画布",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2941,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:34.274Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-d9c8400a4b092f3409e6",
+              "file": "drag-drop.spec.js",
+              "line": 19,
+              "column": 3
+            },
+            {
+              "title": "应该能够拖拽表格组件到画布",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3072,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:34.650Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-e1133d12755f762bb8b9",
+              "file": "drag-drop.spec.js",
+              "line": 48,
+              "column": 3
+            },
+            {
+              "title": "应该能够拖拽柱状图组件到画布",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4042,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:37.223Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-d8c68dac9db5bf223432",
+              "file": "drag-drop.spec.js",
+              "line": 70,
+              "column": 3
+            },
+            {
+              "title": "应该能够拖拽表单组件到画布",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3039,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:37.732Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-facf939ffa7474434b7b",
+              "file": "drag-drop.spec.js",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "应该能够拖拽矩形组件到画布",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2928,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:38.705Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-2eac5491cf05eef49ab6",
+              "file": "drag-drop.spec.js",
+              "line": 114,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "组件交互功能",
+          "file": "drag-drop.spec.js",
+          "line": 137,
+          "column": 6,
+          "specs": [
+            {
+              "title": "应该能够选中组件",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 2948,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:40.778Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-2f9555dbe8caef1c0ec4",
+              "file": "drag-drop.spec.js",
+              "line": 152,
+              "column": 3
+            },
+            {
+              "title": "选中的组件应该在属性面板显示配置",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2974,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:41.272Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-22c5dc60a2496c230f8e",
+              "file": "drag-drop.spec.js",
+              "line": 165,
+              "column": 3
+            },
+            {
+              "title": "应该能够删除组件",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3525,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:41.640Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-86ba86087654cf7811d9",
+              "file": "drag-drop.spec.js",
+              "line": 176,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "工具栏功能",
+          "file": "drag-drop.spec.js",
+          "line": 197,
+          "column": 6,
+          "specs": [
+            {
+              "title": "工具栏应该显示所有操作按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 826,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:43.321Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-a9ce12b2d4f1391526fc",
+              "file": "drag-drop.spec.js",
+              "line": 203,
+              "column": 3
+            },
+            {
+              "title": "应该能够点击预览按钮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 1300,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:43.732Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-3dabc919f171a6823800",
+              "file": "drag-drop.spec.js",
+              "line": 215,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "组件库面板",
+          "file": "drag-drop.spec.js",
+          "line": 225,
+          "column": 6,
+          "specs": [
+            {
+              "title": "应该显示所有组件组",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 795,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:44.153Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-f79af71ec6214421d5fd",
+              "file": "drag-drop.spec.js",
+              "line": 231,
+              "column": 3
+            },
+            {
+              "title": "应该显示所有基础组件",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 938,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:44.256Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-a5deed89834366e12525",
+              "file": "drag-drop.spec.js",
+              "line": 242,
+              "column": 3
+            },
+            {
+              "title": "应该显示所有图表组件",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 807,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:44.954Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-fa0fb37792b69f64f127",
+              "file": "drag-drop.spec.js",
+              "line": 252,
+              "column": 3
+            },
+            {
+              "title": "应该显示所有形状组件",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 818,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:45.044Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-d1d9acf42e91f41bf128",
+              "file": "drag-drop.spec.js",
+              "line": 263,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "画布区域",
+          "file": "drag-drop.spec.js",
+          "line": 272,
+          "column": 6,
+          "specs": [
+            {
+              "title": "画布应该正常显示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 875,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:45.181Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-feb33d5397fc1929f138",
+              "file": "drag-drop.spec.js",
+              "line": 278,
+              "column": 3
+            },
+            {
+              "title": "画布应该支持拖放高亮",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1003,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-16T14:18:45.226Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "064bea962346c6d1dd34-d29224f335e070538df6",
+              "file": "drag-drop.spec.js",
+              "line": 286,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-01-16T14:18:16.929Z",
+    "duration": 29326.119,
+    "expected": 43,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

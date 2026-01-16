@@ -8,15 +8,29 @@
     @mouseleave="$emit('mouseleave')"
     @update="(id, updates) => $emit('update', id, updates)"
   >
-    <div ref="chartRef" class="chart-container" :style="containerStyle" />
+    <DataLoadingState
+      :loading="loading"
+      :error="error"
+      :error-details="error"
+      :empty="!loading && !error && !hasData"
+      empty-text="暂无数据"
+      :fullscreen="false"
+      :show-retry="true"
+      :show-details="true"
+      @retry="refresh"
+    >
+      <div ref="chartRef" class="chart-container" :style="containerStyle" />
+    </DataLoadingState>
   </BaseRenderer>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import BaseRenderer from './BaseRenderer.vue';
+import DataLoadingState from '../../common/DataLoadingState.vue';
 import type { LineChartComponent } from '../../../types';
+import { fetchWithLinkageParams } from '../../../utils/apiHelper';
 
 const props = defineProps<{
   component: LineChartComponent;
@@ -34,14 +48,66 @@ const emit = defineEmits<{
 const chartRef = ref<HTMLElement>();
 let chartInstance: echarts.ECharts | null = null;
 
+// API数据缓存
+const apiChartData = ref<any>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
 const containerStyle = computed(() => ({
   width: '100%',
   height: '100%',
 }));
 
+// 计算是否有数据
+const hasData = computed(() => {
+  const chartData = getChartData();
+  return chartData && chartData.series && chartData.series.length > 0;
+});
+
+/**
+ * 从API获取数据
+ */
+async function fetchApiData() {
+  const dataSource = props.component.dataSource;
+  if (!dataSource || dataSource.type !== 'api') {
+    return;
+  }
+
+  loading.value = true;
+  error.value = null;
+
+  try {
+    console.log('[LineChartRenderer] 开始获取API数据:', {
+      url: dataSource.apiUrl,
+      linkageParams: props.component.linkageParams,
+    });
+
+    const data = await fetchWithLinkageParams(
+      dataSource,
+      props.component.linkageParams || {},
+      props.component.beforeRequest
+    );
+
+    console.log('[LineChartRenderer] API数据获取成功:', data);
+    apiChartData.value = data;
+  } catch (err: any) {
+    console.error('[LineChartRenderer] API数据获取失败:', err);
+    error.value = err.message || '获取数据失败';
+    apiChartData.value = null;
+  } finally {
+    loading.value = false;
+  }
+}
+
 // 获取图表数据
 function getChartData() {
   const dataSource = props.component.dataSource;
+
+  // 优先使用API数据
+  if (apiChartData.value) {
+    console.log('[LineChartRenderer] 使用API数据:', apiChartData.value);
+    return apiChartData.value;
+  }
 
   // 静态数据格式：{ categories: string[], series: Array<{ name: string, data: number[] }> }
   if (dataSource?.staticData) {
@@ -62,6 +128,90 @@ function getChartData() {
       },
     ],
   };
+}
+
+/**
+ * 刷新数据（供联动调用）
+ */
+function refresh() {
+  console.log('[LineChartRenderer] 刷新数据');
+  fetchApiData();
+  if (chartInstance) {
+    updateChartOptions();
+  }
+}
+
+/**
+ * 处理联动刷新事件
+ */
+function handleLinkageRefresh(event: CustomEvent) {
+  console.log('[LineChartRenderer] 收到联动刷新事件:', event.detail);
+  if (event.detail?.targetComponentId === props.component.id) {
+    refresh();
+  }
+}
+
+// 监听数据源变化
+watch(
+  () => props.component.dataSource,
+  (newDataSource) => {
+    console.log('[LineChartRenderer] 数据源变化:', newDataSource);
+    if (newDataSource?.type === 'api') {
+      fetchApiData();
+    } else {
+      apiChartData.value = null;
+    }
+    nextTick(() => {
+      updateChartOptions();
+    });
+  },
+  { immediate: true }
+);
+
+// 监听联动参数变化
+watch(
+  () => props.component.linkageParams,
+  (newParams) => {
+    console.log('[LineChartRenderer] 联动参数变化:', newParams);
+    if (props.component.dataSource?.type === 'api') {
+      fetchApiData().then(() => {
+        nextTick(() => {
+          updateChartOptions();
+        });
+      });
+    }
+  },
+  { deep: true }
+);
+
+// 挂载时添加事件监听
+onMounted(() => {
+  console.log('[LineChartRenderer] 挂载，添加联动刷新事件监听');
+  window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
+  window.addEventListener('resize', handleResize);
+  nextTick(() => {
+    initChart();
+  });
+});
+
+// 卸载时移除事件监听
+onUnmounted(() => {
+  console.log('[LineChartRenderer] 卸载，移除联动刷新事件监听');
+  window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
+  window.removeEventListener('resize', handleResize);
+  if (chartInstance) {
+    chartInstance.dispose();
+    chartInstance = null;
+  }
+});
+
+// 暴露刷新方法供外部调用
+defineExpose({
+  refresh,
+});
+
+function handleResize() {
+  chartInstance?.resize();
 }
 
 // 初始化图表
@@ -312,26 +462,6 @@ watch(
   },
   { deep: true }
 );
-
-onMounted(() => {
-  nextTick(() => {
-    initChart();
-  });
-
-  window.addEventListener('resize', handleResize);
-});
-
-onBeforeUnmount(() => {
-  if (chartInstance) {
-    chartInstance.dispose();
-    chartInstance = null;
-  }
-  window.removeEventListener('resize', handleResize);
-});
-
-function handleResize() {
-  chartInstance?.resize();
-}
 </script>
 
 <style scoped>

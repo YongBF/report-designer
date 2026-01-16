@@ -60,6 +60,12 @@
       </el-select>
     </el-form-item>
 
+    <!-- 请求拦截器配置 -->
+    <RequestInterceptorConfig
+      v-model="props.component.beforeRequest"
+      @update="handleChange"
+    />
+
     <!-- 数据转换配置 -->
     <el-form-item label="数据转换">
       <el-button size="small" @click="transformConfigVisible = true">
@@ -383,6 +389,7 @@ import {
 } from '@element-plus/icons-vue';
 import { updateComponent } from '../../../stores/designer';
 import DataTransformConfig from './DataTransformConfig.vue';
+import RequestInterceptorConfig from './RequestInterceptorConfig.vue';
 
 interface ChartSeries {
   name: string;

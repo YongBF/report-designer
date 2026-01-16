@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Server - 接口管理</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+      color: #333;
+      font-size: 20px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .endpoint-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .endpoint-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+      transition: all 0.3s;
+    }
+
+    .endpoint-item:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+
+    .endpoint-item.disabled {
+      border-left-color: #ccc;
+      opacity: 0.6;
+    }
+
+    .endpoint-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .endpoint-name {
+      font-weight: bold;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .endpoint-method {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .method-GET {
+      background: #28a745;
+      color: white;
+    }
+
+    .method-POST {
+      background: #007bff;
+      color: white;
+    }
+
+    .endpoint-path {
+      font-family: 'Courier New', monospace;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .endpoint-info {
+      display: flex;
+      gap: 15px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .endpoint-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .form-group textarea {
+      font-family: 'Courier New', monospace;
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .global-settings {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .global-settings h3 {
+      margin-bottom: 10px;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .switch-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #667eea;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .add-endpoint-form {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .add-endpoint-form h3 {
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <h1>🚀 Mock Server 接口管理</h1>
+      <p>Report Designer API调试服务器 - 配置和管理模拟API接口</p>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+      <!-- 左侧：接口列表 -->
+      <div class="card">
+        <h2>📋 API接口列表</h2>
+        <div id="endpointList" class="endpoint-list">
+          <!-- 动态生成 -->
+        </div>
+        <button class="btn btn-primary" onclick="showAddForm()" style="margin-top: 15px; width: 100%;">
+          ➕ 添加新接口
+        </button>
+      </div>
+
+      <!-- 右侧：全局设置和添加表单 -->
+      <div class="card">
+        <h2>⚙️ 全局设置</h2>
+        <div class="global-settings">
+          <div class="form-group">
+            <div class="switch-container">
+              <label class="switch">
+                <input type="checkbox" id="enableLog" checked>
+                <span class="slider"></span>
+              </label>
+              <span>启用请求日志</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>默认延迟 (ms)</label>
+            <input type="number" id="defaultDelay" value="500" min="0" max="10000">
+          </div>
+          <button class="btn btn-success" onclick="saveGlobalSettings()" style="width: 100%;">
+            💾 保存设置
+          </button>
+        </div>
+
+        <!-- 添加接口表单 -->
+        <div id="addEndpointForm" class="add-endpoint-form" style="display: none;">
+          <h3>➕ 添加新接口</h3>
+          <div class="form-group">
+            <label>接口名称</label>
+            <input type="text" id="newName" placeholder="例如：用户列表">
+          </div>
+          <div class="form-group">
+            <label>接口路径</label>
+            <input type="text" id="newPath" placeholder="例如：/api/users">
+          </div>
+          <div class="form-group">
+            <label>请求方法</label>
+            <select id="newMethod">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>响应类型</label>
+            <select id="newResponseType">
+              <option value="table">表格数据</option>
+              <option value="chart">图表数据</option>
+              <option value="pie">饼图数据</option>
+              <option value="gauge">仪表盘数据</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>响应延迟 (ms)</label>
+            <input type="number" id="newDelay" value="500" min="0" max="10000">
+          </div>
+          <div class="form-group">
+            <label>响应数据 (JSON)</label>
+            <textarea id="newData" placeholder='{"columns": ["id", "name"], "rows": [...]}'>{
+  "categories": ["一月", "二月", "三月"],
+  "series": [
+    {"name": "销售额", "data": [120, 200, 150]}
+  ]
+}</textarea>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-success" onclick="addEndpoint()" style="flex: 1;">保存</button>
+            <button class="btn btn-danger" onclick="hideAddForm()" style="flex: 1;">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let config = {
+      endpoints: [],
+      globalSettings: {
+        defaultDelay: 500,
+        enableLog: true
+      }
+    };
+
+    // 加载配置
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/config');
+        config = await res.json();
+        renderEndpoints();
+        updateGlobalSettings();
+      } catch (err) {
+        console.error('加载配置失败:', err);
+        showAlert('加载配置失败', 'error');
+      }
+    }
+
+    // 渲染接口列表
+    function renderEndpoints() {
+      const container = document.getElementById('endpointList');
+      container.innerHTML = '';
+
+      config.endpoints.forEach((ep, index) => {
+        const item = document.createElement('div');
+        item.className = `endpoint-item ${ep.enabled ? '' : 'disabled'}`;
+        item.innerHTML = `
+          <div class="endpoint-header">
+            <span class="endpoint-name">${ep.name}</span>
+            <span class="endpoint-method method-${ep.method}">${ep.method}</span>
+          </div>
+          <div class="endpoint-path">${ep.path}</div>
+          <div class="endpoint-info">
+            <span>⏱ ${ep.delay}ms</span>
+            <span>📊 ${ep.responseType}</span>
+            <span>${ep.enabled ? '✅ 启用' : '❌ 禁用'}</span>
+          </div>
+          <div class="endpoint-actions">
+            <button class="btn btn-primary" onclick="testEndpoint(${index})">🧪 测试</button>
+            <button class="btn btn-danger" onclick="deleteEndpoint(${index})">🗑 删除</button>
+            <button class="btn ${ep.enabled ? 'btn-danger' : 'btn-success'}" onclick="toggleEndpoint(${index})">
+              ${ep.enabled ? '❌ 禁用' : '✅ 启用'}
+            </button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // 更新全局设置
+    function updateGlobalSettings() {
+      document.getElementById('enableLog').checked = config.globalSettings.enableLog;
+      document.getElementById('defaultDelay').value = config.globalSettings.defaultDelay;
+    }
+
+    // 保存全局设置
+    async function saveGlobalSettings() {
+      config.globalSettings.enableLog = document.getElementById('enableLog').checked;
+      config.globalSettings.defaultDelay = parseInt(document.getElementById('defaultDelay').value);
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        });
+        const result = await res.json();
+        if (result.success) {
+          showAlert('设置保存成功！服务器将自动重启', 'success');
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          showAlert('保存失败：' + result.message, 'error');
+        }
+      } catch (err) {
+        showAlert('保存失败：' + err.message, 'error');
+      }
+    }
+
+    // 显示添加表单
+    function showAddForm() {
+      document.getElementById('addEndpointForm').style.display = 'block';
+    }
+
+    // 隐藏添加表单
+    function hideAddForm() {
+      document.getElementById('addEndpointForm').style.display = 'none';
+    }
+
+    // 添加接口
+    async function addEndpoint() {
+      const newEndpoint = {
+        id: 'custom-' + Date.now(),
+        name: document.getElementById('newName').value,
+        path: document.getElementById('newPath').value,
+        method: document.getElementById('newMethod').value,
+        delay: parseInt(document.getElementById('newDelay').value),
+        enabled: true,
+        responseType: document.getElementById('newResponseType').value,
+        data: JSON.parse(document.getElementById('newData').value)
+      };
+
+      if (!newEndpoint.name || !newEndpoint.path) {
+        showAlert('请填写接口名称和路径', 'error');
+        return;
+      }
+
+      config.endpoints.push(newEndpoint);
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        });
+        const result = await res.json();
+        if (result.success) {
+          showAlert('接口添加成功！服务器将自动重启', 'success');
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          showAlert('添加失败：' + result.message, 'error');
+        }
+      } catch (err) {
+        showAlert('添加失败：' + err.message, 'error');
+      }
+    }
+
+    // 删除接口
+    async function deleteEndpoint(index) {
+      if (!confirm('确定要删除这个接口吗？')) return;
+
+      config.endpoints.splice(index, 1);
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        });
+        const result = await res.json();
+        if (result.success) {
+          showAlert('接口删除成功！服务器将自动重启', 'success');
+          setTimeout(() => location.reload(), 2000);
+        }
+      } catch (err) {
+        showAlert('删除失败：' + err.message, 'error');
+      }
+    }
+
+    // 切换接口状态
+    async function toggleEndpoint(index) {
+      config.endpoints[index].enabled = !config.endpoints[index].enabled;
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        });
+        const result = await res.json();
+        if (result.success) {
+          renderEndpoints();
+          showAlert('状态更新成功！', 'success');
+        }
+      } catch (err) {
+        showAlert('更新失败：' + err.message, 'error');
+      }
+    }
+
+    // 测试接口
+    async function testEndpoint(index) {
+      const ep = config.endpoints[index];
+      if (!ep.enabled) {
+        showAlert('接口已禁用，无法测试', 'error');
+        return;
+      }
+
+      const url = ep.path;
+      const options = {
+        method: ep.method,
+        headers: { 'Content-Type': 'application/json' }
+      };
+
+      if (ep.method === 'POST') {
+        options.body = JSON.stringify({ test: true });
+      }
+
+      try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+        console.log('接口响应:', data);
+        alert(`✅ 接口测试成功！\n\n响应数据：\n${JSON.stringify(data, null, 2)}`);
+      } catch (err) {
+        console.error('接口测试失败:', err);
+        alert(`❌ 接口测试失败：\n${err.message}`);
+      }
+    }
+
+    // 显示提示
+    function showAlert(message, type = 'success') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.textContent = message;
+      alertDiv.style.position = 'fixed';
+      alertDiv.style.top = '20px';
+      alertDiv.style.right = '20px';
+      alertDiv.style.zIndex = '9999';
+      alertDiv.style.minWidth = '300px';
+      document.body.appendChild(alertDiv);
+
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+
+    // 页面加载时初始化
+    loadConfig();
+  </script>
+</body>
+</html>

@@ -98,6 +98,7 @@ export interface FormComponent extends BaseComponent {
   columns: 1 | 2 | 3;
   size: 'large' | 'default' | 'small';
   showBorder: boolean;
+  backgroundColor?: string;
 }
 
 // 图表类型
@@ -144,19 +145,16 @@ export interface SeriesConfig {
 export interface BarChartComponent extends BaseComponent {
   type: 'bar-chart';
   dataSource: DataSource | null;
-  // 基础配置
   config: BaseChartConfig;
-  // X轴配置
   xAxis: AxisConfig;
-  // Y轴配置
   yAxis: AxisConfig;
-  // 系列配置
   series: SeriesConfig;
-  // 柱状图特有
   barWidth: number;
   barGap: string;
   showBackground: boolean;
   backgroundColor: string;
+  linkageParams?: Record<string, any>;
+  beforeRequest?: string;
 }
 
 // 折线图组件
@@ -167,7 +165,6 @@ export interface LineChartComponent extends BaseComponent {
   xAxis: AxisConfig;
   yAxis: AxisConfig;
   series: SeriesConfig;
-  // 折线图特有
   smooth: boolean;
   step: boolean;
   showSymbol: boolean;
@@ -175,6 +172,8 @@ export interface LineChartComponent extends BaseComponent {
   lineStyleWidth: number;
   lineStyleType: 'solid' | 'dashed' | 'dotted';
   areaStyle: boolean;
+  linkageParams?: Record<string, any>;
+  beforeRequest?: string;
 }
 
 // 饼图组件
@@ -183,12 +182,13 @@ export interface PieChartComponent extends BaseComponent {
   dataSource: DataSource | null;
   config: BaseChartConfig;
   series: SeriesConfig;
-  // 饼图特有
   roseType: 'radius' | 'area' | false;
-  radius: [string, string]; // ['内半径', '外半径'] 如 ['40%', '70%']
-  center: [string, string]; // ['x%', 'y%'] 如 ['50%', '50%']
+  radius: [string, string];
+  center: [string, string];
   emphasisScale: boolean;
   minAngle: number;
+  linkageParams?: Record<string, any>;
+  beforeRequest?: string;
 }
 
 // 散点图组件
@@ -199,11 +199,12 @@ export interface ScatterChartComponent extends BaseComponent {
   xAxis: AxisConfig;
   yAxis: AxisConfig;
   series: SeriesConfig;
-  // 散点图特有
   symbolSize: number;
   symbol: 'circle' | 'rect' | 'triangle' | 'diamond' | 'pin' | 'arrow';
   showEffect: boolean;
   effectType: 'ripple' | 'scale';
+  linkageParams?: Record<string, any>;
+  beforeRequest?: string;
 }
 
 // 仪表盘组件
@@ -211,7 +212,6 @@ export interface GaugeChartComponent extends BaseComponent {
   type: 'gauge-chart';
   dataSource: DataSource | null;
   config: BaseChartConfig;
-  // 仪表盘特有
   min: number;
   max: number;
   startAngle: number;
@@ -233,6 +233,8 @@ export interface GaugeChartComponent extends BaseComponent {
     length: string;
     width: number;
   };
+  linkageParams?: Record<string, any>;
+  beforeRequest?: string;
 }
 
 // 漏斗图组件
@@ -241,7 +243,6 @@ export interface FunnelChartComponent extends BaseComponent {
   dataSource: DataSource | null;
   config: BaseChartConfig;
   series: SeriesConfig;
-  // 漏斗图特有
   sort: 'ascending' | 'descending' | 'none';
   gap: number;
   left: string;
@@ -251,6 +252,8 @@ export interface FunnelChartComponent extends BaseComponent {
   width: string;
   height: string;
   labelAlign: 'left' | 'right' | 'center';
+  linkageParams?: Record<string, any>;
+  beforeRequest?: string;
 }
 
 // 保留原有的通用图表类型（向后兼容）
@@ -286,6 +289,7 @@ export interface TextComponent extends BaseComponent {
   fontStyle: string;
   textAlign: string;
   lineHeight: number;
+  backgroundColor?: string;
 }
 
 // 图片组件
@@ -295,6 +299,7 @@ export interface ImageComponent extends BaseComponent {
   fit: 'fill' | 'contain' | 'cover' | 'none';
   opacity: number;
   borderRadius: number;
+  backgroundColor?: string;
 }
 
 // 表格组件
@@ -323,6 +328,9 @@ export interface TableComponent extends BaseComponent {
   pagination?: boolean;
   pageSize?: number;
   currentPage?: number;
+  backgroundColor?: string;
+  linkageParams?: Record<string, any>; // 联动参数
+  beforeRequest?: string; // 请求拦截器代码
 }
 
 // 矩形组件
@@ -401,6 +409,7 @@ export interface ReportDesign {
   components: Component[];
   dataSources: DataSource[];
   databaseConnections: DatabaseConnection[];
+  linkages?: import('./linkage').LinkageConfig[]; // 组件联动配置
   createdAt: string;
   updatedAt: string;
 }
@@ -415,3 +424,7 @@ export interface HistoryItem {
 
 // 导出格式
 export type ExportFormat = 'pdf' | 'excel' | 'png' | 'json';
+
+// 组件联动类型
+export * from "./linkage";
+

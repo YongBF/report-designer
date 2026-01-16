@@ -15,3 +15,5 @@ export * from './useComponentState';
 export * from './useComponentCreation';
 export * from './useChartRefManagement';
 export * from './useWatchers';
+export * from './useComponentLinkage';
+export * from './useFormData';

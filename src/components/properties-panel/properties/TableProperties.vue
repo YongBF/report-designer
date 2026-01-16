@@ -1,5 +1,7 @@
 <template>
   <el-form label-width="80px" size="small">
+    <el-divider>表格配置</el-divider>
+
     <el-form-item label="显示表头">
       <el-switch v-model="localComponent.showHeader" @change="handleChange" />
     </el-form-item>
@@ -29,6 +31,38 @@
       />
     </el-form-item>
 
+    <el-divider>数据源配置</el-divider>
+
+    <el-form-item label="数据源类型">
+      <el-radio-group v-model="localDataSourceType" @change="handleDataSourceTypeChange">
+        <el-radio value="static">静态数据</el-radio>
+        <el-radio value="api">API 接口</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <!-- API 配置 -->
+    <template v-if="localDataSourceType === 'api'">
+      <el-form-item label="API 地址">
+        <el-input
+          v-model="localApiUrl"
+          placeholder="https://api.example.com/table-data"
+          @change="handleApiConfigChange"
+        />
+      </el-form-item>
+      <el-form-item label="请求方法">
+        <el-select v-model="localApiMethod" @change="handleApiConfigChange">
+          <el-option label="GET" value="GET" />
+          <el-option label="POST" value="POST" />
+        </el-select>
+      </el-form-item>
+
+      <!-- 请求拦截器配置 -->
+      <RequestInterceptorConfig
+        v-model="localComponent.beforeRequest"
+        @update="handleChange"
+      />
+    </template>
+
     <el-divider>列配置</el-divider>
 
     <div v-for="(column, index) in localComponent.columns" :key="column.id" class="column-config">
@@ -57,9 +91,10 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue';
-import type { TableComponent, TableColumn } from '../../../types';
+import { ref, reactive, watch, computed } from 'vue';
+import type { TableComponent, TableColumn, DataSource } from '../../../types';
 import { generateId } from '../../../utils';
+import RequestInterceptorConfig from '../common/RequestInterceptorConfig.vue';
 
 const props = defineProps<{
   component: TableComponent;
@@ -71,10 +106,25 @@ const emit = defineEmits<{
 
 const localComponent = reactive<TableComponent>({ ...props.component });
 
+// 数据源类型
+const localDataSourceType = ref<'static' | 'api'>(
+  props.component.dataSource?.type || 'static'
+);
+
+// API配置
+const localApiUrl = ref(props.component.dataSource?.apiUrl || '');
+const localApiMethod = ref<'GET' | 'POST'>(
+  props.component.dataSource?.apiMethod || 'POST'
+);
+
 watch(
   () => props.component,
   (newComponent) => {
     Object.assign(localComponent, newComponent);
+    // 更新本地数据源类型
+    localDataSourceType.value = newComponent.dataSource?.type || 'static';
+    localApiUrl.value = newComponent.dataSource?.apiUrl || '';
+    localApiMethod.value = newComponent.dataSource?.apiMethod || 'POST';
   },
   { deep: true }
 );
@@ -82,6 +132,39 @@ watch(
 function handleChange() {
   Object.assign(props.component, localComponent);
   emit('update');
+}
+
+// 数据源类型变化处理
+function handleDataSourceTypeChange(type: 'static' | 'api') {
+  if (type === 'api') {
+    // 切换到API，创建API数据源
+    localComponent.dataSource = {
+      id: generateId(),
+      name: 'API数据源',
+      type: 'api',
+      apiUrl: localApiUrl.value,
+      apiMethod: localApiMethod.value,
+      apiParams: {},
+    } as DataSource;
+  } else {
+    // 切换到静态数据
+    localComponent.dataSource = {
+      id: generateId(),
+      name: '静态数据源',
+      type: 'static',
+      staticData: [],
+    };
+  }
+  handleChange();
+}
+
+// API配置变化处理
+function handleApiConfigChange() {
+  if (localComponent.dataSource?.type === 'api') {
+    localComponent.dataSource.apiUrl = localApiUrl.value;
+    localComponent.dataSource.apiMethod = localApiMethod.value;
+    handleChange();
+  }
 }
 
 function addColumn() {

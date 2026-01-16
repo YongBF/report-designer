@@ -9,46 +9,64 @@
     @update="(id, updates) => $emit('update', id, updates)"
   >
     <div class="table-container" :style="containerStyle">
-      <el-table
-        :data="paginatedData"
-        :border="component.border"
-        :stripe="component.stripe"
-        :show-header="component.showHeader"
-        :header-cell-style="headerCellStyle"
-        :cell-style="cellStyle"
-        style="width: 100%"
+      <!-- 数据加载状态 -->
+      <DataLoadingState
+        :loading="loading"
+        :error="error"
+        :error-details="error"
+        :empty="!loading && !error && tableData.length === 0"
+        empty-text="暂无数据"
+        :fullscreen="false"
+        :show-retry="true"
+        :show-details="true"
+        @retry="refresh"
       >
-        <el-table-column
-          v-for="column in component.columns"
-          :key="column.id"
-          :prop="column.field"
-          :label="column.label"
-          :width="column.width === 0 ? undefined : column.width"
-          :align="column.align"
-        />
-      </el-table>
+        <!-- 表格内容 -->
+        <el-table
+          :data="paginatedData"
+          :border="component.border"
+          :stripe="component.stripe"
+          :show-header="component.showHeader"
+          :header-cell-style="headerCellStyle"
+          :cell-style="cellStyle"
+          style="width: 100%"
+          v-loading="loading"
+          element-loading-text="加载中..."
+        >
+          <el-table-column
+            v-for="column in component.columns"
+            :key="column.id"
+            :prop="column.field"
+            :label="column.label"
+            :width="column.width === 0 ? undefined : column.width"
+            :align="column.align"
+          />
+        </el-table>
 
-      <!-- 分页 -->
-      <div v-if="component.pagination ?? true" class="pagination-container">
-        <el-pagination
-          :current-page="component.currentPage ?? 1"
-          :page-size="component.pageSize ?? 10"
-          :total="tableData.length"
-          layout="prev, pager, next, sizes, total"
-          :page-sizes="[3, 5, 10, 20, 50, 100]"
-          small
-          @current-change="handlePageChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
+        <!-- 分页 -->
+        <div v-if="component.pagination ?? true" class="pagination-container">
+          <el-pagination
+            :current-page="component.currentPage ?? 1"
+            :page-size="component.pageSize ?? 10"
+            :total="tableData.length"
+            layout="prev, pager, next, sizes, total"
+            :page-sizes="[3, 5, 10, 20, 50, 100]"
+            small
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange"
+          />
+        </div>
+      </DataLoadingState>
     </div>
   </BaseRenderer>
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, watch, ref, onMounted, onUnmounted } from 'vue';
 import BaseRenderer from './BaseRenderer.vue';
+import DataLoadingState from '../../common/DataLoadingState.vue';
 import type { TableComponent } from '../../../types';
+import { fetchWithLinkageParams } from '../../../utils/apiHelper';
 
 const props = defineProps<{
   component: TableComponent;
@@ -79,10 +97,57 @@ const cellStyle = computed(() => ({
   fontSize: `${props.component.fontSize}px`,
 }));
 
-// 模拟数据 - 实际应该从数据源获取
+// API数据缓存
+const apiData = ref<any[] | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
+/**
+ * 从API获取数据
+ */
+async function fetchApiData() {
+  const dataSource = props.component.dataSource;
+  if (!dataSource || dataSource.type !== 'api') {
+    return;
+  }
+
+  loading.value = true;
+  error.value = null;
+
+  try {
+    console.log('[TableRenderer] 开始获取API数据:', {
+      url: dataSource.apiUrl,
+      linkageParams: props.component.linkageParams,
+    });
+
+    const data = await fetchWithLinkageParams(
+      dataSource,
+      props.component.linkageParams || {},
+      props.component.beforeRequest
+    );
+
+    console.log('[TableRenderer] API数据获取成功:', data);
+    apiData.value = Array.isArray(data) ? data : [data];
+  } catch (err: any) {
+    console.error('[TableRenderer] API数据获取失败:', err);
+    error.value = err.message || '获取数据失败';
+    apiData.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 表格数据
 const tableData = computed(() => {
+  // 优先使用API数据
+  if (apiData.value !== null) {
+    console.log('[TableRenderer] 使用API数据:', apiData.value.length, '条');
+    return apiData.value;
+  }
+
+  // 使用静态数据
   if (props.component.dataSource?.staticData) {
-    console.log('使用静态数据:', props.component.dataSource.staticData.length, '条');
+    console.log('[TableRenderer] 使用静态数据:', props.component.dataSource.staticData.length, '条');
     return props.component.dataSource.staticData;
   }
 
@@ -94,8 +159,69 @@ const tableData = computed(() => {
     });
     return row;
   });
-  console.log('使用示例数据:', data.length, '条');
+  console.log('[TableRenderer] 使用示例数据:', data.length, '条');
   return data;
+});
+
+/**
+ * 刷新数据（供联动调用）
+ */
+function refresh() {
+  console.log('[TableRenderer] 刷新数据');
+  fetchApiData();
+}
+
+/**
+ * 处理联动刷新事件
+ */
+function handleLinkageRefresh(event: CustomEvent) {
+  console.log('[TableRenderer] 收到联动刷新事件:', event.detail);
+  if (event.detail?.targetComponentId === props.component.id) {
+    refresh();
+  }
+}
+
+// 监听数据源变化
+watch(
+  () => props.component.dataSource,
+  (newDataSource) => {
+    console.log('[TableRenderer] 数据源变化:', newDataSource);
+    if (newDataSource?.type === 'api') {
+      fetchApiData();
+    } else {
+      apiData.value = null;
+    }
+  },
+  { immediate: true }
+);
+
+// 监听联动参数变化
+watch(
+  () => props.component.linkageParams,
+  (newParams) => {
+    console.log('[TableRenderer] 联动参数变化:', newParams);
+    if (props.component.dataSource?.type === 'api') {
+      fetchApiData();
+    }
+  },
+  { deep: true }
+);
+
+// 挂载时添加事件监听
+onMounted(() => {
+  console.log('[TableRenderer] 挂载，添加联动刷新事件监听');
+  window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
+});
+
+// 卸载时移除事件监听
+onUnmounted(() => {
+  console.log('[TableRenderer] 卸载，移除联动刷新事件监听');
+  window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
+});
+
+// 暴露刷新方法供外部调用
+defineExpose({
+  refresh,
 });
 
 // 分页数据

@@ -214,7 +214,7 @@
                       >
                         <el-row :gutter="20">
                           <el-col
-                            v-for="item in component.items"
+                            v-for="(item, index) in component.items"
                             :key="item.id"
                             :span="item.span || Math.floor(24 / component.columns)"
                           >
@@ -223,11 +223,13 @@
                               v-if="item.type === 'text'"
                               :label="item.label"
                               :required="item.required"
+                              :class="{ 'last-form-item': index === component.items.length - 1 }"
                             >
                               <el-input
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                               />
                               <div v-if="item.helpText" class="form-item-help">
                                 {{ item.helpText }}
@@ -239,11 +241,13 @@
                               v-else-if="item.type === 'number'"
                               :label="item.label"
                               :required="item.required"
+                              :class="{ 'last-form-item': index === component.items.length - 1 }"
                             >
                               <el-input-number
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 style="width: 100%"
                               />
                             </el-form-item>
@@ -253,12 +257,14 @@
                               v-else-if="item.type === 'password'"
                               :label="item.label"
                               :required="item.required"
+                              :class="{ 'last-form-item': index === component.items.length - 1 }"
                             >
                               <el-input
                                 type="password"
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                               />
                             </el-form-item>
 
@@ -267,12 +273,14 @@
                               v-else-if="item.type === 'email'"
                               :label="item.label"
                               :required="item.required"
+                              :class="{ 'last-form-item': index === component.items.length - 1 }"
                             >
                               <el-input
                                 type="email"
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                               />
                             </el-form-item>
 
@@ -286,7 +294,8 @@
                                 type="date"
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 style="width: 100%"
                               />
                             </el-form-item>
@@ -301,7 +310,8 @@
                                 type="datetime"
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 style="width: 100%"
                               />
                             </el-form-item>
@@ -315,7 +325,8 @@
                               <el-time-picker
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 style="width: 100%"
                               />
                             </el-form-item>
@@ -329,7 +340,8 @@
                               <el-select
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 style="width: 100%"
                               >
                                 <el-option
@@ -349,7 +361,8 @@
                               :required="item.required"
                             >
                               <el-radio-group
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 :disabled="item.disabled"
                               >
                                 <el-radio
@@ -366,7 +379,8 @@
                             <!-- 复选框 -->
                             <el-form-item v-else-if="item.type === 'checkbox'" :label="item.label">
                               <el-checkbox-group
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 :disabled="item.disabled"
                               >
                                 <el-checkbox
@@ -383,7 +397,8 @@
                             <!-- 开关 -->
                             <el-form-item v-else-if="item.type === 'switch'" :label="item.label">
                               <el-switch
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 :disabled="item.disabled"
                               />
                             </el-form-item>
@@ -398,15 +413,17 @@
                                 type="textarea"
                                 :placeholder="item.placeholder"
                                 :disabled="item.disabled"
-                                :model-value="item.defaultValue"
-                                :rows="3"
+                                :rows="item.rows || 3"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                               />
                             </el-form-item>
 
                             <!-- 滑块 -->
                             <el-form-item v-else-if="item.type === 'slider'" :label="item.label">
                               <el-slider
-                                :model-value="item.defaultValue || 0"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue || 0"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 :disabled="item.disabled"
                                 style="width: calc(100% - 20px)"
                               />
@@ -415,7 +432,8 @@
                             <!-- 评分 -->
                             <el-form-item v-else-if="item.type === 'rate'" :label="item.label">
                               <el-rate
-                                :model-value="item.defaultValue || 0"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue || 0"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 :disabled="item.disabled"
                               />
                             </el-form-item>
@@ -423,7 +441,8 @@
                             <!-- 颜色选择 -->
                             <el-form-item v-else-if="item.type === 'color'" :label="item.label">
                               <el-color-picker
-                                :model-value="item.defaultValue"
+                                :model-value="getFieldValue(component.id, item.field) || item.defaultValue"
+                                @update:model-value="(val) => setFieldValue(component.id, item.field, val)"
                                 :disabled="item.disabled"
                               />
                             </el-form-item>
@@ -923,6 +942,15 @@
               <FunnelChartProperties :component="selectedComponent" @update="handleChartUpdate" />
             </template>
 
+            <!-- 组件联动配置（所有组件通用） -->
+            <el-divider>组件联动</el-divider>
+            <ComponentLinkageConfig
+              :component="selectedComponent"
+              :all-components="currentDesign.components"
+              :linkage-manager="linkageManager"
+              @update="handleUpdate"
+            />
+
             <el-divider />
             <el-button type="danger" :icon="Delete" @click="handleDelete">删除组件</el-button>
           </div>
@@ -1401,7 +1429,7 @@ import {
   Delete,
   Rank,
 } from '@element-plus/icons-vue';
-import { selectedIds, canUndo, canRedo, updateComponent } from './stores/designer';
+import { selectedIds, canUndo, canRedo, updateComponent, currentDesign } from './stores/designer';
 import type { Component } from './types';
 import TableRenderer from './components/canvas/renderers/TableRenderer.vue';
 // 图表属性面板组件
@@ -1411,6 +1439,8 @@ import PieChartProperties from './components/properties-panel/properties/PieChar
 import ScatterChartProperties from './components/properties-panel/properties/ScatterChartProperties.vue';
 import GaugeChartProperties from './components/properties-panel/properties/GaugeChartProperties.vue';
 import FunnelChartProperties from './components/properties-panel/properties/FunnelChartProperties.vue';
+// 联动配置组件
+import ComponentLinkageConfig from './components/properties-panel/common/ComponentLinkageConfig.vue';
 
 // 导入 composables
 import {
@@ -1425,6 +1455,8 @@ import {
   useComponentCreation,
   useChartRefManagement,
   useWatchers,
+  useComponentLinkage,
+  useFormData,
 } from './composables';
 import {
   basicComponents,
@@ -1507,7 +1539,15 @@ const {
   parseSeriesData,
   handleChartDataSave,
   handleChartDataCancel,
+  watchComponentChange,
 } = chartData;
+
+// ============ 组件联动管理 ============
+const linkageManager = useComponentLinkage(currentDesign);
+
+// ============ 表单数据管理 ============
+const formDataManager = useFormData();
+const { getFieldValue, setFieldValue, initFormData } = formDataManager;
 
 // ============ 工具栏操作 ============
 const toolbar = useToolbar();
@@ -1606,6 +1646,18 @@ function handleFormItemButtonClick(component: any, item: any) {
     timestamp: new Date().toISOString()
   });
 
+  // 收集表单数据
+  const formData = collectFormData(component);
+
+  // 触发组件联动
+  linkageManager.triggerLinkage(
+    component.id,
+    'button.click',
+    { buttonId: item.id, buttonLabel: item.label },
+    formData,
+    () => currentDesign.value.components
+  );
+
   // 构建 action 对象
   const action = item.actionType ? {
     type: item.actionType,
@@ -1617,7 +1669,7 @@ function handleFormItemButtonClick(component: any, item: any) {
     switch (action.type) {
       case 'submit':
         // 提交表单 - 预留接口
-        console.log('Action: Submit form', { component, item });
+        console.log('Action: Submit form', { component, item, formData });
         // TODO: 实现表单提交逻辑
         // 可以收集表单数据并发送到指定 URL
         break;
@@ -1635,12 +1687,12 @@ function handleFormItemButtonClick(component: any, item: any) {
         break;
       case 'custom':
         // 自定义动作
-        console.log('Action: Custom handler', { component, item });
+        console.log('Action: Custom handler', { component, item, formData });
         if (action.handler) {
           try {
             // 创建安全的执行环境
-            const customFn = new Function('component', 'item', 'console', action.handler);
-            customFn(component, item, console);
+            const customFn = new Function('component', 'item', 'console', 'data', action.handler);
+            customFn(component, item, console, formData);
           } catch (error) {
             console.error('Custom handler error:', error);
             // 可以在这里添加错误提示
@@ -1651,12 +1703,35 @@ function handleFormItemButtonClick(component: any, item: any) {
         console.log('Unknown action type:', action.type);
     }
   }
+}
 
-  // 预留：触发联动事件
-  // 可以通过 emit 发送事件到父组件
-  // 或者调用全局事件总线
-  // 或者更新 store 中的状态
-  // 例如：eventBus.emit('form-button-click', { component, item });
+/**
+ * 收集表单数据
+ * 从表单组件中提取所有字段的值（使用响应式数据）
+ */
+function collectFormData(formComponent: any): Record<string, any> {
+  const formData: Record<string, any> = {};
+
+  if (!formComponent.items || !Array.isArray(formComponent.items)) {
+    return formData;
+  }
+
+  // 遍历表单项，收集数据
+  formComponent.items.forEach((item: any) => {
+    if (item.type === 'button') {
+      // 跳过按钮
+      return;
+    }
+
+    // 从响应式数据源获取字段值
+    if (item.field) {
+      const value = getFieldValue(formComponent.id, item.field);
+      formData[item.field] = value ?? item.defaultValue ?? '';
+    }
+  });
+
+  console.log('[Form Data Collected]', formData);
+  return formData;
 }
 
 </script>
@@ -1981,7 +2056,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f7fa;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px dashed #dcdfe6;
 }
 
 .image-placeholder {
@@ -2001,17 +2078,20 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 4px;
 }
 
 .table-container {
   width: 100%;
   height: 100%;
   overflow: auto;
+  background-color: #ffffff;
 }
 
 .chart-container {
   width: 100%;
   height: 100%;
+  background-color: #ffffff;
 }
 
 .rectangle-content {
@@ -2036,13 +2116,18 @@ body {
   width: 100%;
   height: 100%;
   overflow: auto;
-  padding: 16px;
+  /* 移除内边距，因为父组件已经有padding了 */
 }
 
 .form-container.form-bordered {
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  padding: 20px;
+  padding: 16px;
+}
+
+/* 移除表单中最后一个表单项的底部边距 */
+.form-container .el-row .el-col:last-child .el-form-item {
+  margin-bottom: 0;
 }
 
 .form-item-help {

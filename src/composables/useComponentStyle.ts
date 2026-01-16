@@ -23,11 +23,28 @@ export function useComponentStyle() {
   /**
    * 获取组件的通用样式
    */
-  function getComponentStyle(component: Component) {
+  function getComponentStyle(component: any) {
+    // 矩形组件和线条组件使用自己的特殊样式，不应用卡片样式
+    if (component.type === 'rectangle' || component.type === 'line') {
+      return {
+        height: `${component.height}px`,
+        opacity: component.visible ? 1 : 0.3,
+        cursor: component.locked ? 'not-allowed' : 'default',
+      };
+    }
+
+    // 获取背景色，如果没有设置则使用白色
+    const backgroundColor = component.backgroundColor || '#ffffff';
+
     return {
       height: `${component.height}px`,
       opacity: component.visible ? 1 : 0.3,
       cursor: component.locked ? 'not-allowed' : 'default',
+      backgroundColor: backgroundColor,
+      borderRadius: '4px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      padding: '16px',
+      boxSizing: 'border-box' as const,
     };
   }
 
@@ -41,10 +58,10 @@ export function useComponentStyle() {
       color: component.color,
       fontWeight: component.fontWeight,
       fontStyle: component.fontStyle,
-      textAlign: component.textAlign,
+      textAlign: component.textAlign as any,
       lineHeight: component.lineHeight,
       width: '100%',
-      height: '100%',
+      minHeight: '100%',
       display: 'flex',
       alignItems: 'center',
     };

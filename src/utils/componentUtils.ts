@@ -54,6 +54,7 @@ export function createComponent(type: ComponentType, order: number): Component |
         fontStyle: 'normal',
         textAlign: 'left',
         lineHeight: 1.5,
+        backgroundColor: '#ffffff',
       };
     case 'image':
       return {
@@ -64,6 +65,7 @@ export function createComponent(type: ComponentType, order: number): Component |
         fit: 'contain',
         opacity: 1,
         borderRadius: 0,
+        backgroundColor: '#ffffff',
       };
     case 'table': {
       // 生成默认的3条静态数据
@@ -100,6 +102,7 @@ export function createComponent(type: ComponentType, order: number): Component |
         pagination: true,
         pageSize: 10,
         currentPage: 1,
+        backgroundColor: '#ffffff',
       };
     }
     case 'chart':
@@ -126,7 +129,7 @@ export function createComponent(type: ComponentType, order: number): Component |
           showLegend: true,
           legendPosition: 'top',
           theme: 'default',
-          backgroundColor: 'transparent',
+          backgroundColor: '#ffffff',
           animation: true,
           animationDuration: 1000,
         },
@@ -187,7 +190,7 @@ export function createComponent(type: ComponentType, order: number): Component |
           showLegend: true,
           legendPosition: 'top',
           theme: 'default',
-          backgroundColor: 'transparent',
+          backgroundColor: '#ffffff',
           animation: true,
           animationDuration: 1000,
         },
@@ -251,7 +254,7 @@ export function createComponent(type: ComponentType, order: number): Component |
           showLegend: true,
           legendPosition: 'right',
           theme: 'default',
-          backgroundColor: 'transparent',
+          backgroundColor: '#ffffff',
           animation: true,
           animationDuration: 1000,
         },
@@ -298,7 +301,7 @@ export function createComponent(type: ComponentType, order: number): Component |
           showLegend: true,
           legendPosition: 'top',
           theme: 'default',
-          backgroundColor: 'transparent',
+          backgroundColor: '#ffffff',
           animation: true,
           animationDuration: 1000,
         },
@@ -374,7 +377,7 @@ export function createComponent(type: ComponentType, order: number): Component |
           showLegend: false,
           legendPosition: 'top',
           theme: 'default',
-          backgroundColor: 'transparent',
+          backgroundColor: '#ffffff',
           animation: true,
           animationDuration: 1000,
         },
@@ -421,7 +424,7 @@ export function createComponent(type: ComponentType, order: number): Component |
           showLegend: true,
           legendPosition: 'right',
           theme: 'default',
-          backgroundColor: 'transparent',
+          backgroundColor: '#ffffff',
           animation: true,
           animationDuration: 1000,
         },
@@ -523,6 +526,7 @@ export function createComponent(type: ComponentType, order: number): Component |
         columns: 1,
         size: 'default',
         showBorder: false,
+        backgroundColor: '#ffffff',
       };
     default:
       return null;
