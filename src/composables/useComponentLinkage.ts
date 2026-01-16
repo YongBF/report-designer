@@ -37,7 +37,7 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
   watch(
     linkages,
     (newLinkages) => {
-      if (currentDesign) {
+      if (currentDesign?.value) {
         currentDesign.value.linkages = [...newLinkages];
       }
     },
@@ -47,7 +47,7 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
   // 监听设计数据加载，恢复联动配置
   if (currentDesign) {
     watch(
-      () => currentDesign.value.linkages,
+      () => currentDesign.value?.linkages,
       (loadedLinkages) => {
         if (loadedLinkages && JSON.stringify(loadedLinkages) !== JSON.stringify(linkages.value)) {
           linkages.value = [...loadedLinkages];

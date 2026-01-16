@@ -36,38 +36,55 @@ export const history = {
 
 export const historyIndex = {
   get value() { return getDesignerStore().historyIndex; },
+  set value(val) { getDesignerStore().historyIndex = val; }
 };
 
 export const selectedIds = {
   get value() { return getDesignerStore().selectedIds; },
+  set value(val) { getDesignerStore().selectedIds = val; }
 };
 
 export const hoveredId = {
   get value() { return getDesignerStore().hoveredId; },
+  set value(val) { getDesignerStore().hoveredId = val; }
 };
 
 export const scale = {
   get value() { return getDesignerStore().scale; },
+  set value(val) { getDesignerStore().scale = val; }
 };
 
 export const gridSize = {
   get value() { return getDesignerStore().gridSize; },
+  set value(val) { getDesignerStore().gridSize = val; }
 };
 
 export const showGrid = {
   get value() { return getDesignerStore().showGrid; },
+  set value(val) { getDesignerStore().showGrid = val; }
 };
 
 export const snapToGrid = {
   get value() { return getDesignerStore().snapToGrid; },
+  set value(val) { getDesignerStore().snapToGrid = val; }
 };
 
-// 导出 computed
-export const selectedComponents = getDesignerStore().selectedComponents;
-export const singleSelectedComponent = getDesignerStore().singleSelectedComponent;
-export const hoveredComponent = getDesignerStore().hoveredComponent;
-export const canUndo = getDesignerStore().canUndo;
-export const canRedo = getDesignerStore().canRedo;
+// 导出 computed - 使用 getter 延迟求值，避免在模块加载时初始化
+export const selectedComponents = {
+  get value() { return getDesignerStore().selectedComponents; }
+};
+export const singleSelectedComponent = {
+  get value() { return getDesignerStore().singleSelectedComponent; }
+};
+export const hoveredComponent = {
+  get value() { return getDesignerStore().hoveredComponent; }
+};
+export const canUndo = {
+  get value() { return getDesignerStore().canUndo; }
+};
+export const canRedo = {
+  get value() { return getDesignerStore().canRedo; }
+};
 
 // 导出 actions
 export const initDesigner = () => getDesignerStore().initDesigner();

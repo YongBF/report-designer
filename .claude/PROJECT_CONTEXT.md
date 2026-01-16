@@ -361,6 +361,152 @@ expect(hasBorder).toBe(true);
 
 ---
 
+### 问题5：兼容层初始化错误
+
+**错误信息**:
+```
+Uncaught ReferenceError: Cannot access 'useDesignerStore' before initialization
+    at getDesignerStore (designer.ts:22:5)
+    at designer.ts:66:35
+```
+
+**原因**:
+- 兼容层 `src/stores/designer.ts` 在模块加载时立即调用 `getDesignerStore()`
+- 此时 Pinia 还未初始化（在 `main.ts` 中 `app.use(pinia)` 之前）
+
+**解决方案**:
+```typescript
+// ❌ 错误：在模块加载时立即求值
+export const selectedComponents = getDesignerStore().selectedComponents;
+export const canUndo = getDesignerStore().canUndo;
+
+// ✅ 正确：使用 getter 延迟求值
+export const selectedComponents = {
+  get value() { return getDesignerStore().selectedComponents; }
+};
+export const canUndo = {
+  get value() { return getDesignerStore().canUndo; }
+};
+```
+
+**相关文件**:
+- `src/stores/designer.ts:66-80`
+
+---
+
+### 问题6：兼容层 setter 缺失
+
+**错误信息**:
+```
+Uncaught TypeError: Cannot set property value of #<Object> which has only a getter
+    at Proxy.handleComponentClick (useDragDrop.ts:156:19)
+```
+
+**原因**:
+- 兼容层导出的状态对象（如 `selectedIds`）只有 getter，没有 setter
+- 当代码尝试赋值时（`selectedIds.value = [id]`）就会报错
+
+**解决方案**:
+```typescript
+// ❌ 错误：只有 getter
+export const selectedIds = {
+  get value() { return getDesignerStore().selectedIds; },
+};
+
+// ✅ 正确：同时提供 getter 和 setter
+export const selectedIds = {
+  get value() { return getDesignerStore().selectedIds; },
+  set value(val) { getDesignerStore().selectedIds = val; }
+};
+
+// ✅ 所有需要修改的状态都需要 setter
+export const hoveredId = {
+  get value() { return getDesignerStore().hoveredId; },
+  set value(val) { getDesignerStore().hoveredId = val; }
+};
+
+export const scale = {
+  get value() { return getDesignerStore().scale; },
+  set value(val) { getDesignerStore().scale = val; }
+};
+```
+
+**相关文件**:
+- `src/stores/designer.ts:41-69`
+- `src/composables/useDragDrop.ts:156`
+
+---
+
+### 问题7：导入路径错误
+
+**错误信息**:
+```
+Uncaught SyntaxError: The requested module '/src/stores/designer.ts?t=...'
+does not provide an export named 'useDesignerStore'
+```
+
+**原因**:
+- `useDesignerStore` 只存在于 `src/stores/pinia/designerStore.ts`
+- `src/stores/designer.ts` 是兼容层，不导出 `useDesignerStore`
+
+**解决方案**:
+```typescript
+// ❌ 错误：从兼容层导入 useDesignerStore
+import { useDesignerStore } from './stores/designer';
+
+// ✅ 正确：从 Pinia store 导入
+import { useDesignerStore } from './stores/pinia';
+
+// ✅ 正确：使用兼容层（用于旧代码）
+import { currentDesign, selectedIds, updateComponent } from './stores/designer';
+```
+
+**相关文件**:
+- `src/main.ts:9`
+- `src/App.vue:1431`
+- `src/stores/designer.ts`（兼容层）
+- `src/stores/pinia/designerStore.ts`（实际导出）
+
+---
+
+### 问题8：可选链缺失
+
+**错误信息**:
+```
+useComponentLinkage.ts:50 Uncaught TypeError: Cannot read properties of undefined
+(reading 'linkages')
+```
+
+**原因**:
+- 在 watch 中访问 `currentDesign.value.linkages` 时，`currentDesign.value` 可能是 undefined
+- 需要使用可选链操作符 `?.`
+
+**解决方案**:
+```typescript
+// ❌ 错误：直接访问可能为 undefined 的对象属性
+watch(
+  () => currentDesign.value.linkages,  // ❌ 如果 currentDesign.value 是 undefined 会报错
+  (loadedLinkages) => { ... }
+);
+
+// ✅ 正确：使用可选链
+watch(
+  () => currentDesign.value?.linkages,  // ✅ 安全访问
+  (loadedLinkages) => { ... }
+);
+
+// ✅ 同时也需要在赋值前检查
+if (currentDesign?.value) {  // ✅ 检查存在
+  currentDesign.value.linkages = [...newLinkages];
+}
+```
+
+**相关文件**:
+- `src/composables/useComponentLinkage.ts:50`
+- `src/composables/useComponentLinkage.ts:40`
+
+---
+
 ## Pinia 状态管理最佳实践 ⭐ 2026-01-16 新增
 
 ### ✅ DO - 正确做法
@@ -1262,12 +1408,17 @@ e2e/package.json                    # 测试依赖
 ## 📝 文档信息
 
 **文件**: `.claude/PROJECT_CONTEXT.md`
-**版本**: 2.0
+**版本**: 2.1
 **创建日期**: 2026-01-16
 **最后更新**: 2026-01-16
 **维护者**: Claude Code + 用户
 
 **更新内容**:
+- ✅ v2.1: 添加兼容层常见问题和解决方案（问题5-8）
+  - 兼容层初始化错误（延迟求值）
+  - 兼容层 setter 缺失（getter/setter 配对）
+  - 导入路径错误（Pinia store vs 兼容层）
+  - 可选链缺失（安全访问嵌套属性）
 - ✅ v2.0: 添加 Pinia 状态管理系统
 - ✅ v2.0: 添加状态管理最佳实践
 - ✅ v2.0: 添加 Pinia 检查清单

@@ -1428,7 +1428,7 @@ import {
   Delete,
   Rank,
 } from '@element-plus/icons-vue';
-import { useDesignerStore } from './stores/designer';
+import { useDesignerStore } from './stores/pinia';
 import type { Component } from './types';
 
 // 使用 Pinia store

@@ -6,7 +6,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 import App from './App.vue';
-import { useDesignerStore } from './stores/designer';
+import { useDesignerStore } from './stores/pinia';
 
 const app = createApp(App);
 
