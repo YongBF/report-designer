@@ -13,67 +13,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import * as echarts from 'echarts'
-import BaseRenderer from './BaseRenderer.vue'
-import type { GaugeChartComponent } from '../../../types'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import * as echarts from 'echarts';
+import BaseRenderer from './BaseRenderer.vue';
+import type { GaugeChartComponent } from '../../../types';
 
 const props = defineProps<{
-  component: GaugeChartComponent
-  selected?: boolean
-  hovered?: boolean
-}>()
+  component: GaugeChartComponent;
+  selected?: boolean;
+  hovered?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'mousedown', event: MouseEvent): void
-  (e: 'mouseenter'): void
-  (e: 'mouseleave'): void
-  (e: 'update', id: string, updates: any): void
-}>()
+  (e: 'mousedown', event: MouseEvent): void;
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+  (e: 'update', id: string, updates: any): void;
+}>();
 
-const chartRef = ref<HTMLElement>()
-let chartInstance: echarts.ECharts | null = null
+const chartRef = ref<HTMLElement>();
+let chartInstance: echarts.ECharts | null = null;
 
 const containerStyle = computed(() => ({
   width: '100%',
   height: '100%',
-}))
+}));
 
 // 获取图表数据
 function getChartData() {
-  const dataSource = props.component.dataSource
+  const dataSource = props.component.dataSource;
   if (dataSource?.staticData && dataSource.staticData.length > 0) {
-    const data = dataSource.staticData[0]
-    return data.value !== undefined ? data.value : 50
+    const data = dataSource.staticData[0];
+    return data.value !== undefined ? data.value : 50;
   }
   // 默认模拟数据
-  return Math.floor(Math.random() * 100)
+  return Math.floor(Math.random() * 100);
 }
 
 // 初始化图表
 function initChart() {
-  if (!chartRef.value) return
+  if (!chartRef.value) return;
 
   if (chartInstance) {
-    chartInstance.dispose()
+    chartInstance.dispose();
   }
 
-  chartInstance = echarts.init(chartRef.value, props.component.config.theme)
-  updateChartOptions()
+  chartInstance = echarts.init(chartRef.value, props.component.config.theme);
+  updateChartOptions();
 }
 
 // 更新图表配置
 function updateChartOptions() {
-  if (!chartInstance) return
+  if (!chartInstance) return;
 
-  const option = generateChartOption()
-  chartInstance.setOption(option, { notMerge: true })
+  const option = generateChartOption();
+  chartInstance.setOption(option, { notMerge: true });
 }
 
 // 生成图表配置
 function generateChartOption() {
-  const data = getChartData()
-  const { config } = props.component
+  const data = getChartData();
+  const { config } = props.component;
 
   return {
     title: {
@@ -109,12 +109,14 @@ function generateChartOption() {
           width: props.component.pointer.width,
         },
         splitNumber: props.component.splitNumber,
-        detail: props.component.detail.show ? {
-          valueAnimation: true,
-          fontSize: props.component.detail.fontSize,
-          color: props.component.detail.color,
-          formatter: props.component.detail.formatter,
-        } : undefined,
+        detail: props.component.detail.show
+          ? {
+              valueAnimation: true,
+              fontSize: props.component.detail.fontSize,
+              color: props.component.detail.color,
+              formatter: props.component.detail.formatter,
+            }
+          : undefined,
         data: [
           {
             value: data,
@@ -123,38 +125,38 @@ function generateChartOption() {
       },
     ],
     backgroundColor: config.backgroundColor,
-  }
+  };
 }
 
-// 监听配置变化
+// 监听配置变化 - 直接监听 component 对象以确保所有属性变化都能被检测到
 watch(
-  () => [props.component.config, props.component.min, props.component.max, props.component.startAngle, props.component.endAngle, props.component.radius, props.component.axisLine, props.component.pointer, props.component.splitNumber, props.component.detail, props.component.dataSource],
+  () => props.component,
   () => {
     nextTick(() => {
-      updateChartOptions()
-    })
+      updateChartOptions();
+    });
   },
   { deep: true }
-)
+);
 
 onMounted(() => {
   nextTick(() => {
-    initChart()
-  })
+    initChart();
+  });
 
-  window.addEventListener('resize', handleResize)
-})
+  window.addEventListener('resize', handleResize);
+});
 
 onBeforeUnmount(() => {
   if (chartInstance) {
-    chartInstance.dispose()
-    chartInstance = null
+    chartInstance.dispose();
+    chartInstance = null;
   }
-  window.removeEventListener('resize', handleResize)
-})
+  window.removeEventListener('resize', handleResize);
+});
 
 function handleResize() {
-  chartInstance?.resize()
+  chartInstance?.resize();
 }
 </script>
 

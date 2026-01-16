@@ -25,23 +25,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Picture } from '@element-plus/icons-vue'
-import BaseRenderer from './BaseRenderer.vue'
-import type { ImageComponent } from '../../../types'
+import { computed } from 'vue';
+import { Picture } from '@element-plus/icons-vue';
+import BaseRenderer from './BaseRenderer.vue';
+import type { ImageComponent } from '../../../types';
 
 const props = defineProps<{
-  component: ImageComponent
-  selected?: boolean
-  hovered?: boolean
-}>()
+  component: ImageComponent;
+  selected?: boolean;
+  hovered?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'mousedown', event: MouseEvent): void
-  (e: 'mouseenter'): void
-  (e: 'mouseleave'): void
-  (e: 'update', id: string, updates: any): void
-}>()
+  (e: 'mousedown', event: MouseEvent): void;
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+  (e: 'update', id: string, updates: any): void;
+}>();
 
 const containerStyle = computed(() => ({
   width: '100%',
@@ -51,16 +51,16 @@ const containerStyle = computed(() => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-}))
+}));
 
 const imageStyle = computed(() => ({
   width: '100%',
   height: '100%',
   objectFit: props.component.fit,
-}))
+}));
 
 function handleImageError() {
-  console.error('图片加载失败:', props.component.src)
+  console.error('图片加载失败:', props.component.src);
 }
 </script>
 

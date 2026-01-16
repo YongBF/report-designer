@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 import {
   DocumentAdd,
   FolderOpened,
@@ -137,7 +137,7 @@ import {
   ArrowDown,
   ZoomIn,
   ZoomOut,
-} from '@element-plus/icons-vue'
+} from '@element-plus/icons-vue';
 import {
   canUndo,
   canRedo,
@@ -153,17 +153,17 @@ import {
   importDesign,
   setScale,
   updateCanvasSize,
-} from '../../stores/designer'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import DataSourceManager from '../DataSourceManager.vue'
-import PreviewDialog from '../PreviewDialog.vue'
-import { exportToFile } from '../../utils/export'
+} from '../../stores/designer';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import DataSourceManager from '../DataSourceManager.vue';
+import PreviewDialog from '../PreviewDialog.vue';
+import { exportToFile } from '../../utils/export';
 
-const dataSourceManagerVisible = ref(false)
-const previewVisible = ref(false)
-const fileInputRef = ref<HTMLInputElement>()
+const dataSourceManagerVisible = ref(false);
+const previewVisible = ref(false);
+const fileInputRef = ref<HTMLInputElement>();
 
-const hasSelection = computed(() => selectedIds.value.length > 0)
+const hasSelection = computed(() => selectedIds.value.length > 0);
 
 // 新建
 function handleNew() {
@@ -172,182 +172,191 @@ function handleNew() {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(() => {
-    createNewDesign()
-    ElMessage.success('已新建报表')
-  })
+    createNewDesign();
+    ElMessage.success('已新建报表');
+  });
 }
 
 // 打开
 function handleOpen() {
-  fileInputRef.value?.click()
+  fileInputRef.value?.click();
 }
 
 // 保存
 function handleSave() {
-  const design = exportDesign()
-  const json = JSON.stringify(design, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${design.name}.json`
-  a.click()
-  URL.revokeObjectURL(url)
-  ElMessage.success('报表已保存')
+  const design = exportDesign();
+  const json = JSON.stringify(design, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${design.name}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  ElMessage.success('报表已保存');
 }
 
 // 撤销
 function handleUndo() {
-  undo()
+  undo();
 }
 
 // 重做
 function handleRedo() {
-  redo()
+  redo();
 }
 
 // 删除
 function handleDelete() {
-  if (selectedIds.value.length === 0) return
-  removeComponents(selectedIds.value)
+  if (selectedIds.value.length === 0) return;
+  removeComponents(selectedIds.value);
 }
 
 // 复制
 function handleCopy() {
-  if (selectedIds.value.length === 0) return
-  duplicateComponents(selectedIds.value)
+  if (selectedIds.value.length === 0) return;
+  duplicateComponents(selectedIds.value);
 }
 
 // 粘贴
 function handlePaste() {
-  ElMessage.info('请使用 Ctrl+C 复制组件后再粘贴')
+  ElMessage.info('请使用 Ctrl+C 复制组件后再粘贴');
 }
 
 // 图层操作
 function handleLayerCommand(command: string) {
-  if (selectedIds.value.length === 0) return
+  if (selectedIds.value.length === 0) return;
   selectedIds.value.forEach((id) => {
-    changeComponentOrder(id, command as any)
-  })
+    changeComponentOrder(id, command as any);
+  });
 }
 
 // 数据源管理
 function showDataSourceManager() {
-  dataSourceManagerVisible.value = true
+  dataSourceManagerVisible.value = true;
 }
 
 // 预览
 function handlePreview() {
-  previewVisible.value = true
+  previewVisible.value = true;
 }
 
 // 导出
 function handleExport(format: string) {
-  exportToFile(format as any)
+  exportToFile(format as any);
 }
 
 // 缩放
 function handleZoomIn() {
-  setScale(scale.value + 0.1)
+  setScale(scale.value + 0.1);
 }
 
 function handleZoomOut() {
-  setScale(scale.value - 0.1)
+  setScale(scale.value - 0.1);
 }
 
 function handleResetZoom() {
-  setScale(1)
+  setScale(1);
 }
 
 // 文件上传
 function handleFileChange(e: Event) {
-  const target = e.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
 
-  const reader = new FileReader()
+  const reader = new FileReader();
   reader.onload = (e) => {
     try {
-      const design = JSON.parse(e.target?.result as string)
-      importDesign(design)
-      ElMessage.success('报表已加载')
+      const design = JSON.parse(e.target?.result as string);
+      importDesign(design);
+      ElMessage.success('报表已加载');
     } catch (err) {
-      ElMessage.error('文件格式错误')
+      ElMessage.error('文件格式错误');
     }
-  }
-  reader.readAsText(file)
+  };
+  reader.readAsText(file);
 
-  target.value = ''
+  target.value = '';
 }
 
 // 键盘快捷键
 function handleKeydown(e: KeyboardEvent) {
   // Ctrl+N: 新建
   if (e.ctrlKey && e.key === 'n') {
-    e.preventDefault()
-    handleNew()
+    e.preventDefault();
+    handleNew();
   }
   // Ctrl+O: 打开
   if (e.ctrlKey && e.key === 'o') {
-    e.preventDefault()
-    handleOpen()
+    e.preventDefault();
+    handleOpen();
   }
   // Ctrl+S: 保存
   if (e.ctrlKey && e.key === 's') {
-    e.preventDefault()
-    handleSave()
+    e.preventDefault();
+    handleSave();
   }
   // Ctrl+Z: 撤销
   if (e.ctrlKey && e.key === 'z') {
-    e.preventDefault()
-    handleUndo()
+    e.preventDefault();
+    handleUndo();
   }
   // Ctrl+Y: 重做
   if (e.ctrlKey && e.key === 'y') {
-    e.preventDefault()
-    handleRedo()
+    e.preventDefault();
+    handleRedo();
   }
   // Delete: 删除
   if (e.key === 'Delete' || e.key === 'Backspace') {
-    if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-      e.preventDefault()
-      handleDelete()
+    if (
+      document.activeElement?.tagName !== 'INPUT' &&
+      document.activeElement?.tagName !== 'TEXTAREA'
+    ) {
+      e.preventDefault();
+      handleDelete();
     }
   }
   // F5: 预览
   if (e.key === 'F5') {
-    e.preventDefault()
-    handlePreview()
+    e.preventDefault();
+    handlePreview();
   }
   // Ctrl+C: 复制
   if (e.ctrlKey && e.key === 'c') {
-    if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-      e.preventDefault()
-      handleCopy()
+    if (
+      document.activeElement?.tagName !== 'INPUT' &&
+      document.activeElement?.tagName !== 'TEXTAREA'
+    ) {
+      e.preventDefault();
+      handleCopy();
     }
   }
   // Ctrl+V: 粘贴
   if (e.ctrlKey && e.key === 'v') {
-    if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-      e.preventDefault()
-      handlePaste()
+    if (
+      document.activeElement?.tagName !== 'INPUT' &&
+      document.activeElement?.tagName !== 'TEXTAREA'
+    ) {
+      e.preventDefault();
+      handlePaste();
     }
   }
   // +: 放大
   if (e.key === '+' || e.key === '=') {
-    e.preventDefault()
-    handleZoomIn()
+    e.preventDefault();
+    handleZoomIn();
   }
   // -: 缩小
   if (e.key === '-') {
-    e.preventDefault()
-    handleZoomOut()
+    e.preventDefault();
+    handleZoomOut();
   }
 }
 
 // 添加键盘事件监听
 if (typeof window !== 'undefined') {
-  window.addEventListener('keydown', handleKeydown)
+  window.addEventListener('keydown', handleKeydown);
 }
 </script>
 

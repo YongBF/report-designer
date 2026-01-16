@@ -1,3 +1,19 @@
+<!--
+  LineChartProperties.vue
+
+  折线图属性面板组件
+
+  用于配置折线图的各种属性，包括：
+  - 基础配置（标题、图例、主题、背景色、动画）
+  - X轴配置（显示、名称、样式）
+  - Y轴配置（显示、名称、样式）
+  - 系列配置（标签、边框）
+  - 折线图特有配置（平滑曲线、标记点、区域填充）
+  - 数据源配置
+
+  @author Report Designer Team
+  @since 2025-01-15
+-->
 <template>
   <el-form label-width="100px" size="small">
     <!-- 基础配置 -->
@@ -8,7 +24,12 @@
     </el-form-item>
 
     <el-form-item label="标题字号">
-      <el-input-number v-model="localComponent.config.titleFontSize" :min="12" :max="36" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.config.titleFontSize"
+        :min="12"
+        :max="36"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标题颜色">
@@ -45,7 +66,13 @@
     </el-form-item>
 
     <el-form-item label="动画时长">
-      <el-input-number v-model="localComponent.config.animationDuration" :min="0" :max="5000" :step="100" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.config.animationDuration"
+        :min="0"
+        :max="5000"
+        :step="100"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- X轴配置 -->
@@ -60,7 +87,12 @@
     </el-form-item>
 
     <el-form-item label="名称字号">
-      <el-input-number v-model="localComponent.xAxis.nameFontSize" :min="10" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.xAxis.nameFontSize"
+        :min="10"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="名称颜色">
@@ -68,7 +100,12 @@
     </el-form-item>
 
     <el-form-item label="标签字号">
-      <el-input-number v-model="localComponent.xAxis.axisLabelFontSize" :min="10" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.xAxis.axisLabelFontSize"
+        :min="10"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标签颜色">
@@ -80,7 +117,13 @@
     </el-form-item>
 
     <el-form-item label="轴线宽度">
-      <el-input-number v-model="localComponent.xAxis.axisLineWidth" :min="0" :max="5" :step="0.5" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.xAxis.axisLineWidth"
+        :min="0"
+        :max="5"
+        :step="0.5"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- Y轴配置 -->
@@ -95,7 +138,12 @@
     </el-form-item>
 
     <el-form-item label="名称字号">
-      <el-input-number v-model="localComponent.yAxis.nameFontSize" :min="10" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.yAxis.nameFontSize"
+        :min="10"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="名称颜色">
@@ -103,7 +151,12 @@
     </el-form-item>
 
     <el-form-item label="标签字号">
-      <el-input-number v-model="localComponent.yAxis.axisLabelFontSize" :min="10" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.yAxis.axisLabelFontSize"
+        :min="10"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标签颜色">
@@ -115,7 +168,13 @@
     </el-form-item>
 
     <el-form-item label="轴线宽度">
-      <el-input-number v-model="localComponent.yAxis.axisLineWidth" :min="0" :max="5" :step="0.5" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.yAxis.axisLineWidth"
+        :min="0"
+        :max="5"
+        :step="0.5"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- 系列配置 -->
@@ -138,7 +197,12 @@
     </el-form-item>
 
     <el-form-item label="标签字号">
-      <el-input-number v-model="localComponent.series.labelFontSize" :min="10" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.labelFontSize"
+        :min="10"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标签颜色">
@@ -146,19 +210,39 @@
     </el-form-item>
 
     <el-form-item label="边框宽度">
-      <el-input-number v-model="localComponent.series.itemStyleBorderWidth" :min="0" :max="5" :step="0.5" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.itemStyleBorderWidth"
+        :min="0"
+        :max="5"
+        :step="0.5"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="边框颜色">
-      <el-color-picker v-model="localComponent.series.itemStyleBorderColor" @change="handleChange" />
+      <el-color-picker
+        v-model="localComponent.series.itemStyleBorderColor"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="圆角">
-      <el-input-number v-model="localComponent.series.itemStyleBorderRadius" :min="0" :max="10" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.itemStyleBorderRadius"
+        :min="0"
+        :max="10"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="区域透明度">
-      <el-input-number v-model="localComponent.series.areaStyleOpacity" :min="0" :max="1" :step="0.1" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.areaStyleOpacity"
+        :min="0"
+        :max="1"
+        :step="0.1"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- 折线图特有配置 -->
@@ -177,11 +261,22 @@
     </el-form-item>
 
     <el-form-item label="标记大小">
-      <el-input-number v-model="localComponent.symbolSize" :min="0" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.symbolSize"
+        :min="0"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="线宽">
-      <el-input-number v-model="localComponent.lineStyleWidth" :min="1" :max="10" :step="0.5" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.lineStyleWidth"
+        :min="1"
+        :max="10"
+        :step="0.5"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="线型">
@@ -199,39 +294,27 @@
     <!-- 数据源 -->
     <el-divider content-position="left">数据源</el-divider>
 
-    <el-form-item label="数据源">
-      <el-select
-        v-model="selectedDataSourceId"
-        placeholder="选择数据源"
-        @change="handleDataSourceChange"
-      >
-        <el-option
-          v-for="ds in dataSources"
-          :key="ds.id"
-          :label="ds.name"
-          :value="ds.id"
-        />
-      </el-select>
-    </el-form-item>
+    <ChartDataSourceConfig :component="localComponent" @update="handleChange" />
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed, ref, onMounted } from 'vue'
-import type { LineChartComponent } from '../../../types'
-import { currentDesign } from '../../../stores/designer'
+import { reactive, watch, computed, ref, onMounted } from 'vue';
+import type { LineChartComponent } from '../../../types';
+import { currentDesign, updateComponent } from '../../../stores/designer';
+import ChartDataSourceConfig from '../common/ChartDataSourceConfig.vue';
 
 const props = defineProps<{
-  component: LineChartComponent
-}>()
+  component: LineChartComponent;
+}>();
 
 onMounted(() => {
-  console.log('LineChartProperties mounted with:', props.component)
-})
+  console.log('LineChartProperties mounted with:', props.component);
+});
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
 const localComponent = reactive<LineChartComponent>({
   ...props.component,
@@ -239,31 +322,47 @@ const localComponent = reactive<LineChartComponent>({
   xAxis: { ...props.component.xAxis },
   yAxis: { ...props.component.yAxis },
   series: { ...props.component.series },
-})
-
-const selectedDataSourceId = ref(props.component.dataSource?.id || '')
-
-const dataSources = computed(() => currentDesign.value.dataSources)
+});
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
-    Object.assign(localComponent.config, newComponent.config)
-    Object.assign(localComponent.xAxis, newComponent.xAxis)
-    Object.assign(localComponent.yAxis, newComponent.yAxis)
-    Object.assign(localComponent.series, newComponent.series)
-    selectedDataSourceId.value = newComponent.dataSource?.id || ''
+    // 使用对象展开来创建新的对象引用，确保响应式更新
+    localComponent.id = newComponent.id;
+    localComponent.type = newComponent.type;
+    localComponent.x = newComponent.x;
+    localComponent.y = newComponent.y;
+    localComponent.width = newComponent.width;
+    localComponent.height = newComponent.height;
+    localComponent.zIndex = newComponent.zIndex;
+    localComponent.visible = newComponent.visible;
+    localComponent.locked = newComponent.locked;
+    localComponent.order = newComponent.order;
+
+    // 深拷贝嵌套对象
+    localComponent.config = { ...newComponent.config };
+    localComponent.xAxis = { ...newComponent.xAxis };
+    localComponent.yAxis = { ...newComponent.yAxis };
+    localComponent.series = { ...newComponent.series };
+    localComponent.smooth = newComponent.smooth;
+    localComponent.step = newComponent.step;
+    localComponent.showSymbol = newComponent.showSymbol;
+    localComponent.symbolSize = newComponent.symbolSize;
+    localComponent.lineStyleWidth = newComponent.lineStyleWidth;
+    localComponent.lineStyleType = newComponent.lineStyleType;
+    localComponent.areaStyle = newComponent.areaStyle;
+    localComponent.dataSource = newComponent.dataSource;
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component.config, localComponent.config)
-  Object.assign(props.component.xAxis, localComponent.xAxis)
-  Object.assign(props.component.yAxis, localComponent.yAxis)
-  Object.assign(props.component.series, localComponent.series)
-  Object.assign(props.component, {
+  // 使用 updateComponent 方法来确保触发响应式更新
+  updateComponent(props.component.id, {
+    config: { ...localComponent.config },
+    xAxis: { ...localComponent.xAxis },
+    yAxis: { ...localComponent.yAxis },
+    series: { ...localComponent.series },
     smooth: localComponent.smooth,
     step: localComponent.step,
     showSymbol: localComponent.showSymbol,
@@ -271,13 +370,7 @@ function handleChange() {
     lineStyleWidth: localComponent.lineStyleWidth,
     lineStyleType: localComponent.lineStyleType,
     areaStyle: localComponent.areaStyle,
-  })
-  emit('update')
-}
-
-function handleDataSourceChange(dataSourceId: string) {
-  const dataSource = dataSources.value.find(ds => ds.id === dataSourceId)
-  props.component.dataSource = dataSource || null
-  emit('update')
+  });
+  emit('update');
 }
 </script>

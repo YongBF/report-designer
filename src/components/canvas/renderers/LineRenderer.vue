@@ -13,28 +13,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import BaseRenderer from './BaseRenderer.vue'
-import type { LineComponent } from '../../../types'
+import { computed } from 'vue';
+import BaseRenderer from './BaseRenderer.vue';
+import type { LineComponent } from '../../../types';
 
 const props = defineProps<{
-  component: LineComponent
-  selected?: boolean
-  hovered?: boolean
-}>()
+  component: LineComponent;
+  selected?: boolean;
+  hovered?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'mousedown', event: MouseEvent): void
-  (e: 'mouseenter'): void
-  (e: 'mouseleave'): void
-  (e: 'update', id: string, updates: any): void
-}>()
+  (e: 'mousedown', event: MouseEvent): void;
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+  (e: 'update', id: string, updates: any): void;
+}>();
 
 const lineStyle = computed(() => ({
   width: '100%',
   height: '100%',
   borderTop: `${props.component.strokeWidth}px ${props.component.strokeStyle} ${props.component.stroke}`,
-}))
+}));
 </script>
 
 <style scoped>

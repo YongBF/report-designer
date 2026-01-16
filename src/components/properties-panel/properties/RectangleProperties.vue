@@ -9,7 +9,12 @@
     </el-form-item>
 
     <el-form-item label="边框宽度">
-      <el-input-number v-model="localComponent.borderWidth" :min="0" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.borderWidth"
+        :min="0"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="边框样式">
@@ -28,29 +33,29 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import type { RectangleComponent } from '../../../../types'
+import { reactive, watch } from 'vue';
+import type { RectangleComponent } from '../../../../types';
 
 const props = defineProps<{
-  component: RectangleComponent
-}>()
+  component: RectangleComponent;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
-const localComponent = reactive<RectangleComponent>({ ...props.component })
+const localComponent = reactive<RectangleComponent>({ ...props.component });
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
+    Object.assign(localComponent, newComponent);
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component, localComponent)
-  emit('update')
+  Object.assign(props.component, localComponent);
+  emit('update');
 }
 </script>

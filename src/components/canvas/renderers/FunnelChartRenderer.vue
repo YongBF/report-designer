@@ -13,37 +13,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import * as echarts from 'echarts'
-import BaseRenderer from './BaseRenderer.vue'
-import type { FunnelChartComponent } from '../../../types'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import * as echarts from 'echarts';
+import BaseRenderer from './BaseRenderer.vue';
+import type { FunnelChartComponent } from '../../../types';
 
 const props = defineProps<{
-  component: FunnelChartComponent
-  selected?: boolean
-  hovered?: boolean
-}>()
+  component: FunnelChartComponent;
+  selected?: boolean;
+  hovered?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'mousedown', event: MouseEvent): void
-  (e: 'mouseenter'): void
-  (e: 'mouseleave'): void
-  (e: 'update', id: string, updates: any): void
-}>()
+  (e: 'mousedown', event: MouseEvent): void;
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+  (e: 'update', id: string, updates: any): void;
+}>();
 
-const chartRef = ref<HTMLElement>()
-let chartInstance: echarts.ECharts | null = null
+const chartRef = ref<HTMLElement>();
+let chartInstance: echarts.ECharts | null = null;
 
 const containerStyle = computed(() => ({
   width: '100%',
   height: '100%',
-}))
+}));
 
 // 获取图表数据
 function getChartData() {
-  const dataSource = props.component.dataSource
+  const dataSource = props.component.dataSource;
   if (dataSource?.staticData && dataSource.staticData.length > 0) {
-    return dataSource.staticData
+    return dataSource.staticData;
   }
   // 默认模拟数据
   return [
@@ -52,33 +52,33 @@ function getChartData() {
     { name: '访问', value: 60 },
     { name: '咨询', value: 40 },
     { name: '订单', value: 20 },
-  ]
+  ];
 }
 
 // 初始化图表
 function initChart() {
-  if (!chartRef.value) return
+  if (!chartRef.value) return;
 
   if (chartInstance) {
-    chartInstance.dispose()
+    chartInstance.dispose();
   }
 
-  chartInstance = echarts.init(chartRef.value, props.component.config.theme)
-  updateChartOptions()
+  chartInstance = echarts.init(chartRef.value, props.component.config.theme);
+  updateChartOptions();
 }
 
 // 更新图表配置
 function updateChartOptions() {
-  if (!chartInstance) return
+  if (!chartInstance) return;
 
-  const option = generateChartOption()
-  chartInstance.setOption(option, { notMerge: true })
+  const option = generateChartOption();
+  chartInstance.setOption(option, { notMerge: true });
 }
 
 // 生成图表配置
 function generateChartOption() {
-  const data = getChartData()
-  const { config, series } = props.component
+  const data = getChartData();
+  const { config, series } = props.component;
 
   return {
     title: {
@@ -93,12 +93,14 @@ function generateChartOption() {
       trigger: 'item',
       formatter: '{a} <br/>{b}: {c}',
     },
-    legend: config.showLegend ? {
-      top: config.legendPosition === 'top' ? 0 : 'auto',
-      bottom: config.legendPosition === 'bottom' ? 0 : 'auto',
-      left: config.legendPosition === 'left' ? 0 : 'auto',
-      right: config.legendPosition === 'right' ? 0 : 'auto',
-    } : undefined,
+    legend: config.showLegend
+      ? {
+          top: config.legendPosition === 'top' ? 0 : 'auto',
+          bottom: config.legendPosition === 'bottom' ? 0 : 'auto',
+          left: config.legendPosition === 'left' ? 0 : 'auto',
+          right: config.legendPosition === 'right' ? 0 : 'auto',
+        }
+      : undefined,
     series: [
       {
         type: 'funnel',
@@ -110,12 +112,14 @@ function generateChartOption() {
         height: props.component.height,
         sort: props.component.sort,
         gap: props.component.gap,
-        label: series.labelShow ? {
-          show: series.labelShow,
-          position: series.labelPosition,
-          fontSize: series.labelFontSize,
-          color: series.labelColor,
-        } : undefined,
+        label: series.labelShow
+          ? {
+              show: series.labelShow,
+              position: series.labelPosition,
+              fontSize: series.labelFontSize,
+              color: series.labelColor,
+            }
+          : undefined,
         labelLine: {
           show: true,
           length: 10,
@@ -133,38 +137,38 @@ function generateChartOption() {
       },
     ],
     backgroundColor: config.backgroundColor,
-  }
+  };
 }
 
-// 监听配置变化
+// 监听配置变化 - 直接监听 component 对象以确保所有属性变化都能被检测到
 watch(
-  () => [props.component.config, props.component.series, props.component.sort, props.component.gap, props.component.left, props.component.top, props.component.right, props.component.bottom, props.component.width, props.component.height, props.component.labelAlign, props.component.dataSource],
+  () => props.component,
   () => {
     nextTick(() => {
-      updateChartOptions()
-    })
+      updateChartOptions();
+    });
   },
   { deep: true }
-)
+);
 
 onMounted(() => {
   nextTick(() => {
-    initChart()
-  })
+    initChart();
+  });
 
-  window.addEventListener('resize', handleResize)
-})
+  window.addEventListener('resize', handleResize);
+});
 
 onBeforeUnmount(() => {
   if (chartInstance) {
-    chartInstance.dispose()
-    chartInstance = null
+    chartInstance.dispose();
+    chartInstance = null;
   }
-  window.removeEventListener('resize', handleResize)
-})
+  window.removeEventListener('resize', handleResize);
+});
 
 function handleResize() {
-  chartInstance?.resize()
+  chartInstance?.resize();
 }
 </script>
 

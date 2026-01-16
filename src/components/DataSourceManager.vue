@@ -1,10 +1,5 @@
 <template>
-  <el-dialog
-    v-model="visible"
-    title="数据源管理"
-    width="800px"
-    @close="handleClose"
-  >
+  <el-dialog v-model="visible" title="数据源管理" width="800px" @close="handleClose">
     <el-tabs v-model="activeTab">
       <!-- 数据源列表 -->
       <el-tab-pane label="数据源" name="datasources">
@@ -189,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 import {
   currentDesign,
   addDataSource,
@@ -197,17 +192,17 @@ import {
   removeDataSource,
   addDatabaseConnection,
   removeDatabaseConnection,
-} from '../stores/designer'
-import type { DataSource, DatabaseConnection } from '../types'
-import { ElMessage } from 'element-plus'
+} from '../stores/designer';
+import type { DataSource, DatabaseConnection } from '../types';
+import { ElMessage } from 'element-plus';
 
-const visible = defineModel<boolean>()
-const activeTab = ref('datasources')
+const visible = defineModel<boolean>();
+const activeTab = ref('datasources');
 
 // 数据源相关
-const dataSources = computed(() => currentDesign.value.dataSources)
-const dataSourceFormVisible = ref(false)
-const editingDataSource = ref<DataSource | null>(null)
+const dataSources = computed(() => currentDesign.value.dataSources);
+const dataSourceFormVisible = ref(false);
+const editingDataSource = ref<DataSource | null>(null);
 const dataSourceForm = ref<Partial<DataSource>>({
   name: '',
   type: 'static',
@@ -217,14 +212,14 @@ const dataSourceForm = ref<Partial<DataSource>>({
   apiHeaders: {},
   databaseId: '',
   sql: '',
-})
-const staticDataJson = ref('')
-const apiHeadersJson = ref('')
+});
+const staticDataJson = ref('');
+const apiHeadersJson = ref('');
 
 // 数据库相关
-const databaseConnections = computed(() => currentDesign.value.databaseConnections)
-const databaseFormVisible = ref(false)
-const editingDatabase = ref<DatabaseConnection | null>(null)
+const databaseConnections = computed(() => currentDesign.value.databaseConnections);
+const databaseFormVisible = ref(false);
+const editingDatabase = ref<DatabaseConnection | null>(null);
 const databaseForm = ref<Partial<DatabaseConnection>>({
   name: '',
   type: 'mysql',
@@ -233,78 +228,78 @@ const databaseForm = ref<Partial<DatabaseConnection>>({
   username: '',
   password: '',
   database: '',
-})
+});
 
 function getDataSourceTypeLabel(type: string) {
   const labels: Record<string, string> = {
     static: '静态数据',
     api: 'API',
     sql: 'SQL',
-  }
-  return labels[type] || type
+  };
+  return labels[type] || type;
 }
 
 // 数据源操作
 function showAddDataSource() {
-  editingDataSource.value = null
+  editingDataSource.value = null;
   dataSourceForm.value = {
     name: '',
     type: 'static',
     staticData: [],
-  }
-  staticDataJson.value = ''
-  apiHeadersJson.value = ''
-  dataSourceFormVisible.value = true
+  };
+  staticDataJson.value = '';
+  apiHeadersJson.value = '';
+  dataSourceFormVisible.value = true;
 }
 
 function editDataSource(ds: DataSource) {
-  editingDataSource.value = ds
-  dataSourceForm.value = { ...ds }
-  staticDataJson.value = ds.staticData ? JSON.stringify(ds.staticData, null, 2) : ''
-  apiHeadersJson.value = ds.apiHeaders ? JSON.stringify(ds.apiHeaders, null, 2) : ''
-  dataSourceFormVisible.value = true
+  editingDataSource.value = ds;
+  dataSourceForm.value = { ...ds };
+  staticDataJson.value = ds.staticData ? JSON.stringify(ds.staticData, null, 2) : '';
+  apiHeadersJson.value = ds.apiHeaders ? JSON.stringify(ds.apiHeaders, null, 2) : '';
+  dataSourceFormVisible.value = true;
 }
 
 function saveDataSource() {
   if (!dataSourceForm.value.name) {
-    ElMessage.warning('请输入数据源名称')
-    return
+    ElMessage.warning('请输入数据源名称');
+    return;
   }
 
   try {
     if (dataSourceForm.value.type === 'static' && staticDataJson.value) {
-      dataSourceForm.value.staticData = JSON.parse(staticDataJson.value)
+      dataSourceForm.value.staticData = JSON.parse(staticDataJson.value);
     }
     if (dataSourceForm.value.type === 'api' && apiHeadersJson.value) {
-      dataSourceForm.value.apiHeaders = JSON.parse(apiHeadersJson.value)
+      dataSourceForm.value.apiHeaders = JSON.parse(apiHeadersJson.value);
     }
   } catch (e) {
-    ElMessage.error('JSON 格式错误')
-    return
+    ElMessage.error('JSON 格式错误');
+    return;
   }
 
   if (editingDataSource.value) {
-    updateDataSource(editingDataSource.value.id, dataSourceForm.value)
-    ElMessage.success('数据源已更新')
+    updateDataSource(editingDataSource.value.id, dataSourceForm.value);
+    ElMessage.success('数据源已更新');
   } else {
     addDataSource({
       id: `ds-${Date.now()}`,
       ...dataSourceForm.value,
-    } as DataSource)
-    ElMessage.success('数据源已添加')
+    } as DataSource);
+    ElMessage.success('数据源已添加');
   }
 
-  dataSourceFormVisible.value = false
+  dataSourceFormVisible.value = false;
 }
 
 function deleteDataSource(id: string) {
-  removeDataSource(id)
-  ElMessage.success('数据源已删除')
+  removeDataSource(id);
+  ElMessage.success('数据源已删除');
 }
 
 // 数据库操作
 function showAddDatabase() {
-  editingDatabase.value = null
+  editingDatabase.value = null;
   databaseForm.value = {
     name: '',
     type: 'mysql',
@@ -313,43 +308,43 @@ function showAddDatabase() {
     username: '',
     password: '',
     database: '',
-  }
-  databaseFormVisible.value = true
+  };
+  databaseFormVisible.value = true;
 }
 
 function editDatabase(db: DatabaseConnection) {
-  editingDatabase.value = db
-  databaseForm.value = { ...db }
-  databaseFormVisible.value = true
+  editingDatabase.value = db;
+  databaseForm.value = { ...db };
+  databaseFormVisible.value = true;
 }
 
 function saveDatabase() {
   if (!databaseForm.value.name) {
-    ElMessage.warning('请输入连接名称')
-    return
+    ElMessage.warning('请输入连接名称');
+    return;
   }
 
   if (editingDatabase.value) {
-    Object.assign(editingDatabase.value, databaseForm.value)
-    ElMessage.success('数据库连接已更新')
+    Object.assign(editingDatabase.value, databaseForm.value);
+    ElMessage.success('数据库连接已更新');
   } else {
     addDatabaseConnection({
       id: `db-${Date.now()}`,
       ...databaseForm.value,
-    } as DatabaseConnection)
-    ElMessage.success('数据库连接已添加')
+    } as DatabaseConnection);
+    ElMessage.success('数据库连接已添加');
   }
 
-  databaseFormVisible.value = false
+  databaseFormVisible.value = false;
 }
 
 function deleteDatabase(id: string) {
-  removeDatabaseConnection(id)
-  ElMessage.success('数据库连接已删除')
+  removeDatabaseConnection(id);
+  ElMessage.success('数据库连接已删除');
 }
 
 function handleClose() {
-  visible.value = false
+  visible.value = false;
 }
 </script>
 

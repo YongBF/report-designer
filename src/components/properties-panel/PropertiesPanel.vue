@@ -32,11 +32,7 @@
             </el-form-item>
 
             <el-form-item label="宽度">
-              <el-input-number
-                v-model="selectedComponent.width"
-                :min="20"
-                @change="handleUpdate"
-              />
+              <el-input-number v-model="selectedComponent.width" :min="20" @change="handleUpdate" />
             </el-form-item>
 
             <el-form-item label="高度">
@@ -48,11 +44,7 @@
             </el-form-item>
 
             <el-form-item label="层级">
-              <el-input-number
-                v-model="selectedComponent.zIndex"
-                :min="0"
-                @change="handleUpdate"
-              />
+              <el-input-number v-model="selectedComponent.zIndex" :min="0" @change="handleUpdate" />
             </el-form-item>
 
             <el-form-item label="可见">
@@ -166,33 +158,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { currentDesign, singleSelectedComponent, updateComponent } from '../../stores/designer'
-import TextProperties from './properties/TextProperties.vue'
-import ImageProperties from './properties/ImageProperties.vue'
-import TableProperties from './properties/TableProperties.vue'
-import ChartProperties from './properties/ChartProperties.vue'
-import RectangleProperties from './properties/RectangleProperties.vue'
-import LineProperties from './properties/LineProperties.vue'
-import BarChartProperties from './properties/BarChartProperties.vue'
-import LineChartProperties from './properties/LineChartProperties.vue'
-import PieChartProperties from './properties/PieChartProperties.vue'
-import ScatterChartProperties from './properties/ScatterChartProperties.vue'
-import GaugeChartProperties from './properties/GaugeChartProperties.vue'
-import FunnelChartProperties from './properties/FunnelChartProperties.vue'
-import type { Component } from '../../types'
+import { computed } from 'vue';
+import { currentDesign, singleSelectedComponent, updateComponent } from '../../stores/designer';
+import TextProperties from './properties/TextProperties.vue';
+import ImageProperties from './properties/ImageProperties.vue';
+import TableProperties from './properties/TableProperties.vue';
+import ChartProperties from './properties/ChartProperties.vue';
+import RectangleProperties from './properties/RectangleProperties.vue';
+import LineProperties from './properties/LineProperties.vue';
+import BarChartProperties from './properties/BarChartProperties.vue';
+import LineChartProperties from './properties/LineChartProperties.vue';
+import PieChartProperties from './properties/PieChartProperties.vue';
+import ScatterChartProperties from './properties/ScatterChartProperties.vue';
+import GaugeChartProperties from './properties/GaugeChartProperties.vue';
+import FunnelChartProperties from './properties/FunnelChartProperties.vue';
+import type { Component } from '../../types';
 
 const selectedComponent = computed(() => {
-  const comp = singleSelectedComponent.value as Component | null
+  const comp = singleSelectedComponent.value as Component | null;
   if (comp) {
-    console.log('Selected component:', comp.type, comp)
+    console.log('Selected component:', comp.type, comp);
   }
-  return comp
-})
+  return comp;
+});
 
 function handleUpdate() {
   if (selectedComponent.value) {
-    updateComponent(selectedComponent.value.id, selectedComponent.value)
+    updateComponent(selectedComponent.value.id, selectedComponent.value);
   }
 }
 </script>

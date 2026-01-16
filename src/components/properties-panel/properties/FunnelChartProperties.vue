@@ -8,7 +8,12 @@
     </el-form-item>
 
     <el-form-item label="标题字号">
-      <el-input-number v-model="localComponent.config.titleFontSize" :min="12" :max="36" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.config.titleFontSize"
+        :min="12"
+        :max="36"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标题颜色">
@@ -45,7 +50,13 @@
     </el-form-item>
 
     <el-form-item label="动画时长">
-      <el-input-number v-model="localComponent.config.animationDuration" :min="0" :max="5000" :step="100" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.config.animationDuration"
+        :min="0"
+        :max="5000"
+        :step="100"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- 系列配置 -->
@@ -68,7 +79,12 @@
     </el-form-item>
 
     <el-form-item label="标签字号">
-      <el-input-number v-model="localComponent.series.labelFontSize" :min="10" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.labelFontSize"
+        :min="10"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标签颜色">
@@ -76,15 +92,29 @@
     </el-form-item>
 
     <el-form-item label="边框宽度">
-      <el-input-number v-model="localComponent.series.itemStyleBorderWidth" :min="0" :max="5" :step="0.5" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.itemStyleBorderWidth"
+        :min="0"
+        :max="5"
+        :step="0.5"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="边框颜色">
-      <el-color-picker v-model="localComponent.series.itemStyleBorderColor" @change="handleChange" />
+      <el-color-picker
+        v-model="localComponent.series.itemStyleBorderColor"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="圆角">
-      <el-input-number v-model="localComponent.series.itemStyleBorderRadius" :min="0" :max="10" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.series.itemStyleBorderRadius"
+        :min="0"
+        :max="10"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- 漏斗图特有配置 -->
@@ -103,91 +133,97 @@
     </el-form-item>
 
     <el-form-item label="左边距">
-      <el-input v-model="localComponent.left" @change="handleChange" placeholder="如: 10%" />
+      <el-input v-model="localComponent.left" placeholder="如: 10%" @change="handleChange" />
     </el-form-item>
 
     <el-form-item label="上边距">
-      <el-input v-model="localComponent.top" @change="handleChange" placeholder="如: 60" />
+      <el-input v-model="localComponent.top" placeholder="如: 60" @change="handleChange" />
     </el-form-item>
 
     <el-form-item label="右边距">
-      <el-input v-model="localComponent.right" @change="handleChange" placeholder="如: 10%" />
+      <el-input v-model="localComponent.right" placeholder="如: 10%" @change="handleChange" />
     </el-form-item>
 
     <el-form-item label="下边距">
-      <el-input v-model="localComponent.bottom" @change="handleChange" placeholder="如: 60" />
+      <el-input v-model="localComponent.bottom" placeholder="如: 60" @change="handleChange" />
     </el-form-item>
 
     <el-form-item label="宽度">
-      <el-input v-model="localComponent.width" @change="handleChange" placeholder="如: 80%" />
+      <el-input v-model="localComponent.width" placeholder="如: 80%" @change="handleChange" />
     </el-form-item>
 
     <el-form-item label="高度">
-      <el-input v-model="localComponent.height" @change="handleChange" placeholder="如: 80%" />
+      <el-input v-model="localComponent.height" placeholder="如: 80%" @change="handleChange" />
     </el-form-item>
 
     <!-- 数据源 -->
     <el-divider content-position="left">数据源</el-divider>
 
-    <el-form-item label="数据源">
-      <el-select
-        v-model="selectedDataSourceId"
-        placeholder="选择数据源"
-        @change="handleDataSourceChange"
-      >
-        <el-option
-          v-for="ds in dataSources"
-          :key="ds.id"
-          :label="ds.name"
-          :value="ds.id"
-        />
-      </el-select>
-    </el-form-item>
+    <ChartDataSourceConfig :component="localComponent" @update="handleChange" />
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed, ref, onMounted } from 'vue'
-import type { FunnelChartComponent } from '../../../types'
-import { currentDesign } from '../../../stores/designer'
+import { reactive, watch, computed, ref, onMounted } from 'vue';
+import type { FunnelChartComponent } from '../../../types';
+import { currentDesign, updateComponent } from '../../../stores/designer';
+import ChartDataSourceConfig from '../common/ChartDataSourceConfig.vue';
 
 const props = defineProps<{
-  component: FunnelChartComponent
-}>()
+  component: FunnelChartComponent;
+}>();
 
 onMounted(() => {
-  console.log('FunnelChartProperties mounted with:', props.component)
-})
+  console.log('FunnelChartProperties mounted with:', props.component);
+});
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
 const localComponent = reactive<FunnelChartComponent>({
   ...props.component,
   config: { ...props.component.config },
   series: { ...props.component.series },
-})
-
-const selectedDataSourceId = ref(props.component.dataSource?.id || '')
-
-const dataSources = computed(() => currentDesign.value.dataSources)
+});
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
-    Object.assign(localComponent.config, newComponent.config)
-    Object.assign(localComponent.series, newComponent.series)
-    selectedDataSourceId.value = newComponent.dataSource?.id || ''
+    // 使用对象展开来创建新的对象引用，确保响应式更新
+    localComponent.id = newComponent.id;
+    localComponent.type = newComponent.type;
+    localComponent.x = newComponent.x;
+    localComponent.y = newComponent.y;
+    localComponent.width = newComponent.width;
+    localComponent.height = newComponent.height;
+    localComponent.zIndex = newComponent.zIndex;
+    localComponent.visible = newComponent.visible;
+    localComponent.locked = newComponent.locked;
+    localComponent.order = newComponent.order;
+
+    // 深拷贝嵌套对象
+    localComponent.config = { ...newComponent.config };
+    localComponent.series = { ...newComponent.series };
+    localComponent.sort = newComponent.sort;
+    localComponent.gap = newComponent.gap;
+    localComponent.left = newComponent.left;
+    localComponent.top = newComponent.top;
+    localComponent.right = newComponent.right;
+    localComponent.bottom = newComponent.bottom;
+    localComponent.width = newComponent.width;
+    localComponent.height = newComponent.height;
+    localComponent.labelAlign = newComponent.labelAlign;
+    localComponent.dataSource = newComponent.dataSource;
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component.config, localComponent.config)
-  Object.assign(props.component.series, localComponent.series)
-  Object.assign(props.component, {
+  // 使用 updateComponent 方法来确保触发响应式更新
+  updateComponent(props.component.id, {
+    config: { ...localComponent.config },
+    series: { ...localComponent.series },
     sort: localComponent.sort,
     gap: localComponent.gap,
     left: localComponent.left,
@@ -196,13 +232,7 @@ function handleChange() {
     bottom: localComponent.bottom,
     width: localComponent.width,
     height: localComponent.height,
-  })
-  emit('update')
-}
-
-function handleDataSourceChange(dataSourceId: string) {
-  const dataSource = dataSources.value.find(ds => ds.id === dataSourceId)
-  props.component.dataSource = dataSource || null
-  emit('update')
+  });
+  emit('update');
 }
 </script>

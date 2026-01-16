@@ -37,49 +37,44 @@
         placeholder="选择数据源"
         @change="handleDataSourceChange"
       >
-        <el-option
-          v-for="ds in dataSources"
-          :key="ds.id"
-          :label="ds.name"
-          :value="ds"
-        />
+        <el-option v-for="ds in dataSources" :key="ds.id" :label="ds.name" :value="ds" />
       </el-select>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed } from 'vue'
-import type { ChartComponent } from '../../../types'
-import { currentDesign } from '../../../stores/designer'
+import { reactive, watch, computed } from 'vue';
+import type { ChartComponent } from '../../../types';
+import { currentDesign } from '../../../stores/designer';
 
 const props = defineProps<{
-  component: ChartComponent
-}>()
+  component: ChartComponent;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
-const localComponent = reactive<ChartComponent>({ ...props.component })
+const localComponent = reactive<ChartComponent>({ ...props.component });
 
-const dataSources = computed(() => currentDesign.value.dataSources)
+const dataSources = computed(() => currentDesign.value.dataSources);
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
+    Object.assign(localComponent, newComponent);
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component, localComponent)
-  emit('update')
+  Object.assign(props.component, localComponent);
+  emit('update');
 }
 
 function handleDataSourceChange(value: any) {
-  localComponent.dataSource = value
-  handleChange()
+  localComponent.dataSource = value;
+  handleChange();
 }
 </script>

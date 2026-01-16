@@ -5,7 +5,12 @@
     </el-form-item>
 
     <el-form-item label="字号">
-      <el-input-number v-model="localComponent.fontSize" :min="8" :max="72" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.fontSize"
+        :min="8"
+        :max="72"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="字体">
@@ -45,35 +50,41 @@
     </el-form-item>
 
     <el-form-item label="行高">
-      <el-input-number v-model="localComponent.lineHeight" :min="1" :max="3" :step="0.1" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.lineHeight"
+        :min="1"
+        :max="3"
+        :step="0.1"
+        @change="handleChange"
+      />
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import type { TextComponent } from '../../../../types'
+import { reactive, watch } from 'vue';
+import type { TextComponent } from '../../../../types';
 
 const props = defineProps<{
-  component: TextComponent
-}>()
+  component: TextComponent;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
-const localComponent = reactive<TextComponent>({ ...props.component })
+const localComponent = reactive<TextComponent>({ ...props.component });
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
+    Object.assign(localComponent, newComponent);
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component, localComponent)
-  emit('update')
+  Object.assign(props.component, localComponent);
+  emit('update');
 }
 </script>

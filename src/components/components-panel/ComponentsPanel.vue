@@ -69,20 +69,20 @@ import {
   TrendCharts,
   Odometer,
   Filter,
-} from '@element-plus/icons-vue'
-import type { ComponentType } from '../../types'
+} from '@element-plus/icons-vue';
+import type { ComponentType } from '../../types';
 
 interface ComponentItem {
-  type: ComponentType
-  label: string
-  icon: any
+  type: ComponentType;
+  label: string;
+  icon: any;
 }
 
 const basicComponents: ComponentItem[] = [
   { type: 'text', label: '文本', icon: Document },
   { type: 'image', label: '图片', icon: Picture },
   { type: 'table', label: '表格', icon: Grid },
-]
+];
 
 const chartComponents: ComponentItem[] = [
   { type: 'bar-chart', label: '柱状图', icon: Histogram },
@@ -91,17 +91,17 @@ const chartComponents: ComponentItem[] = [
   { type: 'scatter-chart', label: '散点图', icon: DataAnalysis },
   { type: 'gauge-chart', label: '仪表盘', icon: Odometer },
   { type: 'funnel-chart', label: '漏斗图', icon: Filter },
-]
+];
 
 const shapeComponents: ComponentItem[] = [
   { type: 'rectangle', label: '矩形', icon: Histogram },
   { type: 'line', label: '线条', icon: Coin },
-]
+];
 
 function handleDragStart(item: ComponentItem, e: DragEvent) {
   if (e.dataTransfer) {
-    e.dataTransfer.setData('componentType', item.type)
-    e.dataTransfer.effectAllowed = 'copy'
+    e.dataTransfer.setData('componentType', item.type);
+    e.dataTransfer.effectAllowed = 'copy';
   }
 }
 </script>

@@ -5,7 +5,12 @@
     </el-form-item>
 
     <el-form-item label="宽度">
-      <el-input-number v-model="localComponent.strokeWidth" :min="1" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.strokeWidth"
+        :min="1"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="样式">
@@ -19,29 +24,29 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import type { LineComponent } from '../../../../types'
+import { reactive, watch } from 'vue';
+import type { LineComponent } from '../../../../types';
 
 const props = defineProps<{
-  component: LineComponent
-}>()
+  component: LineComponent;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
-const localComponent = reactive<LineComponent>({ ...props.component })
+const localComponent = reactive<LineComponent>({ ...props.component });
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
+    Object.assign(localComponent, newComponent);
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component, localComponent)
-  emit('update')
+  Object.assign(props.component, localComponent);
+  emit('update');
 }
 </script>

@@ -13,55 +13,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import * as echarts from 'echarts'
-import BaseRenderer from './BaseRenderer.vue'
-import type { ChartComponent } from '../../../types'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import * as echarts from 'echarts';
+import BaseRenderer from './BaseRenderer.vue';
+import type { ChartComponent } from '../../../types';
 
 const props = defineProps<{
-  component: ChartComponent
-  selected?: boolean
-  hovered?: boolean
-}>()
+  component: ChartComponent;
+  selected?: boolean;
+  hovered?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'mousedown', event: MouseEvent): void
-  (e: 'mouseenter'): void
-  (e: 'mouseleave'): void
-  (e: 'update', id: string, updates: any): void
-}>()
+  (e: 'mousedown', event: MouseEvent): void;
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+  (e: 'update', id: string, updates: any): void;
+}>();
 
-const chartRef = ref<HTMLElement>()
-let chartInstance: echarts.ECharts | null = null
+const chartRef = ref<HTMLElement>();
+let chartInstance: echarts.ECharts | null = null;
 
 const containerStyle = computed(() => ({
   width: '100%',
   height: '100%',
-}))
+}));
 
 // 初始化图表
 function initChart() {
-  if (!chartRef.value) return
+  if (!chartRef.value) return;
 
   if (chartInstance) {
-    chartInstance.dispose()
+    chartInstance.dispose();
   }
 
-  chartInstance = echarts.init(chartRef.value, props.component.theme)
-  updateChartOptions()
+  chartInstance = echarts.init(chartRef.value, props.component.theme);
+  updateChartOptions();
 }
 
 // 更新图表配置
 function updateChartOptions() {
-  if (!chartInstance) return
+  if (!chartInstance) return;
 
-  const option = generateChartOption()
-  chartInstance.setOption(option, true)
+  const option = generateChartOption();
+  chartInstance.setOption(option, true);
 }
 
 // 生成图表配置
 function generateChartOption() {
-  const data = props.component.dataSource?.staticData || generateMockData()
+  const data = props.component.dataSource?.staticData || generateMockData();
 
   const baseOption = {
     title: {
@@ -71,16 +71,18 @@ function generateChartOption() {
     tooltip: {
       trigger: 'axis',
     },
-    legend: props.component.showLegend ? {
-      top: 'bottom',
-    } : undefined,
+    legend: props.component.showLegend
+      ? {
+          top: 'bottom',
+        }
+      : undefined,
     grid: {
       left: '3%',
       right: '4%',
       bottom: props.component.showLegend ? '15%' : '3%',
       containLabel: true,
     },
-  }
+  };
 
   switch (props.component.chartType) {
     case 'bar':
@@ -99,7 +101,7 @@ function generateChartOption() {
             data: data.map((d: any) => d.value),
           },
         ],
-      }
+      };
 
     case 'line':
       return {
@@ -118,7 +120,7 @@ function generateChartOption() {
             smooth: true,
           },
         ],
-      }
+      };
 
     case 'pie':
       return {
@@ -126,9 +128,11 @@ function generateChartOption() {
         tooltip: {
           trigger: 'item',
         },
-        legend: props.component.showLegend ? {
-          top: 'bottom',
-        } : undefined,
+        legend: props.component.showLegend
+          ? {
+              top: 'bottom',
+            }
+          : undefined,
         series: [
           {
             type: 'pie',
@@ -143,7 +147,7 @@ function generateChartOption() {
             },
           },
         ],
-      }
+      };
 
     case 'scatter':
       return {
@@ -160,10 +164,10 @@ function generateChartOption() {
             data: data,
           },
         ],
-      }
+      };
 
     default:
-      return baseOption
+      return baseOption;
   }
 }
 
@@ -175,13 +179,13 @@ function generateMockData() {
     { name: '类别3', value: Math.floor(Math.random() * 100) },
     { name: '类别4', value: Math.floor(Math.random() * 100) },
     { name: '类别5', value: Math.floor(Math.random() * 100) },
-  ]
+  ];
 
   if (props.component.chartType === 'pie') {
-    return mockData
+    return mockData;
   }
 
-  return mockData.map((d) => [d.name, d.value])
+  return mockData.map((d) => [d.name, d.value]);
 }
 
 // 监听组件变化
@@ -189,30 +193,30 @@ watch(
   () => props.component,
   () => {
     nextTick(() => {
-      updateChartOptions()
-    })
+      updateChartOptions();
+    });
   },
   { deep: true }
-)
+);
 
 onMounted(() => {
   nextTick(() => {
-    initChart()
-  })
+    initChart();
+  });
 
   // 监听窗口大小变化
-  window.addEventListener('resize', handleResize)
-})
+  window.addEventListener('resize', handleResize);
+});
 
 onBeforeUnmount(() => {
   if (chartInstance) {
-    chartInstance.dispose()
+    chartInstance.dispose();
   }
-  window.removeEventListener('resize', handleResize)
-})
+  window.removeEventListener('resize', handleResize);
+});
 
 function handleResize() {
-  chartInstance?.resize()
+  chartInstance?.resize();
 }
 </script>
 

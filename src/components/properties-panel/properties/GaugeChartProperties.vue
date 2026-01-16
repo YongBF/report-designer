@@ -8,7 +8,12 @@
     </el-form-item>
 
     <el-form-item label="标题字号">
-      <el-input-number v-model="localComponent.config.titleFontSize" :min="12" :max="36" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.config.titleFontSize"
+        :min="12"
+        :max="36"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="标题颜色">
@@ -32,7 +37,13 @@
     </el-form-item>
 
     <el-form-item label="动画时长">
-      <el-input-number v-model="localComponent.config.animationDuration" :min="0" :max="5000" :step="100" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.config.animationDuration"
+        :min="0"
+        :max="5000"
+        :step="100"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- 仪表盘特有配置 -->
@@ -47,15 +58,25 @@
     </el-form-item>
 
     <el-form-item label="起始角度">
-      <el-input-number v-model="localComponent.startAngle" :min="0" :max="360" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.startAngle"
+        :min="0"
+        :max="360"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="结束角度">
-      <el-input-number v-model="localComponent.endAngle" :min="0" :max="360" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.endAngle"
+        :min="0"
+        :max="360"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="半径">
-      <el-input v-model="localComponent.radius" @change="handleChange" placeholder="如: 75%" />
+      <el-input v-model="localComponent.radius" placeholder="如: 75%" @change="handleChange" />
     </el-form-item>
 
     <el-divider content-position="left">轴线配置</el-divider>
@@ -65,7 +86,12 @@
     </el-form-item>
 
     <el-form-item label="轴线宽度">
-      <el-input-number v-model="localComponent.axisLine.lineStyleWidth" :min="1" :max="50" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.axisLine.lineStyleWidth"
+        :min="1"
+        :max="50"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-divider content-position="left">指针配置</el-divider>
@@ -75,17 +101,31 @@
     </el-form-item>
 
     <el-form-item label="指针长度">
-      <el-input v-model="localComponent.pointer.length" @change="handleChange" placeholder="如: 70%" />
+      <el-input
+        v-model="localComponent.pointer.length"
+        placeholder="如: 70%"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="指针宽度">
-      <el-input-number v-model="localComponent.pointer.width" :min="1" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.pointer.width"
+        :min="1"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-divider content-position="left">刻度配置</el-divider>
 
     <el-form-item label="分割段数">
-      <el-input-number v-model="localComponent.splitNumber" :min="2" :max="20" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.splitNumber"
+        :min="2"
+        :max="20"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-divider content-position="left">数值标签配置</el-divider>
@@ -95,7 +135,12 @@
     </el-form-item>
 
     <el-form-item label="字号">
-      <el-input-number v-model="localComponent.detail.fontSize" :min="10" :max="40" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.detail.fontSize"
+        :min="10"
+        :max="40"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="颜色">
@@ -103,45 +148,37 @@
     </el-form-item>
 
     <el-form-item label="格式化">
-      <el-input v-model="localComponent.detail.formatter" @change="handleChange" placeholder="{value}" />
+      <el-input
+        v-model="localComponent.detail.formatter"
+        placeholder="{value}"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <!-- 数据源 -->
     <el-divider content-position="left">数据源</el-divider>
 
-    <el-form-item label="数据源">
-      <el-select
-        v-model="selectedDataSourceId"
-        placeholder="选择数据源"
-        @change="handleDataSourceChange"
-      >
-        <el-option
-          v-for="ds in dataSources"
-          :key="ds.id"
-          :label="ds.name"
-          :value="ds.id"
-        />
-      </el-select>
-    </el-form-item>
+    <ChartDataSourceConfig :component="localComponent" @update="handleChange" />
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed, ref, onMounted } from 'vue'
-import type { GaugeChartComponent } from '../../../types'
-import { currentDesign } from '../../../stores/designer'
+import { reactive, watch, computed, ref, onMounted } from 'vue';
+import type { GaugeChartComponent } from '../../../types';
+import { currentDesign, updateComponent } from '../../../stores/designer';
+import ChartDataSourceConfig from '../common/ChartDataSourceConfig.vue';
 
 const props = defineProps<{
-  component: GaugeChartComponent
-}>()
+  component: GaugeChartComponent;
+}>();
 
 onMounted(() => {
-  console.log('GaugeChartProperties mounted with:', props.component)
-})
+  console.log('GaugeChartProperties mounted with:', props.component);
+});
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
 const localComponent = reactive<GaugeChartComponent>({
   ...props.component,
@@ -149,44 +186,53 @@ const localComponent = reactive<GaugeChartComponent>({
   axisLine: { ...props.component.axisLine },
   detail: { ...props.component.detail },
   pointer: { ...props.component.pointer },
-})
-
-const selectedDataSourceId = ref(props.component.dataSource?.id || '')
-
-const dataSources = computed(() => currentDesign.value.dataSources)
+});
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
-    Object.assign(localComponent.config, newComponent.config)
-    Object.assign(localComponent.axisLine, newComponent.axisLine)
-    Object.assign(localComponent.detail, newComponent.detail)
-    Object.assign(localComponent.pointer, newComponent.pointer)
-    selectedDataSourceId.value = newComponent.dataSource?.id || ''
+    // 使用对象展开来创建新的对象引用，确保响应式更新
+    localComponent.id = newComponent.id;
+    localComponent.type = newComponent.type;
+    localComponent.x = newComponent.x;
+    localComponent.y = newComponent.y;
+    localComponent.width = newComponent.width;
+    localComponent.height = newComponent.height;
+    localComponent.zIndex = newComponent.zIndex;
+    localComponent.visible = newComponent.visible;
+    localComponent.locked = newComponent.locked;
+    localComponent.order = newComponent.order;
+
+    // 深拷贝嵌套对象
+    localComponent.config = { ...newComponent.config };
+    localComponent.axisLine = { ...newComponent.axisLine };
+    localComponent.detail = { ...newComponent.detail };
+    localComponent.pointer = { ...newComponent.pointer };
+    localComponent.min = newComponent.min;
+    localComponent.max = newComponent.max;
+    localComponent.startAngle = newComponent.startAngle;
+    localComponent.endAngle = newComponent.endAngle;
+    localComponent.radius = newComponent.radius;
+    localComponent.splitNumber = newComponent.splitNumber;
+    localComponent.dataSource = newComponent.dataSource;
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component.config, localComponent.config)
-  Object.assign(props.component.axisLine, localComponent.axisLine)
-  Object.assign(props.component.detail, localComponent.detail)
-  Object.assign(props.component.pointer, localComponent.pointer)
-  Object.assign(props.component, {
+  // 使用 updateComponent 方法来确保触发响应式更新
+  updateComponent(props.component.id, {
+    config: { ...localComponent.config },
+    axisLine: { ...localComponent.axisLine },
+    detail: { ...localComponent.detail },
+    pointer: { ...localComponent.pointer },
     min: localComponent.min,
     max: localComponent.max,
     startAngle: localComponent.startAngle,
     endAngle: localComponent.endAngle,
     radius: localComponent.radius,
     splitNumber: localComponent.splitNumber,
-  })
-  emit('update')
-}
-
-function handleDataSourceChange(dataSourceId: string) {
-  const dataSource = dataSources.value.find(ds => ds.id === dataSourceId)
-  props.component.dataSource = dataSource || null
-  emit('update')
+  });
+  emit('update');
 }
 </script>

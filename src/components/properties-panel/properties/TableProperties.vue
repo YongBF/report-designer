@@ -21,7 +21,12 @@
     </el-form-item>
 
     <el-form-item label="字号">
-      <el-input-number v-model="localComponent.fontSize" :min="10" :max="24" @change="handleChange" />
+      <el-input-number
+        v-model="localComponent.fontSize"
+        :min="10"
+        :max="24"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-divider>列配置</el-divider>
@@ -52,31 +57,31 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import type { TableComponent, TableColumn } from '../../../types'
-import { generateId } from '../../../utils'
+import { reactive, watch } from 'vue';
+import type { TableComponent, TableColumn } from '../../../types';
+import { generateId } from '../../../utils';
 
 const props = defineProps<{
-  component: TableComponent
-}>()
+  component: TableComponent;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
-const localComponent = reactive<TableComponent>({ ...props.component })
+const localComponent = reactive<TableComponent>({ ...props.component });
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
+    Object.assign(localComponent, newComponent);
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component, localComponent)
-  emit('update')
+  Object.assign(props.component, localComponent);
+  emit('update');
 }
 
 function addColumn() {
@@ -86,14 +91,14 @@ function addColumn() {
     label: `列${localComponent.columns.length + 1}`,
     width: 100,
     align: 'left',
-  }
-  localComponent.columns.push(newColumn)
-  handleChange()
+  };
+  localComponent.columns.push(newColumn);
+  handleChange();
 }
 
 function removeColumn(index: number) {
-  localComponent.columns.splice(index, 1)
-  handleChange()
+  localComponent.columns.splice(index, 1);
+  handleChange();
 }
 </script>
 

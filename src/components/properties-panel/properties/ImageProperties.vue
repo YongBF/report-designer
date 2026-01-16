@@ -14,7 +14,13 @@
     </el-form-item>
 
     <el-form-item label="透明度">
-      <el-slider v-model="localComponent.opacity" :min="0" :max="1" :step="0.01" @change="handleChange" />
+      <el-slider
+        v-model="localComponent.opacity"
+        :min="0"
+        :max="1"
+        :step="0.01"
+        @change="handleChange"
+      />
     </el-form-item>
 
     <el-form-item label="圆角">
@@ -24,29 +30,29 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import type { ImageComponent } from '../../../../types'
+import { reactive, watch } from 'vue';
+import type { ImageComponent } from '../../../../types';
 
 const props = defineProps<{
-  component: ImageComponent
-}>()
+  component: ImageComponent;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update'): void
-}>()
+  (e: 'update'): void;
+}>();
 
-const localComponent = reactive<ImageComponent>({ ...props.component })
+const localComponent = reactive<ImageComponent>({ ...props.component });
 
 watch(
   () => props.component,
   (newComponent) => {
-    Object.assign(localComponent, newComponent)
+    Object.assign(localComponent, newComponent);
   },
   { deep: true }
-)
+);
 
 function handleChange() {
-  Object.assign(props.component, localComponent)
-  emit('update')
+  Object.assign(props.component, localComponent);
+  emit('update');
 }
 </script>

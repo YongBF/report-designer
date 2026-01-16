@@ -10,12 +10,7 @@
     @contextmenu.self.prevent
   >
     <!-- 画布内容 -->
-    <div
-      class="canvas-content"
-      :style="contentStyle"
-      @dragover.prevent
-      @drop="handleDrop"
-    >
+    <div class="canvas-content" :style="contentStyle" @dragover.prevent @drop="handleDrop">
       <!-- 渲染所有组件 -->
       <template v-for="component in sortedComponents" :key="component.id">
         <component
@@ -31,18 +26,14 @@
       </template>
 
       <!-- 选择框 - 多选 -->
-      <div
-        v-if="selectionBox"
-        class="selection-box"
-        :style="selectionBoxStyle"
-      />
+      <div v-if="selectionBox" class="selection-box" :style="selectionBoxStyle" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import VueDraggable from 'vue-draggable-plus'
+import { ref, computed, watch } from 'vue';
+import VueDraggable from 'vue-draggable-plus';
 import {
   currentDesign,
   selectedIds,
@@ -56,29 +47,44 @@ import {
   clearSelection,
   selectAll,
   setHoveredId,
-} from '../../stores/designer'
-import type { Component } from '../../types'
-import TextRenderer from './renderers/TextRenderer.vue'
-import ImageRenderer from './renderers/ImageRenderer.vue'
-import TableRenderer from './renderers/TableRenderer.vue'
-import ChartRenderer from './renderers/ChartRenderer.vue'
-import RectangleRenderer from './renderers/RectangleRenderer.vue'
-import LineRenderer from './renderers/LineRenderer.vue'
-import BarChartRenderer from './renderers/BarChartRenderer.vue'
-import LineChartRenderer from './renderers/LineChartRenderer.vue'
-import PieChartRenderer from './renderers/PieChartRenderer.vue'
-import ScatterChartRenderer from './renderers/ScatterChartRenderer.vue'
-import GaugeChartRenderer from './renderers/GaugeChartRenderer.vue'
-import FunnelChartRenderer from './renderers/FunnelChartRenderer.vue'
+} from '../../stores/designer';
+import type { Component } from '../../types';
+import TextRenderer from './renderers/TextRenderer.vue';
+import ImageRenderer from './renderers/ImageRenderer.vue';
+import TableRenderer from './renderers/TableRenderer.vue';
+import ChartRenderer from './renderers/ChartRenderer.vue';
+import RectangleRenderer from './renderers/RectangleRenderer.vue';
+import LineRenderer from './renderers/LineRenderer.vue';
+import BarChartRenderer from './renderers/BarChartRenderer.vue';
+import LineChartRenderer from './renderers/LineChartRenderer.vue';
+import PieChartRenderer from './renderers/PieChartRenderer.vue';
+import ScatterChartRenderer from './renderers/ScatterChartRenderer.vue';
+import GaugeChartRenderer from './renderers/GaugeChartRenderer.vue';
+import FunnelChartRenderer from './renderers/FunnelChartRenderer.vue';
 
-const canvasRef = ref<HTMLElement>()
+const canvasRef = ref<HTMLElement>();
+
+// 监听 currentDesign 的变化，调试用
+watch(
+  currentDesign,
+  (newVal, oldVal) => {
+    console.log('[DEBUG] DesignCanvas watch - currentDesign changed!');
+    console.log('[DEBUG] DesignCanvas watch - Same reference?', newVal === oldVal);
+    console.log('[DEBUG] DesignCanvas watch - Components count:', newVal.components.length);
+  },
+  { deep: true }
+);
 
 // 按 zIndex 排序的组件
 const sortedComponents = computed(() => {
-  return [...currentDesign.value.components].sort(
-    (a, b) => a.zIndex - b.zIndex
-  )
-})
+  const sorted = [...currentDesign.value.components].sort((a, b) => a.zIndex - b.zIndex);
+  console.log('[DEBUG] sortedComponents computed - Recalculating, total components:', sorted.length);
+  const barChart = sorted.find(c => c.id === 'bar-chart-1768528335836');
+  if (barChart) {
+    console.log('[DEBUG] sortedComponents - BarChart dataSource:', barChart.dataSource);
+  }
+  return sorted;
+});
 
 // 画布样式
 const canvasStyle = computed(() => ({
@@ -86,7 +92,7 @@ const canvasStyle = computed(() => ({
   height: '100%',
   overflow: 'auto',
   backgroundColor: '#f5f5f5',
-}))
+}));
 
 // 画布内容样式
 const contentStyle = computed(() => ({
@@ -97,7 +103,7 @@ const contentStyle = computed(() => ({
   transformOrigin: 'top left',
   position: 'relative',
   transition: 'transform 0.1s ease',
-}))
+}));
 
 // 获取组件渲染器
 function getComponentRenderer(type: Component['type']) {
@@ -114,143 +120,143 @@ function getComponentRenderer(type: Component['type']) {
     'funnel-chart': FunnelChartRenderer,
     rectangle: RectangleRenderer,
     line: LineRenderer,
-  }
-  return renderers[type]
+  };
+  return renderers[type];
 }
 
 // 拖拽相关
-const isDragging = ref(false)
-const dragStartPos = ref({ x: 0, y: 0 })
-const componentStartPos = ref<Map<string, { x: number; y: number }>>(new Map())
+const isDragging = ref(false);
+const dragStartPos = ref({ x: 0, y: 0 });
+const componentStartPos = ref<Map<string, { x: number; y: number }>>(new Map());
 
 // 选择框相关
-const selectionBox = ref(false)
-const selectionStartPos = ref({ x: 0, y: 0 })
+const selectionBox = ref(false);
+const selectionStartPos = ref({ x: 0, y: 0 });
 const selectionBoxStyle = ref({
   left: '0px',
   top: '0px',
   width: '0px',
   height: '0px',
-})
+});
 
 // 画布鼠标事件
 function handleCanvasMouseDown(e: MouseEvent) {
   // 清除选择
-  clearSelection()
+  clearSelection();
 }
 
 function handleCanvasMouseMove(e: MouseEvent) {
   if (selectionBox.value) {
-    updateSelectionBox(e)
+    updateSelectionBox(e);
   }
 }
 
 function handleCanvasMouseUp(e: MouseEvent) {
   if (selectionBox.value) {
-    finishSelectionBox()
+    finishSelectionBox();
   }
 }
 
 // 组件鼠标事件 - 开始拖拽
 function handleComponentMouseDown(component: Component, e: MouseEvent) {
-  e.stopPropagation()
+  e.stopPropagation();
 
-  const isMultiSelect = e.ctrlKey || e.metaKey
-  selectComponent(component.id, isMultiSelect)
+  const isMultiSelect = e.ctrlKey || e.metaKey;
+  selectComponent(component.id, isMultiSelect);
 
-  isDragging.value = true
-  dragStartPos.value = { x: e.clientX, y: e.clientY }
+  isDragging.value = true;
+  dragStartPos.value = { x: e.clientX, y: e.clientY };
 
   // 记录初始位置
-  componentStartPos.value.clear()
+  componentStartPos.value.clear();
   selectedIds.value.forEach((id) => {
-    const comp = currentDesign.value.components.find((c) => c.id === id)
+    const comp = currentDesign.value.components.find((c) => c.id === id);
     if (comp) {
-      componentStartPos.value.set(id, { x: comp.x, y: comp.y })
+      componentStartPos.value.set(id, { x: comp.x, y: comp.y });
     }
-  })
+  });
 
   // 添加全局事件监听
-  document.addEventListener('mousemove', handleDragMove)
-  document.addEventListener('mouseup', handleDragEnd)
+  document.addEventListener('mousemove', handleDragMove);
+  document.addEventListener('mouseup', handleDragEnd);
 }
 
 // 拖拽移动
 function handleDragMove(e: MouseEvent) {
-  if (!isDragging.value) return
+  if (!isDragging.value) return;
 
-  const dx = (e.clientX - dragStartPos.value.x) / scale.value
-  const dy = (e.clientY - dragStartPos.value.y) / scale.value
+  const dx = (e.clientX - dragStartPos.value.x) / scale.value;
+  const dy = (e.clientY - dragStartPos.value.y) / scale.value;
 
   selectedIds.value.forEach((id) => {
-    const startPos = componentStartPos.value.get(id)
-    if (!startPos) return
+    const startPos = componentStartPos.value.get(id);
+    if (!startPos) return;
 
-    const component = currentDesign.value.components.find((c) => c.id === id)
-    if (!component) return
+    const component = currentDesign.value.components.find((c) => c.id === id);
+    if (!component) return;
 
-    let newX = startPos.x + dx
-    let newY = startPos.y + dy
+    let newX = startPos.x + dx;
+    let newY = startPos.y + dy;
 
     // 吸附到网格
     if (snapToGrid.value) {
-      newX = Math.round(newX / gridSize.value) * gridSize.value
-      newY = Math.round(newY / gridSize.value) * gridSize.value
+      newX = Math.round(newX / gridSize.value) * gridSize.value;
+      newY = Math.round(newY / gridSize.value) * gridSize.value;
     }
 
     // 边界限制
-    newX = Math.max(0, Math.min(newX, currentDesign.value.width - component.width))
-    newY = Math.max(0, Math.min(newY, currentDesign.value.height - component.height))
+    newX = Math.max(0, Math.min(newX, currentDesign.value.width - component.width));
+    newY = Math.max(0, Math.min(newY, currentDesign.value.height - component.height));
 
-    updateComponent(id, { x: newX, y: newY })
-  })
+    updateComponent(id, { x: newX, y: newY });
+  });
 }
 
 // 拖拽结束
 function handleDragEnd() {
-  isDragging.value = false
-  document.removeEventListener('mousemove', handleDragMove)
-  document.removeEventListener('mouseup', handleDragEnd)
+  isDragging.value = false;
+  document.removeEventListener('mousemove', handleDragMove);
+  document.removeEventListener('mouseup', handleDragEnd);
 }
 
 // 选择框相关
 function startSelectionBox(e: MouseEvent) {
-  if (e.button !== 0) return
+  if (e.button !== 0) return;
 
-  selectionBox.value = true
-  selectionStartPos.value = { x: e.clientX, y: e.clientY }
+  selectionBox.value = true;
+  selectionStartPos.value = { x: e.clientX, y: e.clientY };
 }
 
 function updateSelectionBox(e: MouseEvent) {
-  const rect = canvasRef.value?.getBoundingClientRect()
-  if (!rect) return
+  const rect = canvasRef.value?.getBoundingClientRect();
+  if (!rect) return;
 
-  const x1 = selectionStartPos.value.x
-  const y1 = selectionStartPos.value.y
-  const x2 = e.clientX
-  const y2 = e.clientY
+  const x1 = selectionStartPos.value.x;
+  const y1 = selectionStartPos.value.y;
+  const x2 = e.clientX;
+  const y2 = e.clientY;
 
-  const left = Math.min(x1, x2) - rect.left + canvasRef.value!.scrollLeft
-  const top = Math.min(y1, y2) - rect.top + canvasRef.value!.scrollTop
-  const width = Math.abs(x2 - x1)
-  const height = Math.abs(y2 - y1)
+  const left = Math.min(x1, x2) - rect.left + canvasRef.value!.scrollLeft;
+  const top = Math.min(y1, y2) - rect.top + canvasRef.value!.scrollTop;
+  const width = Math.abs(x2 - x1);
+  const height = Math.abs(y2 - y1);
 
   selectionBoxStyle.value = {
     left: `${left / scale.value}px`,
     top: `${top / scale.value}px`,
     width: `${width / scale.value}px`,
     height: `${height / scale.value}px`,
-  }
+  };
 }
 
 function finishSelectionBox() {
   // 检查哪些组件在选择框内
-  const boxLeft = parseFloat(selectionBoxStyle.value.left)
-  const boxTop = parseFloat(selectionBoxStyle.value.top)
-  const boxRight = boxLeft + parseFloat(selectionBoxStyle.value.width)
-  const boxBottom = boxTop + parseFloat(selectionBoxStyle.value.height)
+  const boxLeft = parseFloat(selectionBoxStyle.value.left);
+  const boxTop = parseFloat(selectionBoxStyle.value.top);
+  const boxRight = boxLeft + parseFloat(selectionBoxStyle.value.width);
+  const boxBottom = boxTop + parseFloat(selectionBoxStyle.value.height);
 
-  const selected: string[] = []
+  const selected: string[] = [];
 
   currentDesign.value.components.forEach((component) => {
     if (
@@ -259,48 +265,44 @@ function finishSelectionBox() {
       component.y >= boxTop &&
       component.y + component.height <= boxBottom
     ) {
-      selected.push(component.id)
+      selected.push(component.id);
     }
-  })
+  });
 
   if (selected.length > 0) {
-    selectComponent(selected)
+    selectComponent(selected);
   }
 
-  selectionBox.value = false
+  selectionBox.value = false;
 }
 
 // 处理拖放添加组件
 function handleDrop(e: DragEvent) {
-  e.preventDefault()
+  e.preventDefault();
 
-  const componentType = e.dataTransfer?.getData('componentType')
-  if (!componentType) return
+  const componentType = e.dataTransfer?.getData('componentType');
+  if (!componentType) return;
 
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-  const x = (e.clientX - rect.left) / scale.value
-  const y = (e.clientY - rect.top) / scale.value
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  const x = (e.clientX - rect.left) / scale.value;
+  const y = (e.clientY - rect.top) / scale.value;
 
   // 创建新组件
-  const newComponent = createComponent(componentType as Component['type'], x, y)
+  const newComponent = createComponent(componentType as Component['type'], x, y);
 
   if (newComponent) {
     // 通过事件发送到父组件
-    emit('add-component', newComponent)
+    emit('add-component', newComponent);
   }
 }
 
 const emit = defineEmits<{
-  (e: 'add-component', component: Component): void
-}>()
+  (e: 'add-component', component: Component): void;
+}>();
 
 // 创建新组件
-function createComponent(
-  type: Component['type'],
-  x: number,
-  y: number
-): Component | null {
-  const id = `${type}-${Date.now()}`
+function createComponent(type: Component['type'], x: number, y: number): Component | null {
+  const id = `${type}-${Date.now()}`;
 
   const baseConfig = {
     id,
@@ -309,7 +311,7 @@ function createComponent(
     zIndex: currentDesign.value.components.length,
     visible: true,
     locked: false,
-  }
+  };
 
   switch (type) {
     case 'text':
@@ -326,7 +328,7 @@ function createComponent(
         fontStyle: 'normal',
         textAlign: 'left',
         lineHeight: 1.5,
-      }
+      };
     case 'image':
       return {
         ...baseConfig,
@@ -337,7 +339,7 @@ function createComponent(
         fit: 'contain',
         opacity: 1,
         borderRadius: 0,
-      }
+      };
     case 'table':
       return {
         ...baseConfig,
@@ -356,7 +358,7 @@ function createComponent(
         headerBackgroundColor: '#f5f7fa',
         headerColor: '#606266',
         fontSize: 14,
-      }
+      };
     case 'chart':
       return {
         ...baseConfig,
@@ -369,7 +371,7 @@ function createComponent(
         showLegend: true,
         showDataZoom: false,
         theme: 'default',
-      }
+      };
     case 'rectangle':
       return {
         ...baseConfig,
@@ -381,7 +383,7 @@ function createComponent(
         borderWidth: 1,
         borderStyle: 'solid',
         borderRadius: 0,
-      }
+      };
     case 'line':
       return {
         ...baseConfig,
@@ -391,7 +393,7 @@ function createComponent(
         stroke: '#000000',
         strokeWidth: 2,
         strokeStyle: 'solid',
-      }
+      };
     case 'bar-chart':
     case 'line-chart': {
       const defaultAxisConfig = {
@@ -403,7 +405,7 @@ function createComponent(
         axisLabelColor: '#666',
         axisLineColor: '#ccc',
         axisLineWidth: 1,
-      }
+      };
       const defaultSeriesConfig = {
         labelShow: false,
         labelPosition: 'top' as const,
@@ -413,7 +415,7 @@ function createComponent(
         itemStyleBorderColor: '#fff',
         itemStyleBorderRadius: 0,
         areaStyleOpacity: 0.3,
-      }
+      };
       const defaultConfig = {
         title: '图表标题',
         titleFontSize: 16,
@@ -424,7 +426,7 @@ function createComponent(
         backgroundColor: '#fff',
         animation: true,
         animationDuration: 1000,
-      }
+      };
       return {
         ...baseConfig,
         type: type === 'bar-chart' ? 'bar-chart' : 'line-chart',
@@ -435,21 +437,23 @@ function createComponent(
         xAxis: defaultAxisConfig,
         yAxis: defaultAxisConfig,
         series: defaultSeriesConfig,
-        ...(type === 'bar-chart' ? {
-          barWidth: 20,
-          barGap: '20%',
-          showBackground: false,
-          backgroundColor: '#eee',
-        } : {
-          smooth: false,
-          step: false,
-          showSymbol: true,
-          symbolSize: 6,
-          lineStyleWidth: 2,
-          lineStyleType: 'solid' as const,
-          areaStyle: false,
-        }),
-      }
+        ...(type === 'bar-chart'
+          ? {
+              barWidth: 20,
+              barGap: '20%',
+              showBackground: false,
+              backgroundColor: '#eee',
+            }
+          : {
+              smooth: false,
+              step: false,
+              showSymbol: true,
+              symbolSize: 6,
+              lineStyleWidth: 2,
+              lineStyleType: 'solid' as const,
+              areaStyle: false,
+            }),
+      };
     }
     case 'pie-chart': {
       const defaultConfig = {
@@ -462,7 +466,7 @@ function createComponent(
         backgroundColor: '#fff',
         animation: true,
         animationDuration: 1000,
-      }
+      };
       const defaultSeriesConfig = {
         labelShow: true,
         labelPosition: 'outside' as const,
@@ -472,7 +476,7 @@ function createComponent(
         itemStyleBorderColor: '#fff',
         itemStyleBorderRadius: 0,
         areaStyleOpacity: 0.3,
-      }
+      };
       return {
         ...baseConfig,
         type: 'pie-chart',
@@ -486,7 +490,7 @@ function createComponent(
         center: ['50%', '50%'],
         emphasisScale: true,
         minAngle: 0,
-      }
+      };
     }
     case 'scatter-chart': {
       const defaultAxisConfig = {
@@ -498,7 +502,7 @@ function createComponent(
         axisLabelColor: '#666',
         axisLineColor: '#ccc',
         axisLineWidth: 1,
-      }
+      };
       const defaultSeriesConfig = {
         labelShow: false,
         labelPosition: 'top' as const,
@@ -508,7 +512,7 @@ function createComponent(
         itemStyleBorderColor: '#fff',
         itemStyleBorderRadius: 0,
         areaStyleOpacity: 0.3,
-      }
+      };
       const defaultConfig = {
         title: '散点图标题',
         titleFontSize: 16,
@@ -519,7 +523,7 @@ function createComponent(
         backgroundColor: '#fff',
         animation: true,
         animationDuration: 1000,
-      }
+      };
       return {
         ...baseConfig,
         type: 'scatter-chart',
@@ -534,7 +538,7 @@ function createComponent(
         symbol: 'circle' as const,
         showEffect: false,
         effectType: 'ripple' as const,
-      }
+      };
     }
     case 'gauge-chart': {
       const defaultConfig = {
@@ -547,7 +551,7 @@ function createComponent(
         backgroundColor: '#fff',
         animation: true,
         animationDuration: 1000,
-      }
+      };
       return {
         ...baseConfig,
         type: 'gauge-chart',
@@ -576,7 +580,7 @@ function createComponent(
           length: '70%',
           width: 6,
         },
-      }
+      };
     }
     case 'funnel-chart': {
       const defaultConfig = {
@@ -589,7 +593,7 @@ function createComponent(
         backgroundColor: '#fff',
         animation: true,
         animationDuration: 1000,
-      }
+      };
       const defaultSeriesConfig = {
         labelShow: true,
         labelPosition: 'outside' as const,
@@ -599,7 +603,7 @@ function createComponent(
         itemStyleBorderColor: '#fff',
         itemStyleBorderRadius: 0,
         areaStyleOpacity: 0.3,
-      }
+      };
       return {
         ...baseConfig,
         type: 'funnel-chart',
@@ -614,19 +618,17 @@ function createComponent(
         top: 60,
         right: '10%',
         bottom: 60,
-        width: '80%',
-        height: '80%',
         labelAlign: 'center' as const,
-      }
+      };
     }
     default:
-      return null
+      return null;
   }
 }
 
 // 更新组件
 function handleUpdateComponent(id: string, updates: Partial<Component>) {
-  updateComponent(id, updates)
+  updateComponent(id, updates);
 }
 </script>
 
@@ -638,7 +640,8 @@ function handleUpdateComponent(id: string, updates: Partial<Component>) {
 }
 
 .design-canvas.show-grid {
-  background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   background-size: 10px 10px;
 }

@@ -18,21 +18,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { scale, updateComponent } from '../../../stores/designer'
+import { ref, computed } from 'vue';
+import { scale, updateComponent } from '../../../stores/designer';
 
 const props = defineProps<{
-  component: any
-  selected?: boolean
-  hovered?: boolean
-}>()
+  component: any;
+  selected?: boolean;
+  hovered?: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'mousedown', event: MouseEvent): void
-  (e: 'mouseenter'): void
-  (e: 'mouseleave'): void
-  (e: 'update', id: string, updates: any): void
-}>()
+  (e: 'mousedown', event: MouseEvent): void;
+  (e: 'mouseenter'): void;
+  (e: 'mouseleave'): void;
+  (e: 'update', id: string, updates: any): void;
+}>();
 
 // 渲染器样式
 const rendererStyle = computed(() => ({
@@ -41,47 +41,47 @@ const rendererStyle = computed(() => ({
   opacity: props.component.visible ? (props.component.opacity ?? 1) : 0.3,
   cursor: props.component.locked ? 'not-allowed' : 'default',
   pointerEvents: props.component.locked ? 'none' : 'auto',
-}))
+}));
 
 // 调整大小相关
-const isResizing = ref(false)
-const resizeDirection = ref('')
-const resizeStartPos = ref({ x: 0, y: 0 })
-const resizeStartSize = ref({ height: 0 })
+const isResizing = ref(false);
+const resizeDirection = ref('');
+const resizeStartPos = ref({ x: 0, y: 0 });
+const resizeStartSize = ref({ height: 0 });
 
 function startResize(direction: string, e: MouseEvent) {
-  if (props.component.locked) return
+  if (props.component.locked) return;
 
-  isResizing.value = true
-  resizeDirection.value = direction
-  resizeStartPos.value = { x: e.clientX, y: e.clientY }
+  isResizing.value = true;
+  resizeDirection.value = direction;
+  resizeStartPos.value = { x: e.clientX, y: e.clientY };
   resizeStartSize.value = {
     height: props.component.height,
-  }
+  };
 
-  document.addEventListener('mousemove', handleResizeMove)
-  document.addEventListener('mouseup', handleResizeEnd)
+  document.addEventListener('mousemove', handleResizeMove);
+  document.addEventListener('mouseup', handleResizeEnd);
 }
 
 function handleResizeMove(e: MouseEvent) {
-  if (!isResizing.value) return
+  if (!isResizing.value) return;
 
-  const dy = (e.clientY - resizeStartPos.value.y) / scale.value
+  const dy = (e.clientY - resizeStartPos.value.y) / scale.value;
 
-  const updates: any = {}
+  const updates: any = {};
 
   // 只允许调整高度
   if (resizeDirection.value === 'bottom') {
-    updates.height = Math.max(50, resizeStartSize.value.height + dy)
+    updates.height = Math.max(50, resizeStartSize.value.height + dy);
   }
 
-  emit('update', props.component.id, updates)
+  emit('update', props.component.id, updates);
 }
 
 function handleResizeEnd() {
-  isResizing.value = false
-  document.removeEventListener('mousemove', handleResizeMove)
-  document.removeEventListener('mouseup', handleResizeEnd)
+  isResizing.value = false;
+  document.removeEventListener('mousemove', handleResizeMove);
+  document.removeEventListener('mouseup', handleResizeEnd);
 }
 </script>
 
