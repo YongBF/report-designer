@@ -1,5 +1,7 @@
 <template>
-  <el-form label-width="80px" size="small">
+  <el-form label-width="100px" size="small">
+    <el-divider>文本配置</el-divider>
+
     <el-form-item label="内容">
       <el-input v-model="localComponent.content" type="textarea" @change="handleChange" />
     </el-form-item>

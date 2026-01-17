@@ -1,6 +1,6 @@
 <template>
   <div
-    class="base-renderer"
+    class="base-renderer canvas-component"
     :class="{ selected, hovered }"
     :style="rendererStyle"
     @mousedown="$emit('mousedown', $event)"

@@ -504,160 +504,218 @@
         </div>
         <div class="panel-content">
           <el-empty v-if="!selectedComponent" description="请选择一个组件" />
-          <div v-else>
-            <p><strong>组件类型:</strong> {{ selectedComponent.type }}</p>
-            <p><strong>组件ID:</strong> {{ selectedComponent.id }}</p>
-            <el-divider />
-
-            <el-form label-width="80px" size="small">
-              <el-form-item label="宽度">
-                <el-select id="component-width" v-model="selectedComponent.widthPercent">
-                  <el-option label="100%" value="100" />
-                  <el-option label="50%" value="50" />
-                  <el-option label="33%" value="33" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="高度">
-                <el-input-number
-                  id="component-height"
-                  v-model="selectedComponent.height"
-                  :min="50"
-                  :max="2000"
-                />
-              </el-form-item>
-              <el-form-item label="排序">
-                <el-input-number id="component-order" v-model="selectedComponent.order" :min="0" />
-              </el-form-item>
-              <el-form-item label="可见">
-                <el-switch id="component-visible" v-model="selectedComponent.visible" />
-              </el-form-item>
-              <el-form-item label="锁定">
-                <el-switch id="component-locked" v-model="selectedComponent.locked" />
-              </el-form-item>
-            </el-form>
-
-            <!-- 文本组件额外属性 -->
-            <template v-if="selectedComponent.type === 'text'">
-              <el-divider>文本属性</el-divider>
-              <el-form label-width="80px" size="small">
-                <el-form-item label="内容">
-                  <el-input id="text-content" v-model="selectedComponent.content" type="textarea" />
-                </el-form-item>
-                <el-form-item label="字号">
-                  <el-input-number
-                    id="text-font-size"
-                    v-model="selectedComponent.fontSize"
-                    :min="8"
-                    :max="72"
+          <el-collapse v-else v-model="panelCollapseActive" accordion>
+            <!-- 组件信息 -->
+            <el-collapse-item title="组件信息" name="info">
+              <el-form label-width="100px" size="small">
+                <el-form-item label="组件名称">
+                  <el-input
+                    v-model="selectedComponent.name"
+                    placeholder="为组件设置一个名称，方便在联动配置中识别"
+                    clearable
                   />
+                  <div style="margin-top: 4px; font-size: 12px; color: #909399">
+                    此名称将显示在联动配置的组件列表中
+                  </div>
                 </el-form-item>
-                <el-form-item label="颜色">
-                  <el-color-picker id="text-color" v-model="selectedComponent.color" />
+
+                <el-form-item label="组件类型">
+                  <el-input :value="selectedComponent.type" disabled style="font-family: monospace; font-size: 12px;" />
+                </el-form-item>
+
+                <el-form-item label="组件ID">
+                  <el-input :value="selectedComponent.id" disabled style="font-family: monospace; font-size: 12px;" />
                 </el-form-item>
               </el-form>
+            </el-collapse-item>
+
+            <!-- 基础属性 -->
+            <el-collapse-item title="基础属性" name="basic">
+              <el-form label-width="100px" size="small">
+                <el-form-item label="宽度">
+                  <el-select id="component-width" v-model="selectedComponent.widthPercent">
+                    <el-option label="100%" value="100" />
+                    <el-option label="50%" value="50" />
+                    <el-option label="33%" value="33" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="高度">
+                  <el-input-number
+                    id="component-height"
+                    v-model="selectedComponent.height"
+                    :min="50"
+                    :max="2000"
+                  />
+                </el-form-item>
+                <el-form-item label="排序">
+                  <el-input-number id="component-order" v-model="selectedComponent.order" :min="0" />
+                </el-form-item>
+                <el-form-item label="可见">
+                  <el-switch id="component-visible" v-model="selectedComponent.visible" />
+                </el-form-item>
+                <el-form-item label="锁定">
+                  <el-switch id="component-locked" v-model="selectedComponent.locked" />
+                </el-form-item>
+              </el-form>
+            </el-collapse-item>
+
+            <!-- 文本组件属性 -->
+            <template v-if="selectedComponent.type === 'text'">
+              <el-collapse-item title="文本属性" name="text">
+                <el-form label-width="100px" size="small">
+                  <el-form-item label="内容">
+                    <el-input id="text-content" v-model="selectedComponent.content" type="textarea" />
+                  </el-form-item>
+                  <el-form-item label="字号">
+                    <el-input-number
+                      id="text-font-size"
+                      v-model="selectedComponent.fontSize"
+                      :min="8"
+                      :max="72"
+                    />
+                  </el-form-item>
+                  <el-form-item label="字体">
+                    <el-select id="text-font-family" v-model="selectedComponent.fontFamily">
+                      <el-option label="Arial" value="Arial" />
+                      <el-option label="宋体" value="SimSun" />
+                      <el-option label="黑体" value="SimHei" />
+                      <el-option label="微软雅黑" value="Microsoft YaHei" />
+                      <el-option label="楷体" value="KaiTi" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="颜色">
+                    <el-color-picker id="text-color" v-model="selectedComponent.color" />
+                  </el-form-item>
+                  <el-form-item label="字重">
+                    <el-select id="text-font-weight" v-model="selectedComponent.fontWeight">
+                      <el-option label="正常" :value="400" />
+                      <el-option label="粗体" :value="700" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="样式">
+                    <el-select id="text-font-style" v-model="selectedComponent.fontStyle">
+                      <el-option label="正常" value="normal" />
+                      <el-option label="斜体" value="italic" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="对齐">
+                    <el-select id="text-align" v-model="selectedComponent.textAlign">
+                      <el-option label="左对齐" value="left" />
+                      <el-option label="居中" value="center" />
+                      <el-option label="右对齐" value="right" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="行高">
+                    <el-input-number
+                      id="text-line-height"
+                      v-model="selectedComponent.lineHeight"
+                      :min="1"
+                      :max="3"
+                      :step="0.1"
+                    />
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
             </template>
 
             <!-- 表格组件额外属性 -->
             <template v-if="selectedComponent.type === 'table'">
-              <el-divider>表格属性</el-divider>
+              <!-- 表格设置 -->
+              <el-collapse-item title="表格设置" name="table-settings">
+                <el-form label-width="100px" size="small">
+                  <el-form-item label="显示表头">
+                    <el-switch id="table-show-header" v-model="selectedComponent.showHeader" />
+                  </el-form-item>
+                  <el-form-item label="斑马纹">
+                    <el-switch id="table-stripe" v-model="selectedComponent.stripe" />
+                  </el-form-item>
+                  <el-form-item label="边框">
+                    <el-switch id="table-border" v-model="selectedComponent.border" />
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
 
-              <!-- 基础配置 -->
-              <el-collapse v-model="tableCollapseActive" accordion>
-                <el-collapse-item title="基础设置" name="basic">
-                  <el-form label-width="80px" size="small">
-                    <el-form-item label="显示表头">
-                      <el-switch id="table-show-header" v-model="selectedComponent.showHeader" />
-                    </el-form-item>
-                    <el-form-item label="斑马纹">
-                      <el-switch id="table-stripe" v-model="selectedComponent.stripe" />
-                    </el-form-item>
-                    <el-form-item label="边框">
-                      <el-switch id="table-border" v-model="selectedComponent.border" />
-                    </el-form-item>
-                  </el-form>
-                </el-collapse-item>
+              <!-- 表头样式 -->
+              <el-collapse-item title="表头样式" name="table-header">
+                <el-form label-width="100px" size="small">
+                  <el-form-item label="背景色">
+                    <el-color-picker
+                      id="table-header-bg-color"
+                      v-model="selectedComponent.headerBackgroundColor"
+                    />
+                  </el-form-item>
+                  <el-form-item label="文字颜色">
+                    <el-color-picker
+                      id="table-header-color"
+                      v-model="selectedComponent.headerColor"
+                    />
+                  </el-form-item>
+                  <el-form-item label="字号">
+                    <el-input-number
+                      id="table-font-size"
+                      v-model="selectedComponent.fontSize"
+                      :min="10"
+                      :max="24"
+                    />
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
 
-                <!-- 表头样式 -->
-                <el-collapse-item title="表头样式" name="header">
-                  <el-form label-width="80px" size="small">
-                    <el-form-item label="背景色">
-                      <el-color-picker
-                        id="table-header-bg-color"
-                        v-model="selectedComponent.headerBackgroundColor"
-                      />
-                    </el-form-item>
-                    <el-form-item label="文字颜色">
-                      <el-color-picker
-                        id="table-header-color"
-                        v-model="selectedComponent.headerColor"
-                      />
-                    </el-form-item>
-                    <el-form-item label="字号">
+              <!-- 列配置 -->
+              <el-collapse-item title="列配置" name="table-columns">
+                <div style="margin-bottom: 12px">
+                  <el-button type="primary" size="small" @click="addTableColumn"
+                    >添加列</el-button
+                  >
+                </div>
+
+                <el-table :data="selectedComponent.columns" border size="small" max-height="300">
+                  <el-table-column prop="label" label="列名" width="100">
+                    <template #default="{ row, $index }">
+                      <el-input :id="`column-label-${$index}`" v-model="row.label" size="small" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="field" label="字段" width="100">
+                    <template #default="{ row, $index }">
+                      <el-input :id="`column-field-${$index}`" v-model="row.field" size="small" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="width" label="宽度" width="80">
+                    <template #default="{ row, $index }">
                       <el-input-number
-                        id="table-font-size"
-                        v-model="selectedComponent.fontSize"
-                        :min="10"
-                        :max="24"
+                        :id="`column-width-${$index}`"
+                        v-model="row.width"
+                        :min="0"
+                        :max="500"
+                        size="small"
+                        controls-position="right"
                       />
-                    </el-form-item>
-                  </el-form>
-                </el-collapse-item>
-
-                <!-- 列配置 -->
-                <el-collapse-item title="列配置" name="columns">
-                  <div style="margin-bottom: 12px">
-                    <el-button type="primary" size="small" @click="addTableColumn"
-                      >添加列</el-button
-                    >
-                  </div>
-
-                  <el-table :data="selectedComponent.columns" border size="small" max-height="300">
-                    <el-table-column prop="label" label="列名" width="100">
-                      <template #default="{ row, $index }">
-                        <el-input :id="`column-label-${$index}`" v-model="row.label" size="small" />
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="field" label="字段" width="100">
-                      <template #default="{ row, $index }">
-                        <el-input :id="`column-field-${$index}`" v-model="row.field" size="small" />
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="width" label="宽度" width="80">
-                      <template #default="{ row, $index }">
-                        <el-input-number
-                          :id="`column-width-${$index}`"
-                          v-model="row.width"
-                          :min="0"
-                          :max="500"
-                          size="small"
-                          controls-position="right"
-                        />
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="align" label="对齐" width="80">
-                      <template #default="{ row, $index }">
-                        <el-select :id="`column-align-${$index}`" v-model="row.align" size="small">
-                          <el-option label="左" value="left" />
-                          <el-option label="中" value="center" />
-                          <el-option label="右" value="right" />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="fixed" label="固定" width="80">
-                      <template #default="{ row, $index }">
-                        <el-select :id="`column-fixed-${$index}`" v-model="row.fixed" size="small">
-                          <el-option label="否" value="" />
-                          <el-option label="左" value="left" />
-                          <el-option label="右" value="right" />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="操作" width="150">
-                      <template #default="{ $index }">
-                        <el-button
-                          link
-                          type="primary"
-                          size="small"
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="align" label="对齐" width="80">
+                    <template #default="{ row, $index }">
+                      <el-select :id="`column-align-${$index}`" v-model="row.align" size="small">
+                        <el-option label="左" value="left" />
+                        <el-option label="中" value="center" />
+                        <el-option label="右" value="right" />
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="fixed" label="固定" width="80">
+                    <template #default="{ row, $index }">
+                      <el-select :id="`column-fixed-${$index}`" v-model="row.fixed" size="small">
+                        <el-option label="否" value="" />
+                        <el-option label="左" value="left" />
+                        <el-option label="右" value="right" />
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="150">
+                    <template #default="{ $index }">
+                      <el-button
+                        link
+                        type="primary"
+                        size="small"
                           :disabled="$index === 0"
                           @click="moveTableColumn($index, 'up')"
                         >
@@ -688,9 +746,9 @@
                   </div>
                 </el-collapse-item>
 
-                <!-- 数据源配置 -->
-                <el-collapse-item title="数据源" name="datasource">
-                  <el-form label-width="80px" size="small">
+                <!-- 数据源 -->
+                <el-collapse-item title="数据源" name="table-datasource">
+                  <el-form label-width="100px" size="small">
                     <el-form-item label="数据源类型">
                       <el-radio-group id="table-datasource-type" v-model="tableDataSourceType">
                         <el-radio value="static">静态数据</el-radio>
@@ -751,9 +809,9 @@
                   </el-form>
                 </el-collapse-item>
 
-                <!-- 分页配置 -->
-                <el-collapse-item title="分页设置" name="pagination">
-                  <el-form label-width="80px" size="small">
+                <!-- 分页设置 -->
+                <el-collapse-item title="分页设置" name="table-pagination">
+                  <el-form label-width="100px" size="small">
                     <el-form-item label="启用分页">
                       <el-switch id="table-pagination" v-model="selectedComponent.pagination" />
                     </el-form-item>
@@ -767,192 +825,196 @@
                     </el-form-item>
                   </el-form>
                 </el-collapse-item>
-              </el-collapse>
             </template>
 
             <!-- 表单组件额外属性 -->
             <template v-if="selectedComponent.type === 'form'">
-              <el-divider>表单属性</el-divider>
-
-              <el-collapse v-model="formCollapseActive" accordion>
-                <!-- 表单布局 -->
-                <el-collapse-item title="布局设置" name="layout">
-                  <el-form label-width="80px" size="small">
-                    <el-form-item label="列数">
-                      <el-radio-group id="form-columns" v-model="selectedComponent.columns">
-                        <el-radio :value="1">一列</el-radio>
-                        <el-radio :value="2">两列</el-radio>
-                        <el-radio :value="3">三列</el-radio>
-                      </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="标签位置">
-                      <el-radio-group
-                        id="form-label-position"
-                        v-model="selectedComponent.labelPosition"
-                      >
-                        <el-radio label="left">左对齐</el-radio>
-                        <el-radio label="right">右对齐</el-radio>
-                        <el-radio label="top">顶部</el-radio>
-                      </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="标签宽度">
-                      <el-input-number
-                        id="form-label-width"
-                        v-model="selectedComponent.labelWidth"
-                        :min="40"
-                        :max="200"
-                      />
-                    </el-form-item>
-                    <el-form-item label="表单尺寸">
-                      <el-radio-group id="form-size" v-model="selectedComponent.size">
-                        <el-radio label="large">大</el-radio>
-                        <el-radio label="default">中</el-radio>
-                        <el-radio label="small">小</el-radio>
-                      </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="显示边框">
-                      <el-switch id="form-show-border" v-model="selectedComponent.showBorder" />
-                    </el-form-item>
-                  </el-form>
-                </el-collapse-item>
-
-                <!-- 表单项配置 -->
-                <el-collapse-item title="表单项" name="items">
-                  <div style="margin-bottom: 12px; display: flex; gap: 8px">
-                    <el-select
-                      v-model="newFormItemType"
-                      placeholder="选择表单项类型"
-                      style="width: 200px"
-                      size="small"
+              <!-- 布局设置 -->
+              <el-collapse-item title="表单布局" name="form-layout">
+                <el-form label-width="100px" size="small">
+                  <el-form-item label="列数">
+                    <el-radio-group id="form-columns" v-model="selectedComponent.columns">
+                      <el-radio :value="1">一列</el-radio>
+                      <el-radio :value="2">两列</el-radio>
+                      <el-radio :value="3">三列</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="标签位置">
+                    <el-radio-group
+                      id="form-label-position"
+                      v-model="selectedComponent.labelPosition"
                     >
-                      <el-option label="文本输入" value="text" />
-                      <el-option label="数字输入" value="number" />
-                      <el-option label="密码输入" value="password" />
-                      <el-option label="邮箱" value="email" />
-                      <el-option label="日期选择" value="date" />
-                      <el-option label="日期时间" value="datetime" />
-                      <el-option label="时间选择" value="time" />
-                      <el-option label="下拉选择" value="select" />
-                      <el-option label="单选框" value="radio" />
-                      <el-option label="复选框" value="checkbox" />
-                      <el-option label="开关" value="switch" />
-                      <el-option label="文本域" value="textarea" />
-                      <el-option label="滑块" value="slider" />
-                      <el-option label="评分" value="rate" />
-                      <el-option label="颜色选择" value="color" />
-                      <el-option label="按钮" value="button" />
-                    </el-select>
-                    <el-button type="primary" size="small" @click="handleAddFormItem"
-                      >添加</el-button
-                    >
-                  </div>
+                      <el-radio label="left">左对齐</el-radio>
+                      <el-radio label="right">右对齐</el-radio>
+                      <el-radio label="top">顶部</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="标签宽度">
+                    <el-input-number
+                      id="form-label-width"
+                      v-model="selectedComponent.labelWidth"
+                      :min="40"
+                      :max="200"
+                    />
+                  </el-form-item>
+                  <el-form-item label="表单尺寸">
+                    <el-radio-group id="form-size" v-model="selectedComponent.size">
+                      <el-radio label="large">大</el-radio>
+                      <el-radio label="default">中</el-radio>
+                      <el-radio label="small">小</el-radio>
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="显示边框">
+                    <el-switch id="form-show-border" v-model="selectedComponent.showBorder" />
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
 
-                  <el-table
-                    v-if="selectedFormComponent?.items"
-                    :data="selectedFormComponent.items"
-                    border
+              <!-- 表单项配置 -->
+              <el-collapse-item title="表单项" name="form-items">
+                <div style="margin-bottom: 12px; display: flex; gap: 8px">
+                  <el-select
+                    v-model="newFormItemType"
+                    placeholder="选择表单项类型"
+                    style="width: 200px"
                     size="small"
-                    max-height="400"
                   >
-                    <el-table-column prop="label" label="标签" width="100">
-                      <template #default="{ row }">
-                        <el-input v-model="row.label" size="small" />
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="field" label="字段" width="100">
-                      <template #default="{ row }">
-                        <el-input v-model="row.field" size="small" />
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="type" label="类型" width="100">
-                      <template #default="{ row }">
-                        <el-select v-model="row.type" size="small">
-                          <el-option label="文本" value="text" />
-                          <el-option label="数字" value="number" />
-                          <el-option label="密码" value="password" />
-                          <el-option label="邮箱" value="email" />
-                          <el-option label="日期" value="date" />
-                          <el-option label="日期时间" value="datetime" />
-                          <el-option label="时间" value="time" />
-                          <el-option label="下拉" value="select" />
-                          <el-option label="单选" value="radio" />
-                          <el-option label="复选" value="checkbox" />
-                          <el-option label="开关" value="switch" />
-                          <el-option label="文本域" value="textarea" />
-                          <el-option label="滑块" value="slider" />
-                          <el-option label="评分" value="rate" />
-                          <el-option label="颜色" value="color" />
-                        </el-select>
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="必填" width="60">
-                      <template #default="{ row }">
-                        <el-switch v-model="row.required" size="small" />
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="操作" width="150">
-                      <template #default="{ $index }">
-                        <el-button link type="primary" size="small" @click="editFormItem($index)">
-                          配置
-                        </el-button>
-                        <el-button link type="danger" size="small" @click="removeFormItem($index)">
-                          删除
-                        </el-button>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </el-collapse-item>
-              </el-collapse>
+                    <el-option label="文本输入" value="text" />
+                    <el-option label="数字输入" value="number" />
+                    <el-option label="密码输入" value="password" />
+                    <el-option label="邮箱" value="email" />
+                    <el-option label="日期选择" value="date" />
+                    <el-option label="日期时间" value="datetime" />
+                    <el-option label="时间选择" value="time" />
+                    <el-option label="下拉选择" value="select" />
+                    <el-option label="单选框" value="radio" />
+                    <el-option label="复选框" value="checkbox" />
+                    <el-option label="开关" value="switch" />
+                    <el-option label="文本域" value="textarea" />
+                    <el-option label="滑块" value="slider" />
+                    <el-option label="评分" value="rate" />
+                    <el-option label="颜色选择" value="color" />
+                    <el-option label="按钮" value="button" />
+                  </el-select>
+                  <el-button type="primary" size="small" @click="handleAddFormItem"
+                    >添加</el-button
+                  >
+                </div>
+
+                <el-table
+                  v-if="selectedFormComponent?.items"
+                  :data="selectedFormComponent.items"
+                  border
+                  size="small"
+                  max-height="400"
+                >
+                  <el-table-column prop="label" label="标签" width="100">
+                    <template #default="{ row }">
+                      <el-input v-model="row.label" size="small" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="field" label="字段" width="100">
+                    <template #default="{ row }">
+                      <el-input v-model="row.field" size="small" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="type" label="类型" width="100">
+                    <template #default="{ row }">
+                      <el-select v-model="row.type" size="small">
+                        <el-option label="文本" value="text" />
+                        <el-option label="数字" value="number" />
+                        <el-option label="密码" value="password" />
+                        <el-option label="邮箱" value="email" />
+                        <el-option label="日期" value="date" />
+                        <el-option label="日期时间" value="datetime" />
+                        <el-option label="时间" value="time" />
+                        <el-option label="下拉" value="select" />
+                        <el-option label="单选" value="radio" />
+                        <el-option label="复选" value="checkbox" />
+                        <el-option label="开关" value="switch" />
+                        <el-option label="文本域" value="textarea" />
+                        <el-option label="滑块" value="slider" />
+                        <el-option label="评分" value="rate" />
+                        <el-option label="颜色" value="color" />
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="必填" width="60">
+                    <template #default="{ row }">
+                      <el-switch v-model="row.required" size="small" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="150">
+                    <template #default="{ $index }">
+                      <el-button link type="primary" size="small" @click="editFormItem($index)">
+                        配置
+                      </el-button>
+                      <el-button link type="danger" size="small" @click="removeFormItem($index)">
+                        删除
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-collapse-item>
             </template>
 
             <!-- 柱状图额外属性 -->
             <template v-if="selectedComponent.type === 'bar-chart'">
-              <el-divider>柱状图属性</el-divider>
-              <BarChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              <el-collapse-item title="柱状图属性" name="bar-chart">
+                <BarChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              </el-collapse-item>
             </template>
 
             <!-- 折线图额外属性 -->
             <template v-if="selectedComponent.type === 'line-chart'">
-              <el-divider>折线图属性</el-divider>
-              <LineChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              <el-collapse-item title="折线图属性" name="line-chart">
+                <LineChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              </el-collapse-item>
             </template>
 
             <!-- 饼图额外属性 -->
             <template v-if="selectedComponent.type === 'pie-chart'">
-              <el-divider>饼图属性</el-divider>
-              <PieChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              <el-collapse-item title="饼图属性" name="pie-chart">
+                <PieChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              </el-collapse-item>
             </template>
 
             <!-- 散点图额外属性 -->
             <template v-if="selectedComponent.type === 'scatter-chart'">
-              <el-divider>散点图属性</el-divider>
-              <ScatterChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              <el-collapse-item title="散点图属性" name="scatter-chart">
+                <ScatterChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              </el-collapse-item>
             </template>
 
             <!-- 仪表盘额外属性 -->
             <template v-if="selectedComponent.type === 'gauge-chart'">
-              <el-divider>仪表盘属性</el-divider>
-              <GaugeChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              <el-collapse-item title="仪表盘属性" name="gauge-chart">
+                <GaugeChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              </el-collapse-item>
             </template>
 
             <!-- 漏斗图额外属性 -->
             <template v-if="selectedComponent.type === 'funnel-chart'">
-              <el-divider>漏斗图属性</el-divider>
-              <FunnelChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              <el-collapse-item title="漏斗图属性" name="funnel-chart">
+                <FunnelChartProperties :component="selectedComponent" @update="handleChartUpdate" />
+              </el-collapse-item>
             </template>
 
             <!-- 组件联动配置（所有组件通用） -->
-            <el-divider>组件联动</el-divider>
-            <ComponentLinkageConfig
-              :component="selectedComponent"
-              :all-components="designerStore.currentDesign.components"
-              :linkage-manager="linkageManager"
-              @update="handleUpdate"
-            />
+            <el-collapse-item title="组件联动" name="linkage">
+              <ComponentLinkageConfig
+                :component="selectedComponent"
+                :all-components="designerStore.currentDesign.components"
+                :linkage-manager="linkageManager"
+                @update="handleUpdate"
+              />
+            </el-collapse-item>
 
-            <el-divider />
-            <el-button type="danger" :icon="Delete" @click="handleDelete">删除组件</el-button>
-          </div>
+            <!-- 操作 -->
+            <el-collapse-item title="操作" name="actions">
+              <el-button type="danger" :icon="Delete" style="width: 100%" @click="handleDelete">删除组件</el-button>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </div>
     </div>
@@ -1483,6 +1545,9 @@ const {
   selectedFormComponent,
   canvasStyle,
 } = componentState;
+
+// 属性面板折叠状态
+const panelCollapseActive = ref('info');
 
 // ============ 组件创建 ============
 const { createComponent } = useComponentCreation();

@@ -1,5 +1,7 @@
 <template>
-  <el-form label-width="80px" size="small">
+  <el-form label-width="100px" size="small">
+    <el-divider>图片配置</el-divider>
+
     <el-form-item label="图片源">
       <el-input v-model="localComponent.src" placeholder="输入图片 URL" @change="handleChange" />
     </el-form-item>

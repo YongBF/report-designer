@@ -22,6 +22,23 @@ import type { Component, ComponentType } from '../types';
 export function useComponentCreation() {
   const designerStore = useDesignerStore();
   const { currentDesign } = storeToRefs(designerStore);
+
+  // 组件类型标签映射
+  const typeLabels: Record<string, string> = {
+    form: '表单',
+    table: '表格',
+    'bar-chart': '柱状图',
+    'line-chart': '折线图',
+    'pie-chart': '饼图',
+    'scatter-chart': '散点图',
+    'gauge-chart': '仪表盘',
+    'funnel-chart': '漏斗图',
+    text: '文本',
+    image: '图片',
+    rectangle: '矩形',
+    line: '线条',
+  };
+
   /**
    * 创建指定类型的组件
    * @param type - 组件类型
@@ -31,8 +48,13 @@ export function useComponentCreation() {
     const id = `${type}-${Date.now()}`;
     const order = currentDesign.value.components.length;
 
+    // 生成默认组件名称（联动配置中显示的名称）
+    const typeLabel = typeLabels[type] || type;
+    const defaultName = `${typeLabel} (${id.slice(-4)})`;
+
     const baseConfig = {
       id,
+      name: defaultName,
       widthPercent: '100' as const,
       height: 200,
       order,

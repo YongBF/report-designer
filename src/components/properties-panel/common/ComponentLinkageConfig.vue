@@ -301,7 +301,6 @@ import { Link, Right } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import type { LinkageConfig, ParameterMapping, LinkageActionType } from '../../../types/linkage';
 import type { Component } from '../../../types';
-import type { ReturnType } from 'vue';
 import { generateId } from '../../../utils';
 
 const props = defineProps<{
@@ -382,6 +381,28 @@ function getComponentName(componentId: string): string {
 
 // 获取组件标签
 function getComponentLabel(component: Component): string {
+  // 如果组件有自定义名称，优先显示
+  if (component.name) {
+    const typeLabels: Record<string, string> = {
+      form: '表单',
+      table: '表格',
+      'bar-chart': '柱状图',
+      'line-chart': '折线图',
+      'pie-chart': '饼图',
+      'scatter-chart': '散点图',
+      'gauge-chart': '仪表盘',
+      'funnel-chart': '漏斗图',
+      text: '文本',
+      image: '图片',
+      rectangle: '矩形',
+      line: '线条',
+    };
+
+    const typeLabel = typeLabels[component.type] || component.type;
+    return `${component.name} (${typeLabel})`;
+  }
+
+  // 没有自定义名称时，显示默认格式
   const typeLabels: Record<string, string> = {
     form: '表单',
     table: '表格',

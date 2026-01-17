@@ -1,5 +1,5 @@
 <template>
-  <el-form label-width="80px" size="small">
+  <el-form label-width="100px" size="small">
     <el-divider>表格配置</el-divider>
 
     <el-form-item label="显示表头">

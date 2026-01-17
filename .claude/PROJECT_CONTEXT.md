@@ -8,14 +8,15 @@
 
 1. [项目概述](#项目概述)
 2. [技术栈](#技术栈)
-3. [路由系统](#路由系统) ⭐ 新增
-4. [Playwright 测试最佳实践](#playwright-测试最佳实践)
-5. [已知问题和解决方案](#已知问题和解决方案)
-6. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践)
-7. [UI 结构说明](#ui-结构说明)
-8. [代码示例库](#代码示例库)
-9. [检查清单](#检查清单)
-10. [新会话快速开始](#新会话快速开始)
+3. [路由系统](#路由系统)
+4. [组件命名和属性面板](#组件命名和属性面板) ⭐ 2026-01-17 新增
+5. [Playwright 测试最佳实践](#playwright-测试最佳实践)
+6. [已知问题和解决方案](#已知问题和解决方案)
+7. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践)
+8. [UI 结构说明](#ui-结构说明)
+9. [代码示例库](#代码示例库)
+10. [检查清单](#检查清单)
+11. [新会话快速开始](#新会话快速开始)
 
 ---
 
@@ -27,8 +28,10 @@ Report Designer 是一个**可视化报表设计器**，支持：
 - 📊 多种图表类型（柱状图、折线图、饼图、散点图、仪表盘）
 - 🔗 组件联动功能（触发事件、参数映射）
 - 📡 API 数据源配置
-- 🖼️ **报表预览和导出**（新页签 + 路由）⭐ 2026-01-17 更新
-- 🔄 **Vue Router 路由系统** ⭐ 2026-01-17 新增
+- 🖼️ **报表预览和导出**（新页签 + 路由）
+- 🔄 **Vue Router 路由系统**
+- 🏷️ **组件命名功能** - 组件可设置自定义名称，用于联动配置中展示 ⭐ 2026-01-17 新增
+- 📋 **统一属性面板** - 所有属性使用折叠面板统一展示 ⭐ 2026-01-17 新增
 
 ### 项目结构
 ```
@@ -215,6 +218,214 @@ const designId = params.id;
 - `src/views/Designer.vue` - 设计器页面（从 App.vue 移动）
 - `src/views/PreviewView.vue` - 预览页面
 - `src/App.vue` - 简化为路由容器 `<router-view />`
+
+---
+
+## 组件命名和属性面板 ⭐ 2026-01-17 新增
+
+### 组件命名功能
+
+#### 组件名称属性
+
+每个组件都有一个可选的 `name` 属性，用于在联动配置中识别和展示：
+
+```typescript
+// src/types/index.ts - BaseComponent 接口
+export interface BaseComponent {
+  id: string;
+  type: ComponentType;
+  name?: string;  // 组件名称（可选，用于在联动配置等地方显示）
+  // ... 其他属性
+}
+```
+
+#### 默认名称生成
+
+创建新组件时，会自动生成默认的组件名称：
+
+```typescript
+// src/composables/useComponentCreation.ts
+const typeLabels: Record<string, string> = {
+  form: '表单',
+  table: '表格',
+  'bar-chart': '柱状图',
+  'line-chart': '折线图',
+  'pie-chart': '饼图',
+  'scatter-chart': '散点图',
+  'gauge-chart': '仪表盘',
+  'funnel-chart': '漏斗图',
+  text: '文本',
+  image: '图片',
+  rectangle: '矩形',
+  line: '线条',
+};
+
+// 生成默认名称：格式为 "类型 (ID后4位)"
+const defaultName = `${typeLabel} (${id.slice(-4)})`;
+// 例如："表格 (a3b2)"、"柱状图 (f4e1)"
+```
+
+#### 联动配置中的显示
+
+在联动配置的组件下拉列表中，组件显示格式为：
+
+```typescript
+// src/components/properties-panel/common/ComponentLinkageConfig.vue
+function getComponentLabel(component: Component): string {
+  // 如果组件有自定义名称，优先显示
+  if (component.name) {
+    const typeLabel = typeLabels[component.type] || component.type;
+    return `${component.name} (${typeLabel})`;  // 例如："销售数据表 (表格)"
+  }
+
+  // 没有自定义名称时，显示默认格式
+  const typeLabel = typeLabels[component.type] || component.type;
+  return `${typeLabel} (${component.id.slice(-4)})`;  // 例如："表格 (a3b2)"
+}
+```
+
+#### 属性面板中的配置
+
+在属性面板中，组件名称输入框位于"组件信息"折叠面板的顶部：
+
+```vue
+<!-- src/views/Designer.vue -->
+<el-collapse-item title="组件信息" name="info">
+  <el-form label-width="100px" size="small">
+    <el-form-item label="组件名称">
+      <el-input
+        v-model="selectedComponent.name"
+        placeholder="为组件设置一个名称，方便在联动配置中识别"
+        clearable
+      />
+      <div style="margin-top: 4px; font-size: 12px; color: #909399">
+        此名称将显示在联动配置的组件列表中
+      </div>
+    </el-form-item>
+
+    <el-form-item label="组件类型">
+      <el-input :value="selectedComponent.type" disabled />
+    </el-form-item>
+
+    <el-form-item label="组件ID">
+      <el-input :value="selectedComponent.id" disabled />
+    </el-form-item>
+  </el-form>
+</el-collapse-item>
+```
+
+### 统一属性面板结构
+
+#### 属性面板使用 el-collapse
+
+所有组件的属性现在统一使用 `el-collapse` 折叠面板展示，样式保持一致：
+
+```vue
+<!-- 属性面板结构 -->
+<el-collapse v-model="panelCollapseActive" accordion>
+  <!-- 1. 组件信息（默认展开） -->
+  <el-collapse-item title="组件信息" name="info">
+    <el-form label-width="100px" size="small">
+      <el-form-item label="组件名称">...</el-form-item>
+      <el-form-item label="组件类型">...</el-form-item>
+      <el-form-item label="组件ID">...</el-form-item>
+    </el-form>
+  </el-collapse-item>
+
+  <!-- 2. 基础属性 -->
+  <el-collapse-item title="基础属性" name="basic">
+    <el-form label-width="100px" size="small">
+      <el-form-item label="宽度">...</el-form-item>
+      <el-form-item label="高度">...</el-form-item>
+      <el-form-item label="排序">...</el-form-item>
+      <el-form-item label="可见">...</el-form-item>
+      <el-form-item label="锁定">...</el-form-item>
+    </el-form>
+  </el-collapse-item>
+
+  <!-- 3. 组件特定属性（根据组件类型动态显示） -->
+  <template v-if="selectedComponent.type === 'text'">
+    <el-collapse-item title="文本属性" name="text">
+      <el-form label-width="100px" size="small">
+        <el-form-item label="内容">...</el-form-item>
+        <el-form-item label="字号">...</el-form-item>
+        <!-- ... 其他文本属性 -->
+      </el-form>
+    </el-collapse-item>
+  </template>
+
+  <template v-if="selectedComponent.type === 'table'">
+    <el-collapse-item title="表格设置" name="table-settings">...</el-collapse-item>
+    <el-collapse-item title="表头样式" name="table-header">...</el-collapse-item>
+    <el-collapse-item title="列配置" name="table-columns">...</el-collapse-item>
+    <el-collapse-item title="数据源" name="table-datasource">...</el-collapse-item>
+    <el-collapse-item title="分页设置" name="table-pagination">...</el-collapse-item>
+  </template>
+
+  <!-- 4. 组件联动（所有组件通用） -->
+  <el-collapse-item title="组件联动" name="linkage">
+    <ComponentLinkageConfig ... />
+  </el-collapse-item>
+
+  <!-- 5. 操作 -->
+  <el-collapse-item title="操作" name="actions">
+    <el-button type="danger" @click="handleDelete">删除组件</el-button>
+  </el-collapse-item>
+</el-collapse>
+```
+
+#### 样式规范
+
+所有属性表单遵循统一的样式规范：
+
+```typescript
+// 统一配置
+label-width: "100px"   // 所有表单项标签宽度一致
+size: "small"           // 所有表单组件使用小尺寸
+```
+
+#### 折叠面板状态管理
+
+```typescript
+// src/views/Designer.vue
+import { ref } from 'vue';
+
+// 属性面板折叠状态，默认展开"组件信息"
+const panelCollapseActive = ref('info');
+```
+
+### 组件属性面板文件
+
+各个组件类型的属性面板位于 `src/components/properties-panel/properties/` 目录：
+
+```
+properties-panel/
+├── PropertiesPanel.vue              # 主属性面板（已废弃，移至 Designer.vue）
+├── properties/
+│   ├── TextProperties.vue           # 文本组件属性
+│   ├── ImageProperties.vue          # 图片组件属性
+│   ├── TableProperties.vue          # 表格组件属性
+│   ├── FormProperties.vue           # 表单组件属性
+│   ├── ChartProperties.vue          # 通用图表属性
+│   ├── BarChartProperties.vue       # 柱状图属性
+│   ├── LineChartProperties.vue      # 折线图属性
+│   ├── PieChartProperties.vue       # 饼图属性
+│   ├── ScatterChartProperties.vue   # 散点图属性
+│   ├── GaugeChartProperties.vue     # 仪表盘属性
+│   ├── FunnelChartProperties.vue    # 漏斗图属性
+│   ├── RectangleProperties.vue      # 矩形属性
+│   └── LineProperties.vue           # 线条属性
+└── common/
+    ├── ChartDataSourceConfig.vue    # 图表数据源配置
+    └── ComponentLinkageConfig.vue   # 组件联动配置
+```
+
+### 相关文件
+
+- `src/types/index.ts` - BaseComponent 接口（添加 name 属性）
+- `src/composables/useComponentCreation.ts` - 组件创建逻辑（默认名称生成）
+- `src/views/Designer.vue` - 属性面板（统一使用 el-collapse）
+- `src/components/properties-panel/common/ComponentLinkageConfig.vue` - 联动配置（组件名称显示）
 
 ---
 
@@ -1667,13 +1878,30 @@ const routes: RouteRecordRaw[] = [
 # 项目结构
 src/main.ts                        # 应用入口（Pinia + Router 初始化）
 src/App.vue                        # 根组件（路由容器）
-src/router/index.ts                # 路由配置 ⭐ 新增
-src/views/Designer.vue             # 设计器页面 ⭐ 新增
-src/views/PreviewView.vue          # 预览页面 ⭐ 新增
+src/router/index.ts                # 路由配置
+src/views/Designer.vue             # 设计器页面（包含统一属性面板）
+src/views/PreviewView.vue          # 预览页面
 src/utils/componentData.ts         # 组件列表
+src/types/index.ts                 # TypeScript 类型定义（含组件 name 属性）
+src/composables/useComponentCreation.ts  # 组件创建逻辑（含默认名称生成）
 src/components/properties-panel/common/ComponentLinkageConfig.vue  # 联动配置
 src/stores/pinia/designerStore.ts  # Pinia store
 src/stores/designer.ts             # 兼容层
+
+# 属性面板组件 ⭐ 新增
+src/components/properties-panel/properties/
+├── TextProperties.vue             # 文本组件属性
+├── ImageProperties.vue            # 图片组件属性
+├── TableProperties.vue            # 表格组件属性
+├── FormProperties.vue             # 表单组件属性
+├── BarChartProperties.vue         # 柱状图属性
+├── LineChartProperties.vue        # 折线图属性
+├── PieChartProperties.vue         # 饼图属性
+├── ScatterChartProperties.vue     # 散点图属性
+├── GaugeChartProperties.vue       # 仪表盘属性
+├── FunnelChartProperties.vue      # 漏斗图属性
+├── RectangleProperties.vue        # 矩形属性
+└── LineProperties.vue             # 线条属性
 
 # 测试文件
 e2e/tests/basic-setup.spec.js       # 基础测试（参考）
@@ -1760,7 +1988,8 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
    - 在新会话中可以直接引用
 
 3. **重要更新记录**
-   - ✅ v2.2: 添加路由系统和预览功能（问题9-10）⭐ 2026-01-17
+   - ✅ v2.3: 添加组件命名和统一属性面板功能 ⭐ 2026-01-17
+   - ✅ v2.2: 添加路由系统和预览功能（问题9-10）
    - ✅ v2.1: 添加兼容层常见问题和解决方案（问题5-8）
    - ✅ v2.0: 添加 Pinia 状态管理系统
    - ✅ v2.0: 添加状态管理最佳实践
@@ -1772,20 +2001,23 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
 ## 📝 文档信息
 
 **文件**: `.claude/PROJECT_CONTEXT.md`
-**版本**: 2.2
+**版本**: 2.3
 **创建日期**: 2026-01-16
 **最后更新**: 2026-01-17
 **维护者**: Claude Code + 用户
 
-**最新更新内容** (v2.2 - 2026-01-17):
-- ✅ 添加 Vue Router 4 路由系统
-- ✅ 添加预览功能实现（新页签 + 专用路由）
-- ✅ 更新项目结构（views 目录）
-- ✅ 添加路由最佳实践和示例
-- ✅ 添加问题9：Pinia Store 访问错误（自动解包）
-- ✅ 添加问题10：视图文件导入路径错误
-- ✅ 更新测试用例数量和覆盖范围
-- ✅ 更新所有相关代码示例
+**最新更新内容** (v2.3 - 2026-01-17):
+- ✅ 添加组件命名功能章节
+- ✅ 添加统一属性面板结构说明
+- ✅ 更新组件创建逻辑（默认名称生成）
+- ✅ 更新联动配置中的组件显示格式
+- ✅ 更新属性面板使用 el-collapse 的最佳实践
+- ✅ 添加相关文件列表
+
+**历史更新**:
+- v2.2: 添加 Vue Router 4 路由系统和预览功能
+- v2.1: 添加兼容层常见问题和解决方案
+- v2.0: 添加 Pinia 状态管理系统
 
 **用途**: 为新 Claude Code 会话提供项目上下文，避免重复错误，加速开发。
 
@@ -1793,7 +2025,13 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
 
 **💡 提示**: 在新会话开始时，告诉 Claude：
 ```
-"请参考 .claude/PROJECT_CONTEXT.md 文档，了解 Report Designer 项目的上下文、路由系统和已知问题。"
+"请参考 .claude/PROJECT_CONTEXT.md 文档，了解 Report Designer 项目的上下文、路由系统、组件命名功能、统一属性面板和已知问题。"
 ```
 
 这样可以大幅减少错误重犯，提高开发效率！🎯
+
+**最新功能** (v2.3 - 2026-01-17):
+- 🏷️ 组件命名功能 - 每个组件都有可编辑的名称，用于联动配置中识别
+- 📋 统一属性面板 - 所有属性使用 el-collapse 折叠面板，样式一致
+- 🤖 自动命名 - 创建组件时自动生成默认名称（格式："类型 (ID后4位)"）
+

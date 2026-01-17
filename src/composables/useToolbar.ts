@@ -94,6 +94,10 @@ export function useToolbar() {
     );
     // 立即更新图表显示
     nextTick(() => {
+      // 安全检查：确保 currentDesign.value 存在
+      if (!currentDesign.value || !currentDesign.value.components) {
+        return;
+      }
       const updatedComponent = currentDesign.value.components.find(
         (c) => c.id === selectedComponent!.id
       );

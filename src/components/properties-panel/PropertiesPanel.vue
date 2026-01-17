@@ -8,6 +8,23 @@
       <el-empty v-if="!selectedComponent" description="请选择一个组件" />
 
       <div v-else class="properties-form">
+        <!-- 组件名称（全局） -->
+        <div class="component-name-section">
+          <el-form label-width="100px" size="small">
+            <el-form-item label="组件名称">
+              <el-input
+                v-model="selectedComponent.name"
+                placeholder="为组件设置一个名称，方便在联动配置中识别"
+                clearable
+                @change="handleUpdate"
+              />
+              <div style="margin-top: 4px; font-size: 12px; color: #909399">
+                此名称将显示在联动配置的组件列表中
+              </div>
+            </el-form-item>
+          </el-form>
+        </div>
+
         <!-- 基础属性 -->
         <div class="property-section">
           <div class="section-title">基础属性</div>

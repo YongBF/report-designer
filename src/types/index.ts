@@ -271,6 +271,7 @@ export interface ChartComponent extends BaseComponent {
 export interface BaseComponent {
   id: string;
   type: ComponentType;
+  name?: string; // 组件名称（可选，用于在联动配置等地方显示）
   widthPercent: ComponentWidth;
   height: number;
   order: number;
