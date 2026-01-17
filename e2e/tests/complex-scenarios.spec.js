@@ -144,30 +144,7 @@ test.describe('场景4: 表格列配置', () => {
 });
 
 test.describe('场景5: 工具栏操作', () => {
-  test.skip('预览模式', async ({ page }) => {
-    // TODO: 预览模式功能待完善
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-
-    // 添加一个组件
-    const canvas = page.locator('.canvas-content-inner');
-    const textComponent = page.locator('.component-item').filter({ hasText: '文本' });
-    await textComponent.dragTo(canvas, { targetPosition: { x: 400, y: 200 } });
-    await page.waitForTimeout(1000);
-
-    // 点击预览按钮
-    const previewButton = page.locator('.toolbar button').filter({ hasText: '预览' });
-    await previewButton.click();
-    await page.waitForTimeout(1000);
-
-    // 验证进入预览模式
-    const bodyClass = await page.locator('body').getAttribute('class');
-    expect(bodyClass).toContain('preview');
-
-    // 退出预览
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(1000);
-  });
+  // 预览功能测试已移至 preview-route.spec.js，使用新的路由方式
 
   test('新建和撤销操作', async ({ page }) => {
     await page.goto('/');

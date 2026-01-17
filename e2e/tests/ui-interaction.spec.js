@@ -55,34 +55,26 @@ test.describe('基础UI功能', () => {
     }
   });
 
-  test('应该能够切换到预览模式', async ({ page }) => {
+  test('预览按钮应该打开新标签页', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+
+    // 监听新页面
+    const newPagePromise = page.context().waitForEvent('page');
 
     // 点击预览按钮
     const previewButton = page.locator('.toolbar button').filter({ hasText: '预览' });
     await previewButton.click();
-    await page.waitForTimeout(2000);
 
-    // 验证进入预览模式（body 有 preview class）
-    const bodyClass = await page.locator('body').getAttribute('class');
-    expect(bodyClass).toContain('preview');
+    // 等待新页面打开
+    const newPage = await newPagePromise;
+    await newPage.waitForLoadState('networkidle');
 
-    // 验证预览模式组件可见
-    const previewMode = page.locator('.preview-mode');
-    await expect(previewMode).toBeVisible();
+    // 验证新页面是预览页面
+    expect(newPage.url()).toContain('/preview/');
 
-    // 退出预览（按 Escape）
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(1000);
-
-    // 验证退出预览模式
-    const bodyClassAfter = await page.locator('body').getAttribute('class');
-    expect(bodyClassAfter).not.toContain('preview');
-
-    // 验证预览模式组件消失
-    const previewModeAfter = page.locator('.preview-mode');
-    await expect(previewModeAfter).not.toBeVisible();
+    // 关闭新页面
+    await newPage.close();
   });
 });
 
@@ -135,11 +127,11 @@ test.describe('组件交互功能', () => {
   });
 
   test.skip('应该能够删除组件', async ({ page }) => {
-    // TODO: 组件选中功能在测试环境中不工作，需要调查原因
-    // 可能的原因：
-    // 1. 事件处理机制与测试环境不兼容
-    // 2. 组件结构在旧版和新版之间不一致
-    // 3. 需要更长等待时间或不同的选择器策略
+    // NOTE: 删除功能在代码中已实现（Toolbar.vue handleDelete），但测试环境下组件选中不工作
+    // 删除功能可通过以下方式触发：
+    // 1. 选中组件后点击工具栏删除按钮
+    // 2. 选中组件后按 Delete 键
+    // TODO: 需要修复测试环境下的组件选中机制
     const canvas = page.locator('.canvas-content-inner');
 
     // 拖拽添加文本组件
@@ -147,84 +139,26 @@ test.describe('组件交互功能', () => {
     await textComponent.dragTo(canvas, {
       targetPosition: { x: 150, y: 200 }
     });
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1000);
 
     // 等待组件完全渲染
     await page.waitForSelector('.canvas-component', { state: 'visible', timeout: 10000 });
     const initialCount = await page.locator('.canvas-component').count();
-    console.log('初始组件数量:', initialCount);
+    expect(initialCount).toBeGreaterThan(0);
 
-    // 检查组件是否已经被自动选中（拖拽后通常会自动选中）
+    // 选中组件 - 点击canvas-component元素并直接触发删除
     const canvasComponent = page.locator('.canvas-component').first();
-    let isSelected = await canvasComponent.evaluate(el =>
-      el.classList.contains('selected')
-    );
-    console.log('组件是否被自动选中:', isSelected);
 
-    // 如果没有被选中，尝试点击选中
-    if (!isSelected) {
-      console.log('组件未被自动选中，尝试点击选中');
-      // 点击组件的内容区域，而不是外层容器
-      const textContent = canvasComponent.locator('.text-content').first();
-      if (await textContent.isVisible()) {
-        await textContent.click();
-      } else {
-        await canvasComponent.click();
-      }
-      await page.waitForTimeout(500);
+    // 先尝试点击选中，等待一下
+    await canvasComponent.click({ position: { x: 10, y: 10 } });
+    await page.waitForTimeout(500);
 
-      isSelected = await canvasComponent.evaluate(el =>
-        el.classList.contains('selected')
-      );
-      console.log('点击后组件是否被选中:', isSelected);
-    }
-
-    // 尝试删除 - 即使没有selected class也尝试（可能是样式问题）
-    // 方法1: 尝试工具栏删除按钮（App.vue中的旧按钮）
-    let deleted = false;
-    const oldDeleteButton = page.locator('.toolbar button').filter({ hasText: '删除' });
-    if (await oldDeleteButton.isVisible()) {
-      const isDisabled = await oldDeleteButton.isDisabled();
-      console.log('旧版删除按钮是否可用:', !isDisabled);
-      if (!isDisabled) {
-        await oldDeleteButton.click();
-        console.log('使用旧版删除按钮');
-        deleted = true;
-      }
-    }
-
-    // 方法2: 尝试新版工具栏删除按钮
-    if (!deleted) {
-      const newDeleteButton = page.locator('.toolbar .el-button').filter({ hasText: /删除/ }).first();
-      if (await newDeleteButton.isVisible()) {
-        const isDisabled = await newDeleteButton.isDisabled();
-        console.log('新版删除按钮是否可用:', !isDisabled);
-        if (!isDisabled) {
-          await newDeleteButton.click();
-          console.log('使用新版删除按钮');
-          deleted = true;
-        }
-      }
-    }
-
-    // 方法3: 键盘快捷键
-    if (!deleted) {
-      console.log('尝试键盘快捷键');
-      await page.keyboard.press('Delete');
-      await page.waitForTimeout(500);
-    }
-
+    // 尝试键盘删除
+    await page.keyboard.press('Delete');
     await page.waitForTimeout(1500);
 
     // 验证组件被删除
     const finalCount = await page.locator('.canvas-component').count();
-    console.log('删除后组件数量:', finalCount);
-
-    // 如果删除失败，记录信息
-    if (finalCount >= initialCount) {
-      console.log('删除失败，组件仍然存在');
-    }
-
     expect(finalCount).toBeLessThan(initialCount);
   });
 

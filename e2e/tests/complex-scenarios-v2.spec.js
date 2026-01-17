@@ -126,9 +126,10 @@ test.describe('场景4: 表格配置测试', () => {
 });
 
 test.describe('场景5: 工具栏操作', () => {
-  test.skip('新建和预览功能', async ({ page }) => {
-    // TODO: 预览模式功能待完善
-    await page.goto('/');
+  // 预览功能测试已移至 preview-route.spec.js
+  // 新建功能测试
+  test('新建操作', async ({ page }) => {
+    await page.goto('http://localhost:5174/');
     await page.waitForLoadState('networkidle');
 
     const canvas = page.locator('.canvas-content-inner');
@@ -137,19 +138,6 @@ test.describe('场景5: 工具栏操作', () => {
     const textComponent = page.locator('.component-item').filter({ hasText: '文本' });
     await textComponent.dragTo(canvas, { targetPosition: { x: 400, y: 200 } });
     await page.waitForTimeout(800);
-
-    // 点击预览按钮
-    const previewButton = page.locator('.toolbar button').filter({ hasText: '预览' });
-    await previewButton.click();
-    await page.waitForTimeout(1000);
-
-    // 验证进入预览模式
-    const bodyClass = await page.locator('body').getAttribute('class');
-    expect(bodyClass).toContain('preview');
-
-    // 退出预览
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(1000);
 
     // 点击新建按钮
     const newButton = page.locator('.toolbar button').filter({ hasText: '新建' });
@@ -161,7 +149,7 @@ test.describe('场景5: 工具栏操作', () => {
     const count = await components.count();
     expect(count).toBe(0);
 
-    console.log('✅ 成功测试预览和新建功能');
+    console.log('✅ 成功测试新建功能');
   });
 });
 
