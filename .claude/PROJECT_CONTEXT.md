@@ -10,13 +10,14 @@
 2. [技术栈](#技术栈)
 3. [路由系统](#路由系统)
 4. [组件命名和属性面板](#组件命名和属性面板) ⭐ 2026-01-17 新增
-5. [Playwright 测试最佳实践](#playwright-测试最佳实践)
-6. [已知问题和解决方案](#已知问题和解决方案)
-7. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践)
-8. [UI 结构说明](#ui-结构说明)
-9. [代码示例库](#代码示例库)
-10. [检查清单](#检查清单)
-11. [新会话快速开始](#新会话快速开始)
+5. [大型组件拆分模式](#大型组件拆分模式) ⭐ 2026-01-17 新增
+6. [Playwright 测试最佳实践](#playwright-测试最佳实践)
+7. [已知问题和解决方案](#已知问题和解决方案)
+8. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践)
+9. [UI 结构说明](#ui-结构说明)
+10. [代码示例库](#代码示例库)
+11. [检查清单](#检查清单)
+12. [新会话快速开始](#新会话快速开始)
 
 ---
 
@@ -43,7 +44,7 @@ report-designer/
 │   │   ├── toolbar/         # 工具栏
 │   │   └── common/          # 通用组件
 │   ├── composables/         # Vue 组合式函数
-│   ├── router/              # Vue Router 配置 ⭐ 新增
+│   ├── router/              # Vue Router 配置
 │   │   └── index.ts         # 路由定义
 │   ├── stores/
 │   │   ├── pinia/           # Pinia 状态管理
@@ -52,8 +53,14 @@ report-designer/
 │   │   └── designer.ts      # 兼容层(向后兼容)
 │   ├── types/               # TypeScript 类型定义
 │   ├── utils/               # 工具函数
-│   ├── views/               # 页面视图 ⭐ 新增
-│   │   ├── Designer.vue     # 设计器页面
+│   ├── views/               # 页面视图
+│   │   ├── Designer.vue     # 设计器页面（主布局）
+│   │   ├── designer/        # 设计器子组件 ⭐ 新增
+│   │   │   ├── DesignerToolbar.vue
+│   │   │   ├── ComponentLibrary.vue
+│   │   │   ├── CanvasPanel.vue
+│   │   │   ├── properties/  # 属性面板子组件
+│   │   │   └── composables/ # 专用 composables
 │   │   └── PreviewView.vue  # 预览页面
 │   ├── App.vue              # 根组件（路由容器）
 │   └── main.ts              # 应用入口
@@ -426,6 +433,281 @@ properties-panel/
 - `src/composables/useComponentCreation.ts` - 组件创建逻辑（默认名称生成）
 - `src/views/Designer.vue` - 属性面板（统一使用 el-collapse）
 - `src/components/properties-panel/common/ComponentLinkageConfig.vue` - 联动配置（组件名称显示）
+
+---
+
+## 大型组件拆分模式 ⭐ 2026-01-17 新增
+
+### 背景
+
+当单个 Vue 组件文件超过 1000 行时，代码可维护性会下降。Report Designer 采用了**完全拆分 + 专用 Composables** 的方案（方案 B），将大型组件拆分为多个小型子组件和专用 hooks。
+
+### 设计原则
+
+1. **按 UI 区域拆分组件**：每个独立的 UI 区域对应一个子组件
+2. **按功能拆分 Composables**：每个功能模块对应一个 composable
+3. **主组件只负责布局**：主组件（如 Designer.vue）只包含组件组合逻辑
+4. **Props down, Events up**：数据通过 props 传递，事件通过 emit 向上冒泡
+5. **复用现有逻辑**：尽可能复用已有的 composables
+
+### 拆分结构示例
+
+```
+src/views/designer/
+├── Designer.vue                 # 主布局容器 (~150行)
+├── DesignerToolbar.vue          # 工具栏组件
+├── ComponentLibrary.vue         # 组件库面板
+├── CanvasPanel.vue              # 画布面板
+├── properties/                  # 属性面板子目录
+│   ├── PropertiesPanel.vue      # 属性面板容器
+│   ├── ComponentInfoPanel.vue   # 组件信息折叠
+│   ├── BasePropertiesPanel.vue  # 基础属性折叠
+│   └── TypePropertiesPanel.vue  # 类型特定属性折叠
+└── composables/                 # 专用 Composables
+    ├── useDesignerEvents.ts     # 事件处理
+    ├── useToolbarActions.ts     # 工具栏操作
+    └── usePanelState.ts         # 面板状态管理
+```
+
+### 子组件设计模式
+
+#### 1. 独立 UI 组件（如 DesignerToolbar）
+
+```vue
+<!-- DesignerToolbar.vue -->
+<template>
+  <div class="toolbar" data-testid="toolbar">
+    <el-button :icon="DocumentAdd" @click="handleNew">新建</el-button>
+    <el-button :disabled="!canUndo" @click="handleUndo">撤销</el-button>
+    <!-- ... -->
+  </div>
+</template>
+
+<script setup lang="ts">
+// Props
+interface Props {
+  canUndo?: boolean;
+  canRedo?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+  canUndo: false,
+  canRedo: false,
+});
+
+// Emits
+const emit = defineEmits<{
+  new: [];
+  undo: [];
+  redo: [];
+}>();
+
+// 事件处理
+function handleNew() {
+  emit('new');
+}
+</script>
+```
+
+#### 2. 容器组件（如 PropertiesPanel）
+
+```vue
+<!-- PropertiesPanel.vue -->
+<template>
+  <div class="right-panel">
+    <el-empty v-if="!selectedComponent" />
+    <el-collapse v-else>
+      <!-- 子组件 -->
+      <ComponentInfoPanel :component="selectedComponent" @update="handleUpdate" />
+      <BasePropertiesPanel :component="selectedComponent" @update="handleUpdate" />
+      <TypePropertiesPanel :type="selectedComponent.type" @update="handleUpdate" />
+    </el-collapse>
+  </div>
+</template>
+
+<script setup lang="ts">
+import ComponentInfoPanel from './ComponentInfoPanel.vue';
+import BasePropertiesPanel from './BasePropertiesPanel.vue';
+import TypePropertiesPanel from './TypePropertiesPanel.vue';
+
+// 事件转发
+function handleUpdate(field: string, value: any) {
+  emit('update', field, value);
+}
+</script>
+```
+
+#### 3. 专用 Composable
+
+```typescript
+// composables/useDesignerEvents.ts
+export function useDesignerEvents() {
+  const designerStore = useDesignerStore();
+
+  function handleComponentClick(component: Component) {
+    if (component.locked) return;
+    designerStore.selectComponent(component.id);
+  }
+
+  function handleComponentUpdate(id: string, updates: Partial<Component>) {
+    designerStore.updateComponent(id, updates);
+  }
+
+  return {
+    handleComponentClick,
+    handleComponentUpdate,
+  };
+}
+```
+
+### 主组件结构
+
+```vue
+<!-- Designer.vue -->
+<template>
+  <div class="report-designer">
+    <DesignerToolbar
+      :can-undo="canUndo"
+      :can-redo="canRedo"
+      @new="handleNew"
+      @undo="handleUndo"
+    />
+
+    <div class="designer-main">
+      <ComponentLibrary @drag-start="handleDragStart" />
+      <CanvasPanel
+        :components="orderedComponents"
+        @component-click="handleComponentClick"
+      />
+      <PropertiesPanel
+        :selected-component="selectedComponent"
+        @update="handleUpdate"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+
+// 子组件
+import DesignerToolbar from './designer/DesignerToolbar.vue';
+import ComponentLibrary from './designer/ComponentLibrary.vue';
+import CanvasPanel from './designer/CanvasPanel.vue';
+import PropertiesPanel from './designer/properties/PropertiesPanel.vue';
+
+// Composables
+import { useToolbarActions } from './designer/composables/useToolbarActions';
+import { usePanelState } from './designer/composables/usePanelState';
+import { useDesignerEvents } from './designer/composables/useDesignerEvents';
+
+// 使用 composables
+const toolbarActions = useToolbarActions();
+const panelState = usePanelState();
+const designerEvents = useDesignerEvents();
+
+// 解构需要的状态和方法
+const { canUndo, canRedo } = panelState;
+const { handleNew, handleUndo } = toolbarActions;
+const { handleComponentClick, handleUpdate } = designerEvents;
+</script>
+```
+
+### 最佳实践
+
+#### ✅ DO
+
+1. **明确 Props 类型**
+   ```typescript
+   interface Props {
+     component: Component;
+     allComponents: Component[];
+   }
+   const props = defineProps<Props>();
+   ```
+
+2. **使用 defineEmits 类型**
+   ```typescript
+   const emit = defineEmits<{
+     update: [id: string, data: any];
+     delete: [];
+   }>();
+   ```
+
+3. **子组件保持独立**
+   - 子组件不应直接访问 store
+   - 通过 props 接收数据，通过 emit 发送事件
+   - 保持组件的可测试性和可复用性
+
+4. **复用现有 Composables**
+   - 优先使用 `src/composables` 中已有的逻辑
+   - 专用 composables 只处理特定功能
+
+#### ❌ DON'T
+
+1. **不要在子组件中直接访问 store**
+   ```typescript
+   // ❌ 错误：子组件直接使用 store
+   import { useDesignerStore } from '@/stores/pinia';
+   const store = useDesignerStore();
+
+   // ✅ 正确：通过 props 传递，通过 emit 通知
+   interface Props {
+     selectedIds: string[];
+   }
+   const emit = defineEmits<{ select: [id: string] }>();
+   ```
+
+2. **不要在子组件中重复逻辑**
+   ```typescript
+   // ❌ 错误：在每个子组件中都实现
+   function handleComponentUpdate(id, data) {
+     designerStore.updateComponent(id, data);
+   }
+
+   // ✅ 正确：在主组件中使用 composable
+   const { handleUpdate } = useDesignerEvents();
+   ```
+
+3. **不要过度拆分**
+   - 拆分后的组件应保持功能完整性
+   - 避免创建只有几行代码的组件
+
+4. **不要通过 prop 传递 ref** ⭐ 重要
+   ```typescript
+   // ❌ 错误：通过 prop 传递 ref 不会自动绑定 DOM 元素
+   // 父组件
+   const canvasRef = ref<HTMLElement | null>(null);
+
+   // 子组件
+   interface Props {
+     canvasRefProp: any;
+   }
+   const props = defineProps<Props>();
+
+   // 模板中
+   <div :ref="canvasRefProp"></div>  // ❌ 父组件的 canvasRef.value 仍为 undefined
+
+   // ✅ 正确：使用本地 ref + 事件通知父组件
+   // 子组件
+   const localRef = ref<HTMLElement | null>(null);
+
+   watch(localRef, (newVal) => {
+     if (newVal) {
+       emit('ref-ready', newVal);
+     }
+   }, { immediate: true });
+
+   // 父组件
+   function handleRefReady(element: HTMLElement) {
+     canvasRef.value = element;
+   }
+   ```
+
+### 相关文件
+
+- `src/views/Designer.vue` - 主布局容器
+- `src/views/designer/` - 拆分后的子组件目录
+- `src/views/designer/composables/` - 专用 composables
 
 ---
 
@@ -882,31 +1164,188 @@ function handlePreview() {
 
 ---
 
-### 问题10：视图文件导入路径错误 ⭐ 2026-01-17 新增
+### 问题10：Canvas Ref 绑定问题 ⭐ 2026-01-17 新增
 
 **错误信息**:
 ```
-Failed to resolve import "./components/canvas/renderers/TableRenderer.vue"
-from "src/views/Designer.vue"
+Uncaught TypeError: Cannot read properties of undefined (reading 'getBoundingClientRect')
+    at handleCanvasDragOver (useDragDrop.ts:189:41)
 ```
 
 **原因**:
-- `Designer.vue` 位于 `src/views/` 目录
-- 使用相对路径 `./components` 会查找 `src/views/components/`（不存在）
-- 应该使用 `../components` 查找 `src/components/`
+- 将父组件的 ref 通过 prop 传递并使用 `:ref="canvasRefProp"` 绑定到子组件
+- Vue 不会自动将 DOM 元素赋值给父组件的 ref
+- 导致 `canvasRef.value` 在子组件挂载后仍为 `undefined`
 
 **解决方案**:
-```typescript
-// ❌ 错误：在 views/ 目录中使用 ./components
-import TableRenderer from './components/canvas/renderers/TableRenderer.vue';
+```vue
+<!-- ❌ 错误：通过 prop 传递 ref -->
+<!-- 父组件 Designer.vue -->
+<CanvasPanel :canvas-ref-prop="canvasRef" />
 
-// ✅ 正确：使用 ../components 访问 src 目录
-import TableRenderer from '../components/canvas/renderers/TableRenderer.vue';
+<!-- 子组件 CanvasPanel.vue -->
+<div :ref="canvasRefProp" class="canvas-content"></div>
+
+<!-- ✅ 正确：使用本地 ref + 事件传递 -->
+<!-- 子组件 CanvasPanel.vue -->
+<template>
+  <div ref="localCanvasRef" class="canvas-content"></div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+
+const localCanvasRef = ref<HTMLElement | null>(null);
+
+// Watch for canvas ref changes and emit to parent
+watch(localCanvasRef, (newVal) => {
+  if (newVal) {
+    emit('canvas-ref-ready', newVal);
+  }
+}, { immediate: true });
+</script>
+
+<!-- 父组件 Designer.vue -->
+<CanvasPanel @canvas-ref-ready="handleCanvasRefReady" />
+
+<script setup lang="ts">
+function handleCanvasRefReady(element: HTMLElement) {
+  canvasRef.value = element;
+}
+</script>
 ```
 
 **相关文件**:
-- `src/views/Designer.vue:1434`
-- `src/views/PreviewView.vue:50-61`
+- `src/views/designer/CanvasPanel.vue:177-184`
+- `src/views/Designer.vue:175-177`
+
+---
+
+### 问题11：图表属性不更新 ⭐ 2026-01-17 新增
+
+**问题描述**:
+修改图表组件的标题、颜色等属性后，图表不重新渲染。
+
+**错误信息**:
+```
+[DEBUG] updateComponent - Component not found: undefined
+```
+
+**原因**:
+- `updateComponent` 正确更新了 store 中的数据
+- 但缺少监听图表组件变化的 watcher
+- `useWatchers` composable 在重构后未被导入和使用
+
+**解决方案**:
+```typescript
+// ✅ 在 Designer.vue 中添加图表变化监听器
+import { watch, nextTick } from 'vue';
+
+const chartTypes = [
+  'chart', 'bar-chart', 'line-chart', 'pie-chart',
+  'scatter-chart', 'gauge-chart', 'funnel-chart',
+];
+
+watch(
+  () => orderedComponents.value.filter((c) => chartTypes.includes(c.type)),
+  (newCharts, oldCharts) => {
+    nextTick(() => {
+      newCharts.forEach((component) => {
+        const oldChart = oldCharts?.find((c) => c.id === component.id);
+        let hasChanged = !oldChart;
+
+        if (!hasChanged && oldChart) {
+          // Check if config has changed (includes title)
+          if (
+            JSON.stringify((component as any).config) !==
+            JSON.stringify((oldChart as any).config)
+          ) {
+            hasChanged = true;
+          }
+          // Check other properties
+          else if (
+            JSON.stringify(component) !== JSON.stringify(oldChart)
+          ) {
+            hasChanged = true;
+          }
+        }
+
+        if (hasChanged) {
+          updateChart(component);
+        }
+      });
+    });
+  },
+  { deep: true }
+);
+```
+
+**相关文件**:
+- `src/views/Designer.vue:169-211`
+
+---
+
+### 问题12：拖拽测试目标选择器错误 ⭐ 2026-01-17 新增
+
+**错误信息**:
+```
+TimeoutError: locator.dragTo: Timeout 10000ms exceeded
+<div data-v-xxx="" class="canvas-content">…</div> intercepts pointer events
+```
+
+**原因**:
+- 测试使用 `.canvas-content-inner` 作为拖放目标
+- 但 `@drop` 事件处理器在 `.canvas-content` 上
+- 父元素拦截了指针事件
+
+**解决方案**:
+```javascript
+// ❌ 错误：拖放到 inner 元素
+const canvas = page.locator('.canvas-content-inner');
+await component.dragTo(canvas, { targetPosition: { x: 400, y: 300 } });
+
+// ✅ 正确：拖放到有 drop 处理器的元素
+const canvas = page.locator('.canvas-content');
+await component.dragTo(canvas, { targetPosition: { x: 400, y: 300 } });
+```
+
+**相关文件**:
+- `e2e/tests/drag-drop.spec.js:25, 54, 76, 98, 120, 145, 155`
+
+---
+
+### 问题13：函数名不匹配导致删除失败 ⭐ 2026-01-17 新增
+
+**错误信息**:
+```
+Expected: < 1
+Received: 1  // 组件未被删除
+```
+
+**原因**:
+- `Designer.vue` 中尝试解构 `handleDelete`
+- 但 composable 导出的是 `handleComponentDelete`
+- 导致事件处理函数未正确绑定
+
+**解决方案**:
+```typescript
+// ❌ 错误：函数名不匹配
+const designerEvents = useDesignerEvents();
+const {
+  handleUpdate,
+  handleDelete,  // ❌ 不存在
+} = designerEvents;
+
+// ✅ 正确：使用别名匹配
+const designerEvents = useDesignerEvents();
+const {
+  handleComponentUpdate: handleUpdate,
+  handleComponentDelete: handleDelete,  // ✅ 使用别名
+} = designerEvents;
+```
+
+**相关文件**:
+- `src/views/Designer.vue:121-131`
 
 ---
 
@@ -1616,8 +2055,32 @@ test('测试联动配置面板', async ({ page }) => {
   - 图表需要 1500ms 渲染
   - 组件需要 800ms 初始化
 
-- [ ] ❌ **不要在组件中使用 `.value` 访问 store** ⭐ 新增
+- [ ] ❌ **不要在组件中使用 `.value` 访问 store**
   - Pinia 自动解包，直接使用 `designerStore.currentDesign.id`
+
+- [ ] ❌ **不要拖拽到错误的元素** ⭐ 新增
+  - 测试拖拽时使用 `.canvas-content` 而非 `.canvas-content-inner`
+  - drop 事件处理器在 `.canvas-content` 上
+
+- [ ] ❌ **不要通过 prop 传递 ref** ⭐ 新增
+  - Vue 不会自动将 DOM 元素绑定到父组件的 ref
+  - 使用本地 ref + 事件通知父组件
+
+### 组件拆分检查清单 ⭐ 新增
+
+- [ ] **Ref 绑定**
+  - [ ] 不要通过 prop 传递 ref
+  - [ ] 使用本地 ref + watch + emit
+  - [ ] 父组件监听 `*-ref-ready` 事件
+
+- [ ] **函数名匹配**
+  - [ ] 确认 composable 导出的函数名
+  - [ ] 使用别名解构：`handleComponentDelete: handleDelete`
+
+- [ ] **Watcher 配置**
+  - [ ] 图表组件需要监听配置变化
+  - [ ] 使用 `watch` + `deep: true`
+  - [ ] 变化时调用 `updateChart`
 
 ### Pinia 状态管理检查清单
 
@@ -1718,6 +2181,9 @@ test('测试联动配置面板', async ({ page }) => {
 5. 组件通过拖拽添加，不是点击按钮
 6. 在组件中访问 store 不需要 .value（Pinia 自动解包）
 7. 预览功能在新页签打开，测试时直接导航到 /preview/:id
+8. 拖拽测试使用 `.canvas-content` 而非 `.canvas-content-inner` ⭐ 新增
+9. 不要通过 prop 传递 ref，使用本地 ref + 事件 ⭐ 新增
+10. 图表属性更新需要 watcher，否则不会重新渲染 ⭐ 新增
 
 参考代码：
 - e2e/tests/basic-setup.spec.js（基础测试模式）
@@ -1748,6 +2214,9 @@ Report Designer 项目中有一个测试失败了：
    - 使用 .class 而非 text=
    - Element Plus 需要特殊处理
    - 访问 store 不使用 .value
+   - 拖拽到 `.canvas-content` 而非 `.canvas-content-inner` ⭐ 新增
+   - 不要通过 prop 传递 ref ⭐ 新增
+   - 图表更新需要配置 watcher ⭐ 新增
 
 项目结构：
 - UI 结构在 src/views/Designer.vue
@@ -1863,6 +2332,9 @@ const routes: RouteRecordRaw[] = [
 3. Element Plus Select → 点击而非 selectOption
 4. 渲染未完成 → 增加等待时间到 1500ms
 5. Store 访问错误 → 不使用 .value
+6. 拖拽目标错误 → 使用 `.canvas-content` ⭐ 新增
+7. Ref 绑定失败 → 使用本地 ref + 事件 ⭐ 新增
+8. 图表不更新 → 添加 watcher 监听变化 ⭐ 新增
 
 请帮我调试以下问题：
 [描述具体问题]
@@ -1988,6 +2460,7 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
    - 在新会话中可以直接引用
 
 3. **重要更新记录**
+   - ✅ v2.4: 添加组件拆分后遇到的问题及解决方案（问题10-13）⭐ 2026-01-17
    - ✅ v2.3: 添加组件命名和统一属性面板功能 ⭐ 2026-01-17
    - ✅ v2.2: 添加路由系统和预览功能（问题9-10）
    - ✅ v2.1: 添加兼容层常见问题和解决方案（问题5-8）
@@ -2001,20 +2474,20 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
 ## 📝 文档信息
 
 **文件**: `.claude/PROJECT_CONTEXT.md`
-**版本**: 2.3
+**版本**: 2.4
 **创建日期**: 2026-01-16
 **最后更新**: 2026-01-17
 **维护者**: Claude Code + 用户
 
-**最新更新内容** (v2.3 - 2026-01-17):
-- ✅ 添加组件命名功能章节
-- ✅ 添加统一属性面板结构说明
-- ✅ 更新组件创建逻辑（默认名称生成）
-- ✅ 更新联动配置中的组件显示格式
-- ✅ 更新属性面板使用 el-collapse 的最佳实践
-- ✅ 添加相关文件列表
+**最新更新内容** (v2.4 - 2026-01-17):
+- ✅ 添加问题10: Canvas Ref 绑定问题及解决方案
+- ✅ 添加问题11: 图表属性不更新及 Watcher 配置
+- ✅ 添加问题12: 拖拽测试目标选择器错误
+- ✅ 添加问题13: 函数名不匹配导致删除失败
+- ✅ 更新测试覆盖：16个 drag-drop 测试全部通过
 
 **历史更新**:
+- v2.3: 添加组件命名功能章节和统一属性面板
 - v2.2: 添加 Vue Router 4 路由系统和预览功能
 - v2.1: 添加兼容层常见问题和解决方案
 - v2.0: 添加 Pinia 状态管理系统
@@ -2030,7 +2503,13 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
 
 这样可以大幅减少错误重犯，提高开发效率！🎯
 
-**最新功能** (v2.3 - 2026-01-17):
+**最新功能** (v2.4 - 2026-01-17):
+- 🏗️ 组件拆分完成 - Designer.vue 从 2220 行拆分为多个模块（减少 91.5%）
+- 🔧 Canvas Ref 绑定修复 - 使用本地 ref + 事件传递解决 DOM 元素引用问题
+- 📊 图表更新修复 - 添加 watcher 监听图表组件属性变化并重新渲染
+- ✅ 测试修复 - 16个 drag-drop 测试全部通过
+
+**历史功能** (v2.3 - 2026-01-17):
 - 🏷️ 组件命名功能 - 每个组件都有可编辑的名称，用于联动配置中识别
 - 📋 统一属性面板 - 所有属性使用 el-collapse 折叠面板，样式一致
 - 🤖 自动命名 - 创建组件时自动生成默认名称（格式："类型 (ID后4位)"）

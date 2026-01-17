@@ -186,7 +186,12 @@ export function useDragDrop(
       return;
     }
 
-    const canvasRect = canvasRef.value!.getBoundingClientRect();
+    // 检查 canvasRef 是否可用
+    if (!canvasRef.value) {
+      return;
+    }
+
+    const canvasRect = canvasRef.value.getBoundingClientRect();
     const mouseX = e.clientX - canvasRect.left;
     const mouseY = e.clientY - canvasRect.top;
 

@@ -1,0 +1,108 @@
+{
+  "name": "frontend-standards-checker",
+  "description": "Check frontend code against Report Designer project standards",
+  "version": "2.4",
+  "author": "Claude Code",
+  "rules": {
+    "componentSize": {
+      "maxLines": 1000,
+      "warning": 800,
+      "error": "组件文件超过 {maxLines} 行，需要拆分"
+    },
+    "typescript": {
+      "required": true,
+      "strict": true,
+      "checks": [
+        "props 必须有类型定义",
+        "emits 必须使用 defineEmits",
+        "避免使用 any 类型"
+      ]
+    },
+    "composition": {
+      "required": true,
+      "checks": [
+        "使用 <script setup>",
+        "使用 Composition API",
+        "避免 Options API"
+      ]
+    },
+    "propsEvents": {
+      "propsDown": true,
+      "eventsUp": true,
+      "checks": [
+        "子组件通过 props 接收数据",
+        "子组件通过 emit 发送事件",
+        "子组件不应直接访问 store"
+      ]
+    },
+    "storeAccess": {
+      "correct": [
+        "designerStore.currentDesign.id",
+        "const { canUndo } = designerStore"
+      ],
+      "incorrect": [
+        "designerStore.currentDesign.value.id",
+        "const value = designerStore.currentDesign.value"
+      ]
+    },
+    "testing": {
+      "selectors": [
+        "优先使用 data-testid",
+        "避免 text= 选择器",
+        "使用 .class 选择器"
+      ]
+    },
+    "imports": {
+      "alias": "@/",
+      "noRelative": "避免在 views/ 中使用 ../components",
+      "consistent": "统一使用 @/ 别名"
+    },
+    "composables": {
+      "reuse": "优先复用 src/composables 中已有逻辑",
+      "specific": "专用 composables 只处理特定功能",
+      "location": "views 专用 composables 放在 views/*/composables/"
+    }
+  },
+  "filePatterns": {
+    "components": "src/components/**/*.vue",
+    "views": "src/views/**/*.vue",
+    "composables": "src/composables/**/*.ts"
+  },
+  "checklist": {
+    "newComponent": [
+      "使用 <script setup lang=\"ts\">",
+      "定义 Props 接口",
+      "使用 defineEmits 定义事件",
+      "添加 data-testid 属性",
+      "组件大小 < 500 行"
+    ],
+    "refactor": [
+      "组件超过 800 行时考虑拆分",
+      "按 UI 区域拆分为子组件",
+      "提取逻辑到 composables",
+      "保持子组件独立（不直接访问 store）"
+    ],
+    "testing": [
+      "为关键元素添加 data-testid",
+      "使用 .class 选择器而非 text=",
+      "等待时间：组件 800ms，图表 1500ms",
+      "拖拽位置 x < 200"
+    ]
+  },
+  "examples": {
+    "good": [
+      "src/views/designer/DesignerToolbar.vue",
+      "src/views/designer/ComponentLibrary.vue",
+      "src/views/designer/properties/ComponentInfoPanel.vue"
+    ],
+    "bad": [
+      "超过 1000 行的组件文件",
+      "在子组件中直接使用 useDesignerStore()",
+      "使用 designerStore.xxx.value"
+    ]
+  },
+  "references": [
+    ".claude/PROJECT_CONTEXT.md",
+    ".claude/skills/frontend-developer.json"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "name": "frontend-developer",
+  "description": "Frontend development specialist for Report Designer project",
+  "version": "2.4",
+  "author": "Claude Code",
+  "context": {
+    "project": {
+      "name": "Report Designer",
+      "type": "Vue 3 报表设计器",
+      "techStack": [
+        "Vue 3.5",
+        "TypeScript 5.9",
+        "Vite 5.4",
+        "Pinia 2.2",
+        "Vue Router 4",
+        "Element Plus 2.13",
+        "ECharts 6.0",
+        "Playwright 1.57"
+      ]
+    },
+    "architecture": {
+      "stateManagement": "Pinia",
+      "routing": "Vue Router 4",
+      "componentPattern": "Composition API + TypeScript",
+      "styling": "Scoped CSS"
+    },
+    "standards": {
+      "componentSplit": {
+        "enabled": true,
+        "maxFileSize": 1000,
+        "pattern": "按UI区域拆分，专用Composables"
+      },
+      "propsEvents": {
+        "propsDown": true,
+        "eventsUp": true,
+        "typed": true
+      },
+      "testing": {
+        "selector": "data-testid",
+        "framework": "Playwright"
+      }
+    }
+  },
+  "guidelines": [
+    "使用 Composition API 和 <script setup>",
+    "组件 Props 必须有 TypeScript 类型定义",
+    "使用 defineEmits 定义事件类型",
+    "子组件不应直接访问 store，通过 props/emit 通信",
+    "优先复用 src/composables 中已有的逻辑",
+    "专用 composables 只处理特定功能",
+    "测试选择器使用 data-testid 属性",
+    "Pinia store 在组件中访问不需要 .value（自动解包）",
+    "使用 @/ 别名进行模块导入",
+    "组件文件超过 500 行考虑拆分"
+  ],
+  "fileStructure": {
+    "components": "src/components/",
+    "views": "src/views/",
+    "composables": "src/composables/",
+    "stores": "src/stores/pinia/",
+    "types": "src/types/",
+    "utils": "src/utils/"
+  },
+  "commonTasks": {
+    "createComponent": "创建新组件时，使用 Composition API + TypeScript",
+    "splitComponent": "组件超过 1000 行时，按 UI 区域拆分",
+    "addTest": "为组件添加 data-testid 属性，使用 Playwright 测试",
+    "useState": "使用 useDesignerStore() 访问状态，组件中不需要 .value",
+    "addRoute": "在 src/router/index.ts 添加路由配置"
+  },
+  "avoid": [
+    "在子组件中直接访问 Pinia store",
+    "使用 selectOption() 操作 Element Plus Select",
+    "在组件中使用 designerStore.xxx.value",
+    "使用模糊的 text= 选择器（测试中）",
+    "过度拆分组件（<50行）"
+  ],
+  "references": [
+    ".claude/PROJECT_CONTEXT.md",
+    "src/views/designer/ (拆分示例)",
+    "e2e/tests/ (测试示例)"
+  ]
+}

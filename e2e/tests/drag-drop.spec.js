@@ -22,7 +22,7 @@ test.describe('拖拽添加组件', () => {
     await expect(textComponent).toBeVisible();
 
     // 2. 找到画布区域
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await expect(canvas).toBeVisible();
 
     // 3. 获取初始组件数量
@@ -51,7 +51,7 @@ test.describe('拖拽添加组件', () => {
     await expect(tableComponent).toBeVisible();
 
     // 找到画布区域
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await expect(canvas).toBeVisible();
 
     // 拖拽表格组件到画布
@@ -73,7 +73,7 @@ test.describe('拖拽添加组件', () => {
     await expect(barChartComponent).toBeVisible();
 
     // 找到画布区域
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await expect(canvas).toBeVisible();
 
     // 拖拽柱状图组件到画布
@@ -95,7 +95,7 @@ test.describe('拖拽添加组件', () => {
     await expect(formComponent).toBeVisible();
 
     // 找到画布区域
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await expect(canvas).toBeVisible();
 
     // 拖拽表单组件到画布
@@ -117,7 +117,7 @@ test.describe('拖拽添加组件', () => {
     await expect(rectangleComponent).toBeVisible();
 
     // 找到画布区域
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await expect(canvas).toBeVisible();
 
     // 拖拽矩形组件到画布
@@ -142,7 +142,7 @@ test.describe('组件交互功能', () => {
 
     // 添加一个文本组件用于测试
     const textComponent = page.locator('.component-item').filter({ hasText: '文本' }).first();
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await textComponent.dragTo(canvas, {
       targetPosition: { x: 400, y: 300 }
     });
@@ -152,7 +152,7 @@ test.describe('组件交互功能', () => {
   test('应该能够选中组件', async ({ page }) => {
     // 添加组件到画布
     const textComponent = page.locator('.component-item').filter({ hasText: '文本' }).first();
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     await textComponent.dragTo(canvas, {
       targetPosition: { x: 400, y: 300 }
     });
@@ -187,6 +187,12 @@ test.describe('组件交互功能', () => {
     // 选中组件
     const component = page.locator('.canvas-component').first();
     await component.click();
+    await page.waitForTimeout(500);
+
+    // 展开"操作"面板
+    const actionsPanel = page.locator('.right-panel .el-collapse-item').filter({ hasText: '操作' });
+    await actionsPanel.click();
+    await page.waitForTimeout(300);
 
     // 点击删除按钮
     const deleteButton = page.locator('.right-panel button').filter({ hasText: '删除组件' });
@@ -291,7 +297,7 @@ test.describe('画布区域', () => {
   });
 
   test('画布应该支持拖放高亮', async ({ page }) => {
-    const canvas = page.locator('.canvas-content-inner');
+    const canvas = page.locator('.canvas-content');
     const textComponent = page.locator('.component-item').filter({ hasText: '文本' }).first();
 
     // 开始拖拽

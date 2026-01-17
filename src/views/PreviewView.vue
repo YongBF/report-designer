@@ -1,20 +1,20 @@
 <template>
-  <div class="preview-view">
+  <div class="preview-view" data-testid="preview-view">
     <!-- 顶部导航栏 -->
-    <div class="preview-header">
+    <div class="preview-header" data-testid="preview-header">
       <div class="header-left">
-        <h1 class="preview-title">{{ currentDesign.name }}</h1>
-        <span class="preview-info">{{ currentDesign.width }} × {{ currentDesign.height }}</span>
+        <h1 class="preview-title" data-testid="preview-title">{{ currentDesign.name }}</h1>
+        <span class="preview-info" data-testid="preview-info">{{ currentDesign.width }} × {{ currentDesign.height }}</span>
       </div>
       <div class="header-right">
-        <el-button @click="goBack">返回编辑</el-button>
-        <el-button type="primary" :icon="Download" @click="handleExport">导出</el-button>
+        <el-button data-testid="btn-back" @click="goBack">返回编辑</el-button>
+        <el-button type="primary" :icon="Download" data-testid="btn-export" @click="handleExport">导出</el-button>
       </div>
     </div>
 
     <!-- 预览内容区域 -->
-    <div class="preview-container">
-      <div class="preview-canvas" :style="canvasStyle">
+    <div class="preview-container" data-testid="preview-container">
+      <div class="preview-canvas" data-testid="preview-canvas" :style="canvasStyle">
         <!-- 渲染所有组件 -->
         <template v-for="component in sortedComponents" :key="component.id">
           <component
@@ -28,7 +28,7 @@
     </div>
 
     <!-- 底部提示 -->
-    <div class="preview-footer">
+    <div class="preview-footer" data-testid="preview-footer">
       <el-alert
         type="info"
         :closable="false"
@@ -45,33 +45,34 @@ import { computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Download } from '@element-plus/icons-vue';
-import { currentDesign } from '../stores/designer';
-import type { Component } from '../types';
-import TextRenderer from '../components/canvas/renderers/TextRenderer.vue';
-import ImageRenderer from '../components/canvas/renderers/ImageRenderer.vue';
-import TableRenderer from '../components/canvas/renderers/TableRenderer.vue';
-import ChartRenderer from '../components/canvas/renderers/ChartRenderer.vue';
-import RectangleRenderer from '../components/canvas/renderers/RectangleRenderer.vue';
-import LineRenderer from '../components/canvas/renderers/LineRenderer.vue';
-import BarChartRenderer from '../components/canvas/renderers/BarChartRenderer.vue';
-import LineChartRenderer from '../components/canvas/renderers/LineChartRenderer.vue';
-import PieChartRenderer from '../components/canvas/renderers/PieChartRenderer.vue';
-import ScatterChartRenderer from '../components/canvas/renderers/ScatterChartRenderer.vue';
-import GaugeChartRenderer from '../components/canvas/renderers/GaugeChartRenderer.vue';
-import FunnelChartRenderer from '../components/canvas/renderers/FunnelChartRenderer.vue';
+import { useDesignerStore } from '@/stores/pinia';
+import type { Component } from '@/types';
+import TextRenderer from '@/components/canvas/renderers/TextRenderer.vue';
+import ImageRenderer from '@/components/canvas/renderers/ImageRenderer.vue';
+import TableRenderer from '@/components/canvas/renderers/TableRenderer.vue';
+import ChartRenderer from '@/components/canvas/renderers/ChartRenderer.vue';
+import RectangleRenderer from '@/components/canvas/renderers/RectangleRenderer.vue';
+import LineRenderer from '@/components/canvas/renderers/LineRenderer.vue';
+import BarChartRenderer from '@/components/canvas/renderers/BarChartRenderer.vue';
+import LineChartRenderer from '@/components/canvas/renderers/LineChartRenderer.vue';
+import PieChartRenderer from '@/components/canvas/renderers/PieChartRenderer.vue';
+import ScatterChartRenderer from '@/components/canvas/renderers/ScatterChartRenderer.vue';
+import GaugeChartRenderer from '@/components/canvas/renderers/GaugeChartRenderer.vue';
+import FunnelChartRenderer from '@/components/canvas/renderers/FunnelChartRenderer.vue';
 
 const router = useRouter();
+const designerStore = useDesignerStore();
 
 // 按 zIndex 排序的组件
 const sortedComponents = computed(() => {
-  return [...currentDesign.value.components].sort((a, b) => a.zIndex - b.zIndex);
+  return [...designerStore.currentDesign.components].sort((a, b) => a.zIndex - b.zIndex);
 });
 
 // 预览画布样式
 const canvasStyle = computed(() => ({
-  width: `${currentDesign.value.width}px`,
-  minHeight: `${currentDesign.value.height}px`,
-  backgroundColor: currentDesign.value.backgroundColor,
+  width: `${designerStore.currentDesign.width}px`,
+  minHeight: `${designerStore.currentDesign.height}px`,
+  backgroundColor: designerStore.currentDesign.backgroundColor,
   margin: '0 auto',
   position: 'relative',
 }));
@@ -106,7 +107,7 @@ function handleExport() {
 // 组件挂载时添加preview class到body
 onMounted(() => {
   document.body.classList.add('preview');
-  document.title = `预览 - ${currentDesign.value.name}`;
+  document.title = `预览 - ${designerStore.currentDesign.name}`;
 });
 
 // 组件卸载时移除preview class
