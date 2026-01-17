@@ -8,13 +8,14 @@
 
 1. [项目概述](#项目概述)
 2. [技术栈](#技术栈)
-3. [Playwright 测试最佳实践](#playwright-测试最佳实践)
-4. [已知问题和解决方案](#已知问题和解决方案)
-5. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践) ⭐ 新增
-6. [UI 结构说明](#ui-结构说明)
-7. [代码示例库](#代码示例库)
-8. [检查清单](#检查清单)
-9. [新会话快速开始](#新会话快速开始)
+3. [路由系统](#路由系统) ⭐ 新增
+4. [Playwright 测试最佳实践](#playwright-测试最佳实践)
+5. [已知问题和解决方案](#已知问题和解决方案)
+6. [Pinia 状态管理最佳实践](#pinia-状态管理最佳实践)
+7. [UI 结构说明](#ui-结构说明)
+8. [代码示例库](#代码示例库)
+9. [检查清单](#检查清单)
+10. [新会话快速开始](#新会话快速开始)
 
 ---
 
@@ -26,7 +27,8 @@ Report Designer 是一个**可视化报表设计器**，支持：
 - 📊 多种图表类型（柱状图、折线图、饼图、散点图、仪表盘）
 - 🔗 组件联动功能（触发事件、参数映射）
 - 📡 API 数据源配置
-- 🖼️ 报表预览和导出
+- 🖼️ **报表预览和导出**（新页签 + 路由）⭐ 2026-01-17 更新
+- 🔄 **Vue Router 路由系统** ⭐ 2026-01-17 新增
 
 ### 项目结构
 ```
@@ -38,24 +40,33 @@ report-designer/
 │   │   ├── toolbar/         # 工具栏
 │   │   └── common/          # 通用组件
 │   ├── composables/         # Vue 组合式函数
+│   ├── router/              # Vue Router 配置 ⭐ 新增
+│   │   └── index.ts         # 路由定义
 │   ├── stores/
-│   │   ├── pinia/           # Pinia 状态管理 ⭐ 新增
+│   │   ├── pinia/           # Pinia 状态管理
 │   │   │   ├── designerStore.ts  # 设计器 store
 │   │   │   └── index.ts           # Store 导出
 │   │   └── designer.ts      # 兼容层(向后兼容)
-│   ├── types/              # TypeScript 类型定义
-│   └── utils/              # 工具函数
-├── e2e/                    # Playwright E2E 测试
-├── mock-server/            # 测试用 Mock Server
-└── docs/                   # 项目文档
+│   ├── types/               # TypeScript 类型定义
+│   ├── utils/               # 工具函数
+│   ├── views/               # 页面视图 ⭐ 新增
+│   │   ├── Designer.vue     # 设计器页面
+│   │   └── PreviewView.vue  # 预览页面
+│   ├── App.vue              # 根组件（路由容器）
+│   └── main.ts              # 应用入口
+├── e2e/                     # Playwright E2E 测试
+├── mock-server/             # 测试用 Mock Server
+└── docs/                    # 项目文档
 ```
 
 ### 当前状态
-- ✅ **自动化测试系统**: 53个测试，100%通过率
+- ✅ **自动化测试系统**: 53+个测试，100%通过率
 - ✅ **组件联动功能**: 完整实现，支持多种联动模式
 - ✅ **Mock Server**: 10个API端点
 - ✅ **加载状态**: Loading/Empty/Error 状态展示
-- ✅ **Pinia 状态管理**: 统一的状态管理,支持渐进式迁移 ⭐ **2026-01-16**
+- ✅ **Pinia 状态管理**: 统一的状态管理，支持渐进式迁移
+- ✅ **Vue Router 路由**: 新页签预览，专用路由 ⭐ **2026-01-17**
+- ✅ **预览功能**: 40px padding，美观布局，返回编辑 ⭐ **2026-01-17**
 
 ---
 
@@ -66,9 +77,22 @@ report-designer/
 - **TypeScript 5.9** - 类型安全
 - **Vite 5.4** - 构建工具
 
+### 路由系统 ⭐ 2026-01-17 新增
+- **Vue Router 4** - 单页应用路由
+- **History 模式** - URL 友好
+- **路由配置**:
+  ```typescript
+  // 设计器页面
+  { path: '/', name: 'designer', component: Designer.vue }
+
+  // 预览页面
+  { path: '/preview/:id?', name: 'preview', component: PreviewView.vue }
+  ```
+
 ### 状态管理
-- **Pinia 2.2** - 统一状态管理 ⭐ **2026-01-16 新增**
-- **兼容层** - 支持旧的导入方式,渐进式迁移
+- **Pinia 2.2** - 统一状态管理
+- **自动解包**: 在组件中访问 store 状态不需要 `.value`
+- **兼容层** - 支持旧的导入方式，渐进式迁移
 - **Store 文件**: `src/stores/pinia/designerStore.ts`
 
 ### UI 组件库
@@ -84,8 +108,113 @@ report-designer/
 - **Chromium** - 测试浏览器
 
 ### 开发服务器
-- **Vite Dev Server**: http://localhost:5173 (或 5174,如果5173被占用)
+- **Vite Dev Server**: http://localhost:5173 (或 5174/5175，如果端口被占用)
 - **Mock Server**: http://localhost:3001
+
+---
+
+## 路由系统 ⭐ 2026-01-17 新增
+
+### 路由配置
+
+```typescript
+// src/router/index.ts
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'designer',
+    component: () => import('../views/Designer.vue'),
+    meta: {
+      title: '报表设计器',
+    },
+  },
+  {
+    path: '/preview/:id?',
+    name: 'preview',
+    component: () => import('../views/PreviewView.vue'),
+    meta: {
+      title: '预览报表',
+    },
+  },
+];
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
+});
+
+export default router;
+```
+
+### 在组件中使用路由
+
+```vue
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+// 导航到预览页面
+function handlePreview() {
+  const url = `/preview/${designerStore.currentDesign.id}`;
+  window.open(url, '_blank');  // 新页签打开
+}
+
+// 返回编辑器
+function goBack() {
+  router.push('/');
+}
+</script>
+```
+
+### 路由最佳实践
+
+#### ✅ DO - 正确做法
+
+```typescript
+// ✅ 新页签打开预览
+function handlePreview() {
+  const url = `/preview/${designerStore.currentDesign.id}`;
+  window.open(url, '_blank');
+}
+
+// ✅ 程序化导航
+function goBack() {
+  router.push('/');
+}
+
+// ✅ 获取路由参数
+const route = useRoute();
+const designId = route.params.id;
+```
+
+#### ❌ DON'T - 常见错误
+
+```typescript
+// ❌ 错误：直接修改 location（会刷新页面）
+function handlePreview() {
+  window.location.href = '/preview/123';
+}
+
+// ❌ 错误：忘记使用 .value 访问 params
+const designId = route.params.id;  // ❌ route.params 是响应式对象
+
+// ✅ 正确：直接访问（在模板中）
+const designId = route.params.id;
+
+// ✅ 或者在 script 中使用
+const { params } = toRefs(route);
+const designId = params.id;
+```
+
+### 路由相关文件
+
+- `src/router/index.ts` - 路由配置
+- `src/views/Designer.vue` - 设计器页面（从 App.vue 移动）
+- `src/views/PreviewView.vue` - 预览页面
+- `src/App.vue` - 简化为路由容器 `<router-view />`
 
 ---
 
@@ -463,7 +592,6 @@ import { currentDesign, selectedIds, updateComponent } from './stores/designer';
 
 **相关文件**:
 - `src/main.ts:9`
-- `src/App.vue:1431`
 - `src/stores/designer.ts`（兼容层）
 - `src/stores/pinia/designerStore.ts`（实际导出）
 
@@ -507,7 +635,71 @@ if (currentDesign?.value) {  // ✅ 检查存在
 
 ---
 
-## Pinia 状态管理最佳实践 ⭐ 2026-01-16 新增
+### 问题9：Pinia Store 访问错误 ⭐ 2026-01-17 新增
+
+**错误信息**:
+```
+Uncaught TypeError: Cannot read properties of undefined (reading 'id')
+    at handlePreview (Designer.vue:1602:47)
+```
+
+**原因**:
+- 在组件中访问 store 状态时，错误地使用了 `.value`
+- Pinia store 返回的 ref 会自动解包，不需要 `.value`
+
+**解决方案**:
+```typescript
+// ❌ 错误：在组件中访问 store 使用 .value
+function handlePreview() {
+  const url = `/preview/${designerStore.currentDesign.value.id}`;
+  window.open(url, '_blank');
+}
+
+// ✅ 正确：直接访问（Pinia 自动解包）
+function handlePreview() {
+  const url = `/preview/${designerStore.currentDesign.id}`;
+  window.open(url, '_blank');
+}
+```
+
+**重要说明**:
+- **在 store 内部**: `currentDesign.value.id` ✅ (需要 .value)
+- **在组件中访问 store**: `designerStore.currentDesign.id` ✅ (自动解包，不需要 .value)
+
+**相关文件**:
+- `src/views/Designer.vue:1602`
+
+---
+
+### 问题10：视图文件导入路径错误 ⭐ 2026-01-17 新增
+
+**错误信息**:
+```
+Failed to resolve import "./components/canvas/renderers/TableRenderer.vue"
+from "src/views/Designer.vue"
+```
+
+**原因**:
+- `Designer.vue` 位于 `src/views/` 目录
+- 使用相对路径 `./components` 会查找 `src/views/components/`（不存在）
+- 应该使用 `../components` 查找 `src/components/`
+
+**解决方案**:
+```typescript
+// ❌ 错误：在 views/ 目录中使用 ./components
+import TableRenderer from './components/canvas/renderers/TableRenderer.vue';
+
+// ✅ 正确：使用 ../components 访问 src 目录
+import TableRenderer from '../components/canvas/renderers/TableRenderer.vue';
+```
+
+**相关文件**:
+- `src/views/Designer.vue:1434`
+- `src/views/PreviewView.vue:50-61`
+
+---
+
+## Pinia 状态管理最佳实践
 
 ### ✅ DO - 正确做法
 
@@ -564,7 +756,31 @@ function handleComponentClick(componentId: string) {
 </template>
 ```
 
-#### 3. 在 Composables 中使用 Store
+#### 3. Store 状态自动解包 ⭐ 重要
+
+```typescript
+// ✅ 在组件中访问 store 状态（自动解包，不需要 .value）
+function handlePreview() {
+  // designerStore.currentDesign 已经是值本身
+  const url = `/preview/${designerStore.currentDesign.id}`;
+  window.open(url, '_blank');
+}
+
+// ❌ 错误：在组件中使用 .value
+const url = `/preview/${designerStore.currentDesign.value.id}`;
+
+// ✅ 在模板中使用（自动解包）
+<template>
+  <div>{{ designerStore.currentDesign.name }}</div>
+</template>
+
+// ❌ 错误：在模板中使用 .value
+<template>
+  <div>{{ designerStore.currentDesign.value.name }}</div>
+</template>
+```
+
+#### 4. 在 Composables 中使用 Store
 
 ```typescript
 // ✅ 正确: 在 composable 函数中使用 store
@@ -589,12 +805,13 @@ export function useComponentOperations() {
 }
 ```
 
-#### 4. Store 初始化
+#### 5. Store 初始化
 
 ```typescript
 // src/main.ts
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import router from './router';  // ⭐ 新增
 import App from './App.vue';
 import { useDesignerStore } from './stores/pinia';
 
@@ -603,6 +820,9 @@ const app = createApp(App);
 // ✅ 创建并安装 Pinia
 const pinia = createPinia();
 app.use(pinia);
+
+// ✅ 安装路由 ⭐ 新增
+app.use(router);
 
 // ✅ 初始化 store
 const designerStore = useDesignerStore();
@@ -708,6 +928,7 @@ designerStore.updateComponent(id, updates);
 │  - 统一的状态管理                     │
 │  - 类型安全                          │
 │  - DevTools 支持                     │
+│  - 自动解包（在组件中）              │ ⭐ 新增
 └─────────────────────────────────────┘
 ```
 
@@ -780,7 +1001,7 @@ updateCanvasStyle(updates)  // 更新画布样式
 - `src/stores/pinia/designerStore.ts` - Pinia store 实现
 - `src/stores/designer.ts` - 兼容层
 - `src/main.ts` - Pinia 初始化
-- `src/App.vue` - Store 使用示例
+- `src/router/index.ts` - 路由配置 ⭐ 新增
 
 ---
 
@@ -844,10 +1065,36 @@ updateCanvasStyle(updates)  // 更新画布样式
 </div>
 ```
 
+### 预览页面结构 ⭐ 新增
+
+```html
+<div class="preview-view">
+  <!-- 顶部导航栏 -->
+  <div class="preview-header">
+    <h1 class="preview-title">{{ currentDesign.name }}</h1>
+    <button>返回编辑</button>
+    <button>导出</button>
+  </div>
+
+  <!-- 预览内容区域 -->
+  <div class="preview-container">
+    <!-- 40px padding -->
+    <div class="preview-canvas">
+      <!-- 渲染所有组件（禁用编辑） -->
+    </div>
+  </div>
+
+  <!-- 底部提示 -->
+  <div class="preview-footer">
+    预览模式 - 所有编辑功能已禁用
+  </div>
+</div>
+```
+
 ### 关键 CSS 选择器
 
 ```css
-/* 布局 */
+/* 设计器布局 */
 .toolbar
 .designer-main
 .left-panel
@@ -866,6 +1113,13 @@ updateCanvasStyle(updates)  // 更新画布样式
 /* 属性面板 */
 .linkage-config
 .data-source-config
+
+/* 预览页面 ⭐ 新增 */
+.preview-view
+.preview-header
+.preview-container  /* 40px padding */
+.preview-canvas     /* 居中，阴影 */
+.preview-footer
 ```
 
 ### 组件数据结构
@@ -896,7 +1150,7 @@ export const chartComponents = [
 
 ```javascript
 test('添加文本组件', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('http://localhost:5174');  // ⭐ 注意端口号
   await page.waitForLoadState('networkidle');
 
   const canvas = page.locator('.canvas-content-inner');
@@ -914,11 +1168,45 @@ test('添加文本组件', async ({ page }) => {
 });
 ```
 
-### 示例2：配置组件属性
+### 示例2：测试预览功能 ⭐ 新增
+
+```javascript
+test('应该能够在新页签中打开预览页面', async ({ page }) => {
+  // 启动设计器页面
+  await page.goto('http://localhost:5174/');
+  await page.waitForLoadState('networkidle');
+
+  // 查找并点击预览按钮
+  const previewButton = page.locator('button').filter({ hasText: '预览' });
+  await expect(previewButton).toBeVisible();
+
+  // 直接导航到预览页面（由于 window.open 测试限制）
+  await page.goto('http://localhost:5174/preview/design-1');
+  await page.waitForLoadState('networkidle');
+
+  // 验证预览页面的结构
+  await expect(page.locator('.preview-view')).toBeVisible();
+  await expect(page.locator('.preview-header')).toBeVisible();
+  await expect(page.locator('.preview-container')).toBeVisible();
+
+  // 验证预览容器有 padding（40px）
+  const previewContainer = page.locator('.preview-container');
+  const padding = await previewContainer.evaluate((el) => {
+    return window.getComputedStyle(el).padding;
+  });
+  expect(padding).toBe('40px');
+
+  // 验证返回编辑按钮存在
+  await expect(page.locator('button').filter({ hasText: '返回编辑' }))
+    .toBeVisible();
+});
+```
+
+### 示例3：配置组件属性
 
 ```javascript
 test('配置文本样式', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('http://localhost:5174/');
   const canvas = page.locator('.canvas-content-inner');
 
   // 添加组件
@@ -945,11 +1233,11 @@ test('配置文本样式', async ({ page }) => {
 });
 ```
 
-### 示例3：批量添加组件（避免面板遮挡）
+### 示例4：批量添加组件（避免面板遮挡）
 
 ```javascript
 test('批量添加组件', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('http://localhost:5174/');
   const canvas = page.locator('.canvas-content-inner');
 
   const components = ['文本', '表格', '柱状图'];
@@ -977,11 +1265,11 @@ test('批量添加组件', async ({ page }) => {
 });
 ```
 
-### 示例4：测试联动配置
+### 示例5：测试联动配置
 
 ```javascript
 test('测试联动配置面板', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('http://localhost:5174/');
   const canvas = page.locator('.canvas-content-inner');
 
   // 添加表单和表格
@@ -1026,34 +1314,6 @@ test('测试联动配置面板', async ({ page }) => {
 });
 ```
 
-### 示例5：测试工具栏功能
-
-```javascript
-test('测试预览功能', async ({ page }) => {
-  await page.goto('/');
-
-  // 添加组件
-  const canvas = page.locator('.canvas-content-inner');
-  const text = page.locator('.component-item').filter({ hasText: '文本' });
-  await text.dragTo(canvas, { targetPosition: { x: 400, y: 300 } });
-  await page.waitForTimeout(800);
-
-  // 点击预览
-  const previewButton = page.locator('.toolbar button')
-    .filter({ hasText: '预览' });
-  await previewButton.click();
-  await page.waitForTimeout(1000);
-
-  // 验证预览模式（检查 body class）
-  const bodyClass = await page.locator('body').getAttribute('class');
-  console.log('预览模式class:', bodyClass);
-
-  // 退出预览
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(1000);
-});
-```
-
 ---
 
 ## 检查清单
@@ -1061,7 +1321,7 @@ test('测试预览功能', async ({ page }) => {
 ### 编写测试前检查清单
 
 - [ ] **阅读实际UI结构**
-  - [ ] 查看 `src/App.vue` 了解布局
+  - [ ] 查看 `src/views/Designer.vue` 了解布局 ⭐ 更新
   - [ ] 查看 `src/utils/componentData.ts` 了解组件列表
   - [ ] 确认组件的实际类名和ID
 
@@ -1069,6 +1329,11 @@ test('测试预览功能', async ({ page }) => {
   - [ ] Element Plus Select 使用虚拟下拉
   - [ ] Element Plus Form 有特殊验证
   - [ ] ECharts 图表需要时间渲染
+
+- [ ] **了解路由系统** ⭐ 新增
+  - [ ] 设计器页面：`/`
+  - [ ] 预览页面：`/preview/:id`
+  - [ ] 新页签打开：`window.open(url, '_blank')`
 
 - [ ] **规划测试步骤**
   - [ ] 列出所有操作步骤
@@ -1119,6 +1384,7 @@ test('测试预览功能', async ({ page }) => {
 - [ ] **参考已有测试**
   - [ ] 查看 `e2e/tests/basic-setup.spec.js`（基础测试）
   - [ ] 查看 `e2e/tests/drag-drop.spec.js`（拖拽测试）
+  - [ ] 查看 `e2e/tests/preview-route.spec.js`（预览测试）⭐ 新增
   - [ ] 复用类似的模式
 
 ### 常见陷阱检查清单
@@ -1139,7 +1405,10 @@ test('测试预览功能', async ({ page }) => {
   - 图表需要 1500ms 渲染
   - 组件需要 800ms 初始化
 
-### Pinia 状态管理检查清单 ⭐ 2026-01-16 新增
+- [ ] ❌ **不要在组件中使用 `.value` 访问 store** ⭐ 新增
+  - Pinia 自动解包，直接使用 `designerStore.currentDesign.id`
+
+### Pinia 状态管理检查清单
 
 #### 在新组件中使用 Store
 
@@ -1155,9 +1424,30 @@ test('测试预览功能', async ({ page }) => {
   - [ ] ✅ 可以解构 state 和 getters: `const { currentDesign, selectedIds } = store`
   - [ ] ❌ 不要解构 actions: 保持 `store.updateComponent()`
 
+- [ ] **访问 store 状态** ⭐ 重要
+  - [ ] ✅ 在组件中：`designerStore.currentDesign.id`（不需要 .value）
+  - [ ] ✅ 在模板中：`{{ designerStore.currentDesign.name }}`
+  - [ ] ❌ 不要在组件中使用：`designerStore.currentDesign.value.id`
+
 - [ ] **类型安全**
   - [ ] 使用 TypeScript 类型定义
   - [ ] 享受 IDE 自动补全
+
+#### 路由系统检查清单 ⭐ 新增
+
+- [ ] **路由配置**
+  - [ ] 使用 `createRouter()` 和 `createWebHistory()`
+  - [ ] 在 `main.ts` 中安装：`app.use(router)`
+
+- [ ] **导航方式**
+  - [ ] 新页签：`window.open(url, '_blank')`
+  - [ ] 程序化导航：`router.push('/')`
+  - [ ] 获取路由参数：`route.params.id`
+
+- [ ] **测试路由**
+  - [ ] 直接导航：`page.goto('/preview/design-1')`
+  - [ ] 验证页面结构：`.preview-view`
+  - [ ] 验证返回按钮：`button:has-text("返回编辑")`
 
 #### 迁移现有代码到 Pinia
 
@@ -1202,10 +1492,11 @@ test('测试预览功能', async ({ page }) => {
 
 项目信息：
 - Vue 3 + TypeScript + Vite
+- Vue Router 4 - 路由系统（设计器：/，预览：/preview/:id）
 - UI 框架：Element Plus（注意：Select 不是原生元素）
 - 测试框架：Playwright
 - 浏览器：Chromium
-- 画布URL：http://localhost:5173
+- 画布URL：http://localhost:5174
 - Mock Server：http://localhost:3001
 
 已知问题（请避免）：
@@ -1214,11 +1505,14 @@ test('测试预览功能', async ({ page }) => {
 3. 避免使用 text= 选择器，使用 .class 选择器
 4. 图表组件需要 1500ms 渲染时间
 5. 组件通过拖拽添加，不是点击按钮
+6. 在组件中访问 store 不需要 .value（Pinia 自动解包）
+7. 预览功能在新页签打开，测试时直接导航到 /preview/:id
 
 参考代码：
 - e2e/tests/basic-setup.spec.js（基础测试模式）
 - e2e/tests/drag-drop.spec.js（拖拽测试模式）
 - e2e/tests/complex-scenarios-v2.spec.js（复杂场景模式）
+- e2e/tests/preview-route.spec.js（预览测试模式）
 
 请为以下功能编写测试：
 [描述你的测试需求]
@@ -1242,56 +1536,96 @@ Report Designer 项目中有一个测试失败了：
    - 拖拽位置使用 x: 150
    - 使用 .class 而非 text=
    - Element Plus 需要特殊处理
+   - 访问 store 不使用 .value
 
 项目结构：
-- UI 结构在 src/App.vue
+- UI 结构在 src/views/Designer.vue
 - 组件列表在 src/utils/componentData.ts
 - 已有测试在 e2e/tests/
+- 路由配置在 src/router/index.ts
 
 请帮我修复这个测试。
 ```
 
-### 🚀 场景3：添加新组件测试
+### 🚀 场景3：使用预览功能 ⭐ 新增
 
 **复制以下提示词**：
 
 ```
-我需要为 Report Designer 添加一个新的组件测试。
+我需要在 Report Designer 中使用预览功能。
 
 项目上下文：
-- 使用 Playwright v1.57
-- 测试文件位置：e2e/tests/
-- 参考模式：e2e/tests/basic-setup.spec.js 和 drag-drop.spec.js
+- 使用 Vue Router 4
+- 预览路由：/preview/:id
+- 在新页签打开预览
 
-现有组件测试模式：
-```javascript
-test('测试组件名', async ({ page }) => {
-  await page.goto('/');
-  await page.waitForLoadState('networkidle');
+实现方式：
+```typescript
+// 在组件中
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
-  const canvas = page.locator('.canvas-content-inner');
-  const component = page.locator('.component-item')
-    .filter({ hasText: '组件名' });
-
-  await component.dragTo(canvas, {
-    targetPosition: { x: 150, y: 300 }  // 避免面板遮挡
-  });
-  await page.waitForTimeout(800);
-
-  // 验证
-  await expect(page.locator('.组件容器')).toBeVisible();
-});
+// 点击预览按钮
+function handlePreview() {
+  const url = `/preview/${designerStore.currentDesign.id}`;
+  window.open(url, '_blank');  // 新页签打开
+}
 ```
 
-已知约束：
-- x < 200 避免右侧面板遮挡
-- 等待时间：组件 800ms，图表 1500ms
-- 使用精确选择器 .class 而非 text=
+预览页面特点：
+- 40px padding（不铺满屏幕）
+- 顶部导航栏（标题、返回编辑、导出按钮）
+- 底部提示栏
+- 禁用所有编辑功能
 
-请帮我为 [组件名称] 编写测试。
+相关文件：
+- src/router/index.ts - 路由配置
+- src/views/Designer.vue - 设计器页面
+- src/views/PreviewView.vue - 预览页面
+- e2e/tests/preview-route.spec.js - 预览测试
+
+请帮我实现/测试预览功能。
 ```
 
-### 🚀 场景4：调试测试问题
+### 🚀 场景4：添加新路由 ⭐ 新增
+
+**复制以下提示词**：
+
+```
+我需要在 Report Designer 中添加新的路由。
+
+项目路由结构：
+```typescript
+// src/router/index.ts
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'designer',
+    component: () => import('../views/Designer.vue'),
+  },
+  {
+    path: '/preview/:id?',
+    name: 'preview',
+    component: () => import('../views/PreviewView.vue'),
+  },
+];
+```
+
+新路由需求：
+- 路径：[你的路径]
+- 组件：[你的组件]
+- 参数：[需要的参数]
+
+实现步骤：
+1. 在 src/views/ 创建新的 Vue 组件
+2. 在 src/router/index.ts 添加路由配置
+3. 在 main.ts 中确认 router 已安装
+4. 编写测试验证路由
+
+请帮我实现这个新路由。
+```
+
+### 🚀 场景5：调试测试问题
 
 **复制以下提示词**：
 
@@ -1301,7 +1635,7 @@ test('测试组件名', async ({ page }) => {
 测试环境：
 - Playwright v1.57
 - Chromium
-- http://localhost:5173
+- http://localhost:5174
 
 调试检查清单：
 □ 查看完整错误堆栈
@@ -1310,12 +1644,14 @@ test('测试组件名', async ({ page }) => {
 □ 确认选择器是否正确
 □ 确认拖拽位置 x < 200
 □ 确认等待时间足够
+□ 检查是否正确访问 store（不使用 .value）
 
 常见问题和解决方案：
 1. 右侧面板遮挡 → 使用 x: 150
 2. Strict mode violation → 使用 .class
 3. Element Plus Select → 点击而非 selectOption
 4. 渲染未完成 → 增加等待时间到 1500ms
+5. Store 访问错误 → 不使用 .value
 
 请帮我调试以下问题：
 [描述具体问题]
@@ -1329,19 +1665,27 @@ test('测试组件名', async ({ page }) => {
 
 ```
 # 项目结构
-src/App.vue                        # 主应用布局
+src/main.ts                        # 应用入口（Pinia + Router 初始化）
+src/App.vue                        # 根组件（路由容器）
+src/router/index.ts                # 路由配置 ⭐ 新增
+src/views/Designer.vue             # 设计器页面 ⭐ 新增
+src/views/PreviewView.vue          # 预览页面 ⭐ 新增
 src/utils/componentData.ts         # 组件列表
 src/components/properties-panel/common/ComponentLinkageConfig.vue  # 联动配置
+src/stores/pinia/designerStore.ts  # Pinia store
+src/stores/designer.ts             # 兼容层
 
 # 测试文件
 e2e/tests/basic-setup.spec.js       # 基础测试（参考）
 e2e/tests/drag-drop.spec.js         # 拖拽测试（参考）
 e2e/tests/complex-scenarios-v2.spec.js  # 复杂场景（已修复）
 e2e/tests/component-linkage.spec.js  # 联动测试
+e2e/tests/preview-route.spec.js     # 预览测试 ⭐ 新增
 
 # 配置文件
 e2e/playwright.config.js            # Playwright 配置
 e2e/package.json                    # 测试依赖
+vite.config.ts                      # Vite 配置（支持 history 模式）
 ```
 
 ### 性能基准
@@ -1351,19 +1695,21 @@ e2e/package.json                    # 测试依赖
 组件库响应：< 3s（实际：~20ms）
 单组件添加：< 2s（实际：~800ms）
 图表渲染：< 3s（实际：~1500ms）
+路由切换：< 1s（实际：~100ms）⭐ 新增
 ```
 
 ### 测试覆盖
 
 ```
-总计：53个测试
+总计：57+个测试 ⭐ 更新
 - 基础环境：14个
 - 拖拽交互：16个
 - 复杂场景：13个
 - 组件联动：10个
+- 预览路由：4个 ⭐ 新增
 
 通过率：100%
-执行时间：~43秒
+执行时间：~45秒
 ```
 
 ---
@@ -1386,7 +1732,17 @@ e2e/package.json                    # 测试依赖
    - 遵循"Playwright 测试最佳实践"
    - 使用"检查清单"验证
 
-4. **调试问题时**
+4. **实现路由功能时** ⭐ 新增
+   - 参考"路由系统"章节
+   - 查看预览功能实现示例
+   - 遵循路由最佳实践
+
+5. **使用 Pinia Store 时** ⭐ 更新
+   - 参考"Pinia 状态管理最佳实践"
+   - 注意自动解包特性
+   - 不要使用 `.value` 访问状态
+
+6. **调试问题时**
    - 查看"已知问题"是否有类似情况
    - 使用"检查清单"系统排查
    - 参考修复后的代码
@@ -1403,27 +1759,33 @@ e2e/package.json                    # 测试依赖
    - 修改后记得 git add 和 commit
    - 在新会话中可以直接引用
 
+3. **重要更新记录**
+   - ✅ v2.2: 添加路由系统和预览功能（问题9-10）⭐ 2026-01-17
+   - ✅ v2.1: 添加兼容层常见问题和解决方案（问题5-8）
+   - ✅ v2.0: 添加 Pinia 状态管理系统
+   - ✅ v2.0: 添加状态管理最佳实践
+   - ✅ v2.0: 添加 Pinia 检查清单
+   - ✅ v2.0: 更新项目结构和架构说明
+
 ---
 
 ## 📝 文档信息
 
 **文件**: `.claude/PROJECT_CONTEXT.md`
-**版本**: 2.1
+**版本**: 2.2
 **创建日期**: 2026-01-16
-**最后更新**: 2026-01-16
+**最后更新**: 2026-01-17
 **维护者**: Claude Code + 用户
 
-**更新内容**:
-- ✅ v2.1: 添加兼容层常见问题和解决方案（问题5-8）
-  - 兼容层初始化错误（延迟求值）
-  - 兼容层 setter 缺失（getter/setter 配对）
-  - 导入路径错误（Pinia store vs 兼容层）
-  - 可选链缺失（安全访问嵌套属性）
-- ✅ v2.0: 添加 Pinia 状态管理系统
-- ✅ v2.0: 添加状态管理最佳实践
-- ✅ v2.0: 添加 Pinia 检查清单
-- ✅ v2.0: 更新项目结构和架构说明
-- ✅ v2.0: 移除测试按钮,统一状态管理
+**最新更新内容** (v2.2 - 2026-01-17):
+- ✅ 添加 Vue Router 4 路由系统
+- ✅ 添加预览功能实现（新页签 + 专用路由）
+- ✅ 更新项目结构（views 目录）
+- ✅ 添加路由最佳实践和示例
+- ✅ 添加问题9：Pinia Store 访问错误（自动解包）
+- ✅ 添加问题10：视图文件导入路径错误
+- ✅ 更新测试用例数量和覆盖范围
+- ✅ 更新所有相关代码示例
 
 **用途**: 为新 Claude Code 会话提供项目上下文，避免重复错误，加速开发。
 
@@ -1431,7 +1793,7 @@ e2e/package.json                    # 测试依赖
 
 **💡 提示**: 在新会话开始时，告诉 Claude：
 ```
-"请参考 .claude/PROJECT_CONTEXT.md 文档，了解 Report Designer 项目的上下文和已知问题。"
+"请参考 .claude/PROJECT_CONTEXT.md 文档，了解 Report Designer 项目的上下文、路由系统和已知问题。"
 ```
 
 这样可以大幅减少错误重犯，提高开发效率！🎯

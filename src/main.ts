@@ -6,6 +6,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 import App from './App.vue';
+import router from './router';
 import { useDesignerStore } from './stores/pinia';
 
 const app = createApp(App);
@@ -13,6 +14,9 @@ const app = createApp(App);
 // 创建 Pinia 实例
 const pinia = createPinia();
 app.use(pinia);
+
+// 使用路由
+app.use(router);
 
 // 初始化设计器 store
 const designerStore = useDesignerStore();

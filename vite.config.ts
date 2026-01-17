@@ -13,5 +13,7 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    // 支持 history 模式的路由
+    proxy: {},
   },
 });

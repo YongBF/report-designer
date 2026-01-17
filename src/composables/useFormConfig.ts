@@ -15,7 +15,7 @@
 
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { saveHistory, updateComponent } from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
 import type { Component, FormItemOption } from '../types';
 
 /**
@@ -24,6 +24,7 @@ import type { Component, FormItemOption } from '../types';
  * @param selectedFormComponent - 选中的表单组件
  */
 export function useFormConfig(selectedFormComponent: any) {
+  const designerStore = useDesignerStore();
   // 表单配置状态
   const formCollapseActive = ref(['layout']);
   const formItemEditorVisible = ref(false);
@@ -98,10 +99,10 @@ export function useFormConfig(selectedFormComponent: any) {
         break;
     }
 
-    // 使用 updateComponent 确保响应式更新
+    // 使用 designerStore.updateComponent 确保响应式更新
     const newItems = [...form.items, newItem];
-    updateComponent(form.id, { items: newItems });
-    saveHistory('添加表单项');
+    designerStore.updateComponent(form.id, { items: newItems });
+    designerStore.saveHistory('添加表单项');
   }
 
   /**
@@ -111,10 +112,10 @@ export function useFormConfig(selectedFormComponent: any) {
     const form = selectedFormComponent.value;
     if (!form || !form.items) return;
 
-    // 使用 updateComponent 确保响应式更新
+    // 使用 designerStore.updateComponent 确保响应式更新
     const newItems = form.items.filter((_: any, i: number) => i !== index);
-    updateComponent(form.id, { items: newItems });
-    saveHistory('删除表单项');
+    designerStore.updateComponent(form.id, { items: newItems });
+    designerStore.saveHistory('删除表单项');
   }
 
   /**
@@ -189,12 +190,12 @@ export function useFormConfig(selectedFormComponent: any) {
     delete item.optionsApiConfigHeadersJson;
     delete item.optionsApiConfigParamsJson;
 
-    // 使用 updateComponent 确保响应式更新
+    // 使用 designerStore.updateComponent 确保响应式更新
     const newItems = [...form.items];
     newItems[editingFormItemIndex.value] = item;
-    updateComponent(form.id, { items: newItems });
+    designerStore.updateComponent(form.id, { items: newItems });
     formItemEditorVisible.value = false;
-    saveHistory('编辑表单项');
+    designerStore.saveHistory('编辑表单项');
     ElMessage.success('表单项已保存');
   }
 

@@ -16,13 +16,16 @@
  */
 
 import { ref, computed } from 'vue';
-import { currentDesign, selectedIds } from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
+import { storeToRefs } from 'pinia';
 import type { Component } from '../types';
 
 /**
  * 组件状态管理的 composable
  */
 export function useComponentState() {
+  const designerStore = useDesignerStore();
+  const { currentDesign, selectedIds } = storeToRefs(designerStore);
   // Canvas 引用
   const canvasRef = ref<HTMLElement>();
 

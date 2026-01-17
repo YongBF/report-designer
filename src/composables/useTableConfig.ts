@@ -14,7 +14,7 @@
  */
 
 import { ref, computed } from 'vue';
-import { saveHistory, updateComponent } from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
 import type { Component } from '../types';
 
 /**
@@ -23,6 +23,7 @@ import type { Component } from '../types';
  * @param selectedComponent - 选中的组件
  */
 export function useTableConfig(selectedComponent: any) {
+  const designerStore = useDesignerStore();
   // 表格配置状态
   const tableCollapseActive = ref(['basic']);
   const tableDataSourceType = ref('static');
@@ -53,7 +54,7 @@ export function useTableConfig(selectedComponent: any) {
       fixed: '' as string | undefined,
     };
     table.columns.push(newColumn);
-    saveHistory('添加列');
+    designerStore.saveHistory('添加列');
   }
 
   /**
@@ -64,7 +65,7 @@ export function useTableConfig(selectedComponent: any) {
 
     const table = selectedComponent.value as any;
     table.columns.splice(index, 1);
-    saveHistory('删除列');
+    designerStore.saveHistory('删除列');
   }
 
   /**
@@ -83,7 +84,7 @@ export function useTableConfig(selectedComponent: any) {
       table.columns[index] = table.columns[index + 1];
       table.columns[index + 1] = temp;
     }
-    saveHistory('移动列');
+    designerStore.saveHistory('移动列');
   }
 
   /**
@@ -151,8 +152,8 @@ export function useTableConfig(selectedComponent: any) {
 
     const table = selectedComponent.value as any;
 
-    // 使用 updateComponent 确保响应式更新
-    updateComponent(table.id, {
+    // 使用 designerStore.updateComponent 确保响应式更新
+    designerStore.updateComponent(table.id, {
       dataSource: {
         ...table.dataSource,
         staticData: [...staticData.value],
@@ -160,7 +161,7 @@ export function useTableConfig(selectedComponent: any) {
     });
 
     staticDataEditorVisible.value = false;
-    saveHistory('更新静态数据');
+    designerStore.saveHistory('更新静态数据');
   }
 
   return {

@@ -12,13 +12,16 @@
  * @since 2025-01-15
  */
 
-import { currentDesign } from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
+import { storeToRefs } from 'pinia';
 import type { Component, ComponentType } from '../types';
 
 /**
  * 组件创建的 composable
  */
 export function useComponentCreation() {
+  const designerStore = useDesignerStore();
+  const { currentDesign } = storeToRefs(designerStore);
   /**
    * 创建指定类型的组件
    * @param type - 组件类型

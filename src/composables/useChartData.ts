@@ -15,7 +15,7 @@
 
 import { ref, watch, nextTick } from 'vue';
 import { ElMessage } from 'element-plus';
-import { currentDesign, updateComponent } from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
 import type { Component } from '../types';
 
 interface ChartSeries {
@@ -34,6 +34,9 @@ export function useChartData(
   selectedComponent: any,
   updateChart: (component: Component) => void
 ) {
+  const designerStore = useDesignerStore();
+  const { currentDesign } = designerStore;
+
   // 图表数据编辑状态
   const chartDataEditorVisible = ref(false);
   const chartDataSourceType = ref('static');
@@ -147,7 +150,7 @@ export function useChartData(
       };
 
       // 更新组件的 dataSource
-      updateComponent(selectedComponent.value.id, {
+      designerStore.updateComponent(selectedComponent.value.id, {
         dataSource: {
           ...selectedComponent.value.dataSource!,
           type: 'static',
@@ -156,7 +159,7 @@ export function useChartData(
       });
     } else if (chartDataSourceType.value === 'api') {
       // 更新 API 配置
-      updateComponent(selectedComponent.value.id, {
+      designerStore.updateComponent(selectedComponent.value.id, {
         dataSource: {
           ...selectedComponent.value.dataSource!,
           type: 'api',

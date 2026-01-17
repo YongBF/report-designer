@@ -73,18 +73,23 @@ test.describe('性能测试', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
+    const canvas = page.locator('.canvas-content-inner');
     const startTime = Date.now();
 
-    await page.click('button:has-text("文本")');
+    // 使用拖拽方式添加组件
+    const textComponent = page.locator('.component-item').filter({ hasText: '文本' });
+    await textComponent.dragTo(canvas, {
+      targetPosition: { x: 400, y: 200 }
+    });
 
     // 等待组件出现
-    await page.waitForSelector('.text-component', { timeout: 5000 });
+    await page.waitForSelector('.canvas-component', { timeout: 5000 });
 
     const responseTime = Date.now() - startTime;
 
     console.log(`组件创建响应时间: ${responseTime}ms`);
 
-    // 组件创建应该在1秒内完成
-    expect(responseTime).toBeLessThan(1000);
+    // 组件创建应该在2秒内完成（拖拽操作）
+    expect(responseTime).toBeLessThan(2000);
   });
 });

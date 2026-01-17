@@ -16,13 +16,8 @@
 
 import { ref, type Ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import {
-  currentDesign,
-  selectedIds,
-  addComponent,
-  removeComponents,
-  saveHistory,
-} from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
+import { storeToRefs } from 'pinia';
 import type { Component, ComponentType } from '../types';
 
 interface ComponentItem {
@@ -43,6 +38,8 @@ export function useDragDrop(
   orderedComponents: any,
   createComponent: (type: ComponentType) => Component | null
 ) {
+  const designerStore = useDesignerStore();
+  const { currentDesign, selectedIds } = storeToRefs(designerStore);
   // 拖拽状态
   const draggingComponentId = ref<string | null>(null);
   const dropIndex = ref<number | null>(null);
@@ -103,10 +100,10 @@ export function useDragDrop(
 
       currentDesign.value.components.push(newComponent);
       selectedIds.value = [newComponent.id];
-      saveHistory('添加组件');
+      designerStore.saveHistory('添加组件');
     } else {
-      // 使用默认的 addComponent
-      addComponent(newComponent);
+      // 使用默认的 designerStore.addComponent
+      designerStore.addComponent(newComponent);
     }
 
     ElMessage.success('组件已添加');
@@ -324,7 +321,7 @@ export function useDragDrop(
    */
   function handleDelete() {
     if (selectedIds.value.length > 0) {
-      removeComponents(selectedIds.value);
+      designerStore.removeComponents(selectedIds.value);
       ElMessage.success('组件已删除');
     }
   }

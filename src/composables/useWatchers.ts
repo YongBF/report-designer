@@ -18,7 +18,8 @@
  */
 
 import { watch, nextTick } from 'vue';
-import { currentDesign } from '../stores/designer';
+import { useDesignerStore } from '../stores/pinia';
+import { storeToRefs } from 'pinia';
 import type { Component } from '../types';
 
 interface WatchersDeps {
@@ -52,6 +53,9 @@ interface WatchersDeps {
  * @param deps - 依赖的状态和方法
  */
 export function useWatchers(deps: WatchersDeps) {
+  const designerStore = useDesignerStore();
+  const { currentDesign } = storeToRefs(designerStore);
+
   const {
     selectedComponent,
     orderedComponents,

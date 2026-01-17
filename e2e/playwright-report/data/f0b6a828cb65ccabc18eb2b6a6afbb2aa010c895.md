@@ -1,0 +1,384 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - button "新建" [ref=e5] [cursor=pointer]:
+      - img [ref=e7]
+      - generic [ref=e9]: 新建
+    - button "撤销" [disabled] [ref=e10]:
+      - img [ref=e12]
+      - generic [ref=e15]: 撤销
+    - button "重做" [disabled] [ref=e16]:
+      - img [ref=e18]
+      - generic [ref=e20]: 重做
+    - button "保存" [ref=e21] [cursor=pointer]:
+      - img [ref=e23]
+      - generic [ref=e25]: 保存
+    - button "预览" [ref=e26] [cursor=pointer]:
+      - img [ref=e28]
+      - generic [ref=e30]: 预览
+    - separator [ref=e31]
+    - generic [ref=e32]: 💡 提示：点击组件选中后，拖拽蓝色手柄可移动组件
+  - generic [ref=e33]:
+    - generic [ref=e34]:
+      - heading "组件库" [level=3] [ref=e36]
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]: 基础组件
+          - generic [ref=e40]:
+            - img [ref=e42]
+            - generic [ref=e44]: 文本
+          - generic [ref=e45]:
+            - img [ref=e47]
+            - generic [ref=e50]: 图片
+          - generic [ref=e51]:
+            - img [ref=e53]
+            - generic [ref=e55]: 表格
+          - generic [ref=e56]:
+            - img [ref=e58]
+            - generic [ref=e60]: 表单
+        - generic [ref=e61]:
+          - generic [ref=e62]: 图表组件
+          - generic [ref=e63]:
+            - img [ref=e65]
+            - generic [ref=e67]: 柱状图
+          - generic [ref=e68]:
+            - img [ref=e70]
+            - generic [ref=e72]: 折线图
+          - generic [ref=e73]:
+            - img [ref=e75]
+            - generic [ref=e78]: 饼图
+          - generic [ref=e79]:
+            - img [ref=e81]
+            - generic [ref=e83]: 散点图
+          - generic [ref=e84]:
+            - img [ref=e86]
+            - generic [ref=e90]: 仪表盘
+        - generic [ref=e91]:
+          - generic [ref=e92]: 形状组件
+          - generic [ref=e93]:
+            - img [ref=e95]
+            - generic [ref=e97]: 矩形
+          - generic [ref=e98]:
+            - img [ref=e100]
+            - generic [ref=e104]: 线条
+    - generic [ref=e120]: 双击编辑文本
+    - generic [ref=e121]:
+      - heading "属性面板" [level=3] [ref=e123]
+      - generic [ref=e125]:
+        - paragraph [ref=e126]:
+          - strong [ref=e127]: "组件类型:"
+          - text: line-chart
+        - paragraph [ref=e128]:
+          - strong [ref=e129]: "组件ID:"
+          - text: line-chart-1768619245932
+        - separator [ref=e130]
+        - generic [ref=e131]:
+          - generic [ref=e132]:
+            - generic [ref=e133]: 宽度
+            - generic [ref=e136] [cursor=pointer]:
+              - generic:
+                - combobox "宽度" [ref=e138]
+                - generic [ref=e139]: 100%
+              - img [ref=e142]
+          - generic [ref=e144]:
+            - generic [ref=e145]: 高度
+            - generic [ref=e147]:
+              - button "减少数值" [ref=e148] [cursor=pointer]:
+                - img [ref=e150]
+              - button "增加数值" [ref=e152] [cursor=pointer]:
+                - img [ref=e154]
+              - spinbutton "高度" [ref=e158]: "400"
+          - generic [ref=e159]:
+            - generic [ref=e160]: 排序
+            - generic [ref=e162]:
+              - button "减少数值" [ref=e163] [cursor=pointer]:
+                - img [ref=e165]
+              - button "增加数值" [ref=e167] [cursor=pointer]:
+                - img [ref=e169]
+              - spinbutton "排序" [ref=e173]: "1"
+          - generic [ref=e174]:
+            - generic [ref=e175]: 可见
+            - generic [ref=e177]:
+              - switch "可见" [checked]
+          - generic [ref=e180]:
+            - generic [ref=e181]: 锁定
+            - generic [ref=e183]:
+              - switch "锁定"
+        - separator [ref=e186]:
+          - generic [ref=e187]: 折线图属性
+        - generic [ref=e188]:
+          - separator [ref=e189]:
+            - generic [ref=e190]: 基础配置
+          - generic [ref=e191]:
+            - generic [ref=e192]: 标题
+            - textbox "标题" [ref=e196]: 折线图
+          - generic [ref=e197]:
+            - generic [ref=e198]: 标题字号
+            - generic [ref=e200]:
+              - button "减少数值" [ref=e201] [cursor=pointer]:
+                - img [ref=e203]
+              - button "增加数值" [ref=e205] [cursor=pointer]:
+                - img [ref=e207]
+              - spinbutton "标题字号" [ref=e211]: "18"
+          - generic [ref=e212]:
+            - generic [ref=e213]: 标题颜色
+            - button "标题颜色" [ref=e215]:
+              - img [ref=e220] [cursor=pointer]
+          - generic [ref=e222]:
+            - generic [ref=e223]: 显示图例
+            - generic [ref=e225]:
+              - switch "显示图例" [checked]
+          - generic [ref=e228]:
+            - generic [ref=e229]: 图例位置
+            - generic [ref=e232] [cursor=pointer]:
+              - generic:
+                - combobox "图例位置" [ref=e234]
+                - generic [ref=e235]: 顶部
+              - img [ref=e238]
+          - generic [ref=e240]:
+            - generic [ref=e241]: 主题
+            - generic [ref=e244] [cursor=pointer]:
+              - generic:
+                - combobox "主题" [ref=e246]
+                - generic [ref=e247]: 默认
+              - img [ref=e250]
+          - generic [ref=e252]:
+            - generic [ref=e253]: 背景色
+            - button "背景色" [ref=e255]:
+              - img [ref=e260] [cursor=pointer]
+          - generic [ref=e262]:
+            - generic [ref=e263]: 开启动画
+            - generic [ref=e265]:
+              - switch "开启动画" [checked]
+          - generic [ref=e268]:
+            - generic [ref=e269]: 动画时长
+            - generic [ref=e271]:
+              - button "减少数值" [ref=e272] [cursor=pointer]:
+                - img [ref=e274]
+              - button "增加数值" [ref=e276] [cursor=pointer]:
+                - img [ref=e278]
+              - spinbutton "动画时长" [ref=e282]: "1000"
+          - separator [ref=e283]:
+            - generic [ref=e284]: X轴配置
+          - generic [ref=e285]:
+            - generic [ref=e286]: 显示X轴
+            - generic [ref=e288]:
+              - switch "显示X轴" [checked]
+          - generic [ref=e291]:
+            - generic [ref=e292]: 轴名称
+            - textbox "轴名称" [ref=e296]: 类别
+          - generic [ref=e297]:
+            - generic [ref=e298]: 名称字号
+            - generic [ref=e300]:
+              - button "减少数值" [ref=e301] [cursor=pointer]:
+                - img [ref=e303]
+              - button "增加数值" [ref=e305] [cursor=pointer]:
+                - img [ref=e307]
+              - spinbutton "名称字号" [ref=e311]: "14"
+          - generic [ref=e312]:
+            - generic [ref=e313]: 名称颜色
+            - button "名称颜色" [ref=e315]:
+              - img [ref=e320] [cursor=pointer]
+          - generic [ref=e322]:
+            - generic [ref=e323]: 标签字号
+            - generic [ref=e325]:
+              - button "减少数值" [ref=e326] [cursor=pointer]:
+                - img [ref=e328]
+              - button "增加数值" [ref=e330] [cursor=pointer]:
+                - img [ref=e332]
+              - spinbutton "标签字号" [ref=e336]: "12"
+          - generic [ref=e337]:
+            - generic [ref=e338]: 标签颜色
+            - button "标签颜色" [ref=e340]:
+              - img [ref=e345] [cursor=pointer]
+          - generic [ref=e347]:
+            - generic [ref=e348]: 轴线颜色
+            - button "轴线颜色" [ref=e350]:
+              - img [ref=e355] [cursor=pointer]
+          - generic [ref=e357]:
+            - generic [ref=e358]: 轴线宽度
+            - generic [ref=e360]:
+              - button "减少数值" [ref=e361] [cursor=pointer]:
+                - img [ref=e363]
+              - button "增加数值" [ref=e365] [cursor=pointer]:
+                - img [ref=e367]
+              - spinbutton "轴线宽度" [ref=e371]: "1"
+          - separator [ref=e372]:
+            - generic [ref=e373]: Y轴配置
+          - generic [ref=e374]:
+            - generic [ref=e375]: 显示Y轴
+            - generic [ref=e377]:
+              - switch "显示Y轴" [checked]
+          - generic [ref=e380]:
+            - generic [ref=e381]: 轴名称
+            - textbox "轴名称" [ref=e385]: 数值
+          - generic [ref=e386]:
+            - generic [ref=e387]: 名称字号
+            - generic [ref=e389]:
+              - button "减少数值" [ref=e390] [cursor=pointer]:
+                - img [ref=e392]
+              - button "增加数值" [ref=e394] [cursor=pointer]:
+                - img [ref=e396]
+              - spinbutton "名称字号" [ref=e400]: "14"
+          - generic [ref=e401]:
+            - generic [ref=e402]: 名称颜色
+            - button "名称颜色" [ref=e404]:
+              - img [ref=e409] [cursor=pointer]
+          - generic [ref=e411]:
+            - generic [ref=e412]: 标签字号
+            - generic [ref=e414]:
+              - button "减少数值" [ref=e415] [cursor=pointer]:
+                - img [ref=e417]
+              - button "增加数值" [ref=e419] [cursor=pointer]:
+                - img [ref=e421]
+              - spinbutton "标签字号" [ref=e425]: "12"
+          - generic [ref=e426]:
+            - generic [ref=e427]: 标签颜色
+            - button "标签颜色" [ref=e429]:
+              - img [ref=e434] [cursor=pointer]
+          - generic [ref=e436]:
+            - generic [ref=e437]: 轴线颜色
+            - button "轴线颜色" [ref=e439]:
+              - img [ref=e444] [cursor=pointer]
+          - generic [ref=e446]:
+            - generic [ref=e447]: 轴线宽度
+            - generic [ref=e449]:
+              - button "减少数值" [ref=e450] [cursor=pointer]:
+                - img [ref=e452]
+              - button "增加数值" [ref=e454] [cursor=pointer]:
+                - img [ref=e456]
+              - spinbutton "轴线宽度" [ref=e460]: "1"
+          - separator [ref=e461]:
+            - generic [ref=e462]: 系列配置
+          - generic [ref=e463]:
+            - generic [ref=e464]: 显示标签
+            - generic [ref=e466]:
+              - switch "显示标签"
+          - generic [ref=e469]:
+            - generic [ref=e470]: 标签位置
+            - generic [ref=e473] [cursor=pointer]:
+              - generic:
+                - combobox "标签位置" [ref=e475]
+                - generic [ref=e476]: 顶部
+              - img [ref=e479]
+          - generic [ref=e481]:
+            - generic [ref=e482]: 标签字号
+            - generic [ref=e484]:
+              - button "减少数值" [ref=e485] [cursor=pointer]:
+                - img [ref=e487]
+              - button "增加数值" [ref=e489] [cursor=pointer]:
+                - img [ref=e491]
+              - spinbutton "标签字号" [ref=e495]: "12"
+          - generic [ref=e496]:
+            - generic [ref=e497]: 标签颜色
+            - button "标签颜色" [ref=e499]:
+              - img [ref=e504] [cursor=pointer]
+          - generic [ref=e506]:
+            - generic [ref=e507]: 边框宽度
+            - generic [ref=e509]:
+              - button "减少数值" [ref=e510]:
+                - img [ref=e512]
+              - button "增加数值" [ref=e514] [cursor=pointer]:
+                - img [ref=e516]
+              - spinbutton "边框宽度" [ref=e520]: "0"
+          - generic [ref=e521]:
+            - generic [ref=e522]: 边框颜色
+            - button "边框颜色" [ref=e524]:
+              - img [ref=e529] [cursor=pointer]
+          - generic [ref=e531]:
+            - generic [ref=e532]: 圆角
+            - generic [ref=e534]:
+              - button "减少数值" [ref=e535]:
+                - img [ref=e537]
+              - button "增加数值" [ref=e539] [cursor=pointer]:
+                - img [ref=e541]
+              - spinbutton "圆角" [ref=e545]: "0"
+          - generic [ref=e546]:
+            - generic [ref=e547]: 区域透明度
+            - generic [ref=e549]:
+              - button "减少数值" [ref=e550] [cursor=pointer]:
+                - img [ref=e552]
+              - button "增加数值" [ref=e554] [cursor=pointer]:
+                - img [ref=e556]
+              - spinbutton "区域透明度" [ref=e560]: "0.3"
+          - separator [ref=e561]:
+            - generic [ref=e562]: 折线图配置
+          - generic [ref=e563]:
+            - generic [ref=e564]: 平滑曲线
+            - generic [ref=e566]:
+              - switch "平滑曲线"
+          - generic [ref=e569]:
+            - generic [ref=e570]: 阶梯线
+            - generic [ref=e572]:
+              - switch "阶梯线"
+          - generic [ref=e575]:
+            - generic [ref=e576]: 显示标记
+            - generic [ref=e578]:
+              - switch "显示标记" [checked]
+          - generic [ref=e581]:
+            - generic [ref=e582]: 标记大小
+            - generic [ref=e584]:
+              - button "减少数值" [ref=e585] [cursor=pointer]:
+                - img [ref=e587]
+              - button "增加数值" [ref=e589] [cursor=pointer]:
+                - img [ref=e591]
+              - spinbutton "标记大小" [ref=e595]: "6"
+          - generic [ref=e596]:
+            - generic [ref=e597]: 线宽
+            - generic [ref=e599]:
+              - button "减少数值" [ref=e600] [cursor=pointer]:
+                - img [ref=e602]
+              - button "增加数值" [ref=e604] [cursor=pointer]:
+                - img [ref=e606]
+              - spinbutton "线宽" [ref=e610]: "2"
+          - generic [ref=e611]:
+            - generic [ref=e612]: 线型
+            - generic [ref=e615] [cursor=pointer]:
+              - generic:
+                - combobox "线型" [ref=e617]
+                - generic [ref=e618]: 实线
+              - img [ref=e621]
+          - generic [ref=e623]:
+            - generic [ref=e624]: 区域填充
+            - generic [ref=e626]:
+              - switch "区域填充"
+          - separator [ref=e629]:
+            - generic [ref=e630]: 数据源
+          - generic [ref=e631]:
+            - generic [ref=e632]: 数据源类型
+            - radiogroup "数据源类型" [ref=e634]:
+              - generic [ref=e635] [cursor=pointer]:
+                - radio "静态数据" [checked] [ref=e637]
+                - generic [ref=e639]: 静态数据
+              - generic [ref=e640] [cursor=pointer]:
+                - radio "API 接口" [ref=e642]
+                - generic [ref=e644]: API 接口
+          - group "数据" [ref=e645]:
+            - generic [ref=e646]: 数据
+            - button "编辑数据 (1 个系列)" [ref=e648] [cursor=pointer]:
+              - generic [ref=e649]: 编辑数据 (1 个系列)
+          - group "数据预览" [ref=e650]:
+            - generic [ref=e651]: 数据预览
+            - generic [ref=e653]:
+              - generic [ref=e654]: "类别:"
+              - generic [ref=e655]: 一月, 二月, 三月, 四月, 五月, 六月
+              - generic [ref=e656]:
+                - generic [ref=e657]: "销售额:"
+                - generic [ref=e658]: 120, 200, 150, 80, 70, 110
+        - separator [ref=e659]:
+          - generic [ref=e660]: 组件联动
+        - generic [ref=e662]:
+          - generic [ref=e663]:
+            - heading "联动配置" [level=4] [ref=e664]
+            - button "+ 添加联动" [ref=e665] [cursor=pointer]:
+              - generic [ref=e666]: + 添加联动
+          - generic [ref=e667]:
+            - img [ref=e669]
+            - paragraph [ref=e686]: 暂无联动配置，点击上方按钮添加
+        - separator [ref=e687]
+        - button "删除组件" [ref=e688] [cursor=pointer]:
+          - img [ref=e690]
+          - generic [ref=e692]: 删除组件
+```

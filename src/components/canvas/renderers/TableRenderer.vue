@@ -19,6 +19,7 @@
         :fullscreen="false"
         :show-retry="true"
         :show-details="true"
+        :custom-style="{ minHeight: 'auto', padding: '0', display: 'flex', flexDirection: 'column', alignItems: 'stretch', justifyContent: 'flex-start' }"
         @retry="refresh"
       >
         <!-- 表格内容 -->
@@ -42,21 +43,21 @@
             :align="column.align"
           />
         </el-table>
-
-        <!-- 分页 -->
-        <div v-if="component.pagination ?? true" class="pagination-container">
-          <el-pagination
-            :current-page="component.currentPage ?? 1"
-            :page-size="component.pageSize ?? 10"
-            :total="tableData.length"
-            layout="prev, pager, next, sizes, total"
-            :page-sizes="[3, 5, 10, 20, 50, 100]"
-            small
-            @current-change="handlePageChange"
-            @size-change="handleSizeChange"
-          />
-        </div>
       </DataLoadingState>
+
+      <!-- 分页 - 移到 DataLoadingState 外部 -->
+      <div v-if="component.pagination ?? true" class="pagination-container">
+        <el-pagination
+          :current-page="component.currentPage ?? 1"
+          :page-size="component.pageSize ?? 10"
+          :total="tableData.length"
+          layout="prev, pager, next, sizes, total"
+          :page-sizes="[3, 5, 10, 20, 50, 100]"
+          small
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
     </div>
   </BaseRenderer>
 </template>
@@ -286,17 +287,47 @@ watch(
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* 覆盖 DataLoadingState 的默认样式 */
+.table-container :deep(.data-loading-state) {
+  min-height: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  flex: 1;
 }
 
 .table-container :deep(.el-table) {
   font-size: inherit;
   flex: 1;
+  min-height: 0;
 }
 
+.table-container :deep(.el-table__body-wrapper) {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 分页容器 - 固定在底部右对齐 */
 .pagination-container {
-  margin-top: 12px;
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
-  padding: 8px 0;
+  align-items: center;
+  padding: 12px 0 0 0;
+  margin-top: 0;
+}
+
+.pagination-container :deep(.el-pagination) {
+  justify-content: flex-end;
+  margin: 0;
+}
+
+.pagination-container :deep(.el-pagination__sizes) {
+  margin-right: auto;
 }
 </style>
