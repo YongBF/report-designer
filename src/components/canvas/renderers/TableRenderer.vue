@@ -116,10 +116,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-      url: dataSource.apiUrl,
-      linkageParams: props.component.linkageParams,
-    });
-
     const data = await fetchWithLinkageParams(
       dataSource,
       props.component.linkageParams || {},
@@ -227,12 +223,6 @@ const paginatedData = computed(() => {
   const currentPage = props.component.currentPage ?? 1;
   const pageSize = props.component.pageSize ?? 10;
 
-    pagination,
-    currentPage,
-    pageSize,
-    totalData: tableData.value.length,
-  });
-
   if (!pagination) {
     return tableData.value;
   }
@@ -255,10 +245,7 @@ function handleSizeChange(size: number) {
 watch(
   () => [props.component.pagination, props.component.pageSize, props.component.currentPage],
   () => {
-      pagination: props.component.pagination,
-      pageSize: props.component.pageSize,
-      currentPage: props.component.currentPage,
-    });
+    // 分页配置变化时重新计算
   },
   { immediate: true }
 );

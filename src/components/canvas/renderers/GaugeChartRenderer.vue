@@ -77,9 +77,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-      url: dataSource.apiUrl,
-      linkageParams: props.component.linkageParams,
-    });
 
     const data = await fetchWithLinkageParams(
       dataSource,
