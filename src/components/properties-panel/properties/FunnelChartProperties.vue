@@ -173,10 +173,6 @@ const props = defineProps<{
   component: FunnelChartComponent;
 }>();
 
-onMounted(() => {
-  console.log('FunnelChartProperties mounted with:', props.component);
-});
-
 const emit = defineEmits<{
   (e: 'update'): void;
 }>();

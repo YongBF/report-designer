@@ -44,7 +44,6 @@ export function deepClone<T>(obj: T): T {
   try {
     return JSON.parse(JSON.stringify(obj));
   } catch (error) {
-    console.error('深拷贝失败:', error);
     throw new Error('无法深拷贝对象：可能包含循环引用或不可序列化的内容');
   }
 }
@@ -74,7 +73,6 @@ export function downloadFile(content: string, filename: string, type: string): v
     a.click();
     URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('文件下载失败:', error);
     throw new Error(`下载文件 "${filename}" 失败`);
   }
 }

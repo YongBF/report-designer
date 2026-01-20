@@ -173,10 +173,6 @@ const props = defineProps<{
   component: PieChartComponent;
 }>();
 
-onMounted(() => {
-  console.log('PieChartProperties mounted with:', props.component);
-});
-
 const emit = defineEmits<{
   (e: 'update'): void;
 }>();

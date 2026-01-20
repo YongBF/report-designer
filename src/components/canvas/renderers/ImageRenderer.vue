@@ -60,7 +60,6 @@ const imageStyle = computed(() => ({
 }));
 
 function handleImageError() {
-  console.error('图片加载失败:', props.component.src);
 }
 </script>
 

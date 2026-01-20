@@ -193,9 +193,6 @@ import type { Component } from '../../types';
 
 const selectedComponent = computed(() => {
   const comp = singleSelectedComponent.value as Component | null;
-  if (comp) {
-    console.log('Selected component:', comp.type, comp);
-  }
   return comp;
 });
 

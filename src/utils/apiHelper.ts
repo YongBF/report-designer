@@ -34,13 +34,6 @@ export async function fetchWithLinkageParams(
 
   const { apiUrl, apiMethod = 'POST', apiParams = {} } = dataSource;
 
-  console.log('[API Helper] 准备发送请求:', {
-    url: apiUrl,
-    method: apiMethod,
-    apiParams,
-    linkageParams,
-  });
-
   // 构建请求配置对象
   const requestConfig: any = {
     url: apiUrl,
@@ -72,7 +65,6 @@ export async function fetchWithLinkageParams(
   // 如果有请求拦截器，执行它
   if (beforeRequest) {
     try {
-      console.log('[API Helper] 执行请求拦截器...');
       const interceptorFn = new Function(
         'config',
         'linkageParams',
@@ -90,15 +82,11 @@ export async function fetchWithLinkageParams(
 
       if (modifiedConfig) {
         Object.assign(requestConfig, modifiedConfig);
-        console.log('[API Helper] 拦截器已修改请求配置:', requestConfig);
       }
     } catch (error) {
-      console.error('[API Helper] 请求拦截器执行失败:', error);
       throw new Error(`请求拦截器错误: ${error}`);
     }
   }
-
-  console.log('[API Helper] 发送请求:', requestConfig);
 
   // 发送请求
   const response = await fetch(requestConfig.url, {
@@ -112,7 +100,6 @@ export async function fetchWithLinkageParams(
   }
 
   const data = await response.json();
-  console.log('[API Helper] 请求成功:', data);
 
   return data;
 }

@@ -267,7 +267,6 @@ export function useFormConfig(selectedFormComponent: any) {
 
       const response = await fetch(config.url, options);
       if (!response.ok) {
-        console.error('API 请求失败:', response.statusText);
         return [];
       }
 
@@ -282,7 +281,6 @@ export function useFormConfig(selectedFormComponent: any) {
       dynamicOptionsCache.value.set(cacheKey, formattedOptions);
       return formattedOptions;
     } catch (error) {
-      console.error('加载 API 选项失败:', error);
       return [];
     }
   }

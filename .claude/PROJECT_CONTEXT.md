@@ -18,6 +18,7 @@
 10. [代码示例库](#代码示例库)
 11. [检查清单](#检查清单)
 12. [新会话快速开始](#新会话快速开始)
+13. [Claude Skills 集成](#claude-skills-集成) ⭐ 2026-01-20 新增
 
 ---
 
@@ -2513,4 +2514,698 @@ vite.config.ts                      # Vite 配置（支持 history 模式）
 - 🏷️ 组件命名功能 - 每个组件都有可编辑的名称，用于联动配置中识别
 - 📋 统一属性面板 - 所有属性使用 el-collapse 折叠面板，样式一致
 - 🤖 自动命名 - 创建组件时自动生成默认名称（格式："类型 (ID后4位)"）
+
+
+---
+
+## Claude Skills 集成
+
+> 📌 **版本**: v2.5 - 2026-01-20  
+> 🎯 **用途**: 项目已集成 Claude Code Skills，提供自动化开发工作流支持。
+
+### 概述
+
+项目已安装多个 Claude Skills，覆盖代码审查、测试生成、文档生成、重构等开发全流程。这些技能通过 Slash Commands 调用，大幅提升开发效率。
+
+### 项目结构
+
+```
+.claude/
+├── skills/                    # Claude Skills 技能定义
+│   ├── code-reviewer.claude   # 代码审查技能
+│   ├── test-generator.claude  # 测试生成技能
+│   ├── docs-generator.claude  # 文档生成技能
+│   ├── code-explainer.claude  # 代码解释技能
+│   └── refactor.claude        # 代码重构技能
+├── commands/                  # Slash Commands 命令定义
+│   ├── commit.md              # 智能提交命令
+│   ├── tdd.md                 # TDD 工作流命令
+│   ├── docs.md                # 文档生成命令
+│   ├── review.md              # 代码审查命令
+│   ├── explain.md             # 代码解释命令
+│   └── refactor.md            # 代码重构命令
+├── PROJECT_CONTEXT.md         # 项目上下文文档
+└── prompts/                   # 自定义提示词模板
+```
+
+### 已安装的 Skills
+
+#### 1. Code Reviewer - 代码审查 ⭐ 推荐使用
+
+**文件**: `.claude/skills/code-reviewer.claude`
+
+**功能**:
+- 代码质量检查（命名、复杂度、重复度）
+- 安全漏洞检测（SQL注入、XSS、CSRF等）
+- 性能问题分析（算法复杂度、内存泄漏）
+- 最佳实践验证（框架规范、设计模式）
+
+**使用方法**:
+```bash
+# 审查当前修改
+@review
+
+# 审查特定文件
+@review src/components/Button.vue
+
+# 只检查安全问题
+@review --security
+```
+
+**输出示例**:
+```markdown
+# Code Review 报告
+- 代码质量: ⭐⭐⭐⭐☆
+- 安全性: ⭐⭐⭐⭐⭐
+- 性能: ⭐⭐⭐☆☆
+
+## 问题清单
+### 🔴 严重问题
+1. SQL 注入风险 (src/utils/db.ts:45)
+
+### 🟡 警告
+2. 未使用的变量 (src/App.vue:120)
+
+### 🔵 优化建议
+3. 可以使用 async/await (src/services/api.ts:50)
+```
+
+**适用场景**:
+- 代码提交前的自我审查
+- Pull Request 代码评审
+- 重构前的代码分析
+
+---
+
+#### 2. Test Generator - 测试生成 ⭐ 推荐使用
+
+**文件**: `.claude/skills/test-generator.claude`
+
+**功能**:
+- 自动生成单元测试（Jest/Vitest）
+- 生成集成测试和 E2E 测试
+- 提供 Mock 数据和 Fixture
+- TDD 工作流支持（Red-Green-Refactor）
+
+**使用方法**:
+```bash
+# 为当前文件生成测试
+@tdd
+
+# TDD 模式：先写测试
+@tdd "为用户登录功能编写测试"
+
+# TDD 模式：实现功能
+@tdd "实现用户登录功能"
+
+# TDD 模式：重构代码
+@tdd "重构登录代码"
+```
+
+**测试框架支持**:
+- Jest / Vitest (JavaScript/TypeScript)
+- Playwright / Cypress (E2E)
+- MSW (Mock Service Worker)
+
+**输出示例**:
+```typescript
+describe('UserService', () => {
+  describe('login', () => {
+    it('should throw error when credentials are invalid', () => {
+      // Arrange
+      const credentials = { username: 'test', password: 'wrong' };
+
+      // Act & Assert
+      expect(() => userService.login(credentials))
+        .toThrow('Invalid credentials');
+    });
+
+    it('should return user when credentials are valid', () => {
+      // Arrange
+      const credentials = { username: 'test', password: 'test123' };
+
+      // Act
+      const user = userService.login(credentials);
+
+      // Assert
+      expect(user).toBeDefined();
+      expect(user.username).toBe('test');
+    });
+  });
+});
+```
+
+**适用场景**:
+- 新功能开发前编写测试
+- 提升测试覆盖率
+- TDD 实践
+
+---
+
+#### 3. Docs Generator - 文档生成 ⭐ 推荐使用
+
+**文件**: `.claude/skills/docs-generator.claude`
+
+**功能**:
+- 生成 API 文档（JSDoc/TSDoc）
+- 生成组件文档（Props/Events/Slots）
+- 生成架构文档（系统设计、数据流）
+- 生成开发文档（环境搭建、调试技巧）
+
+**使用方法**:
+```bash
+# 生成整个项目文档
+@docs
+
+# 为特定模块生成文档
+@docs src/components/Button
+
+# 生成 API 文档
+@docs --type=api
+
+# 生成使用指南
+@docs --type=guide
+```
+
+**文档格式**:
+- Markdown (.md)
+- JSDoc/TSDoc 注释
+- OpenAPI/Swagger
+
+**输出示例**:
+```markdown
+# Button 组件文档
+
+## 概述
+通用按钮组件，支持多种样式和尺寸。
+
+## Props
+
+| 属性 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| type | 'primary' \| 'default' | 'default' | 按钮类型 |
+| size | 'small' \| 'medium' \| 'large' | 'medium' | 按钮尺寸 |
+| disabled | boolean | false | 是否禁用 |
+
+## Events
+
+| 事件名 | 参数 | 描述 |
+|--------|------|------|
+| click | (event: MouseEvent) | 点击时触发 |
+
+## 示例
+\`\`\`vue
+<Button type="primary" size="large" @click="handleClick">
+  点击我
+</Button>
+\`\`\`
+```
+
+**适用场景**:
+- 组件库文档维护
+- API 文档生成
+- 项目文档构建
+
+---
+
+#### 4. Code Explainer - 代码解释
+
+**文件**: `.claude/skills/code-explainer.claude`
+
+**功能**:
+- 深入分析代码逻辑和工作原理
+- 识别设计模式和架构风格
+- 生成流程图和时序图
+- 提供改进建议
+
+**使用方法**:
+```bash
+# 解释当前文件
+@explain
+
+# 解释特定代码
+@explain src/stores/userStore.ts
+
+# 生成架构图
+@explain --architecture
+
+# 生成流程图
+@explain --flowchart
+```
+
+**输出示例**:
+```markdown
+# 代码分析: useChartGenerator.ts
+
+## 概述
+用于生成和更新 ECharts 图表的 Vue 3 Composable。
+
+## 核心功能
+1. 图表初始化
+2. 配置更新
+3. 响应式尺寸调整
+4. 销毁清理
+
+## 工作流程
+\`\`\`mermaid
+flowchart TD
+    A[组件挂载] --> B[获取 DOM 元素]
+    B --> C[创建 ECharts 实例]
+    C --> D[设置初始配置]
+    D --> E[监听配置变化]
+\`\`\`
+
+## 设计模式
+- 组合式模式: Vue 3 Composition API
+- 观察者模式: watch 监听配置变化
+- 单一职责: 只负责图表生成
+```
+
+**适用场景**:
+- 理解复杂代码逻辑
+- 代码学习和培训
+- 代码审查辅助
+
+---
+
+#### 5. Refactor - 代码重构
+
+**文件**: `.claude/skills/refactor.claude`
+
+**功能**:
+- 智能重构建议（提取函数/类、简化条件）
+- 遵循 SOLID 原则
+- 降低圈复杂度
+- 消除代码重复
+
+**使用方法**:
+```bash
+# 重构当前文件
+@refactor
+
+# 重构特定文件
+@refactor src/components/UserList.vue
+
+# 应用特定模式
+@refactor --pattern=extract-function
+@refactor --pattern=remove-duplication
+```
+
+**重构模式**:
+- 提取函数 (Extract Function)
+- 提取类 (Extract Class)
+- 引入参数对象 (Introduce Parameter Object)
+- 替换魔法数字 (Replace Magic Number)
+- 简化条件表达式 (Simplify Conditional)
+- 移除重复代码 (Remove Duplication)
+
+**输出示例**:
+```typescript
+// Before
+function processUser(user) {
+  if (user.name) {
+    console.log(user.name);
+  }
+  if (user.email) {
+    console.log(user.email);
+  }
+}
+
+// After
+function processUser(user) {
+  logIfValid(user.name);
+  logIfValid(user.email);
+}
+
+function logIfValid(value) {
+  if (value) {
+    console.log(value);
+  }
+}
+```
+
+**适用场景**:
+- 代码质量提升
+- 技术债务清理
+- 代码维护性改进
+
+---
+
+### Slash Commands
+
+#### @commit - 智能提交
+
+**文件**: `.claude/commands/commit.md`
+
+**功能**: 自动生成符合规范的 Git 提交信息
+
+**使用方法**:
+```bash
+@commit
+```
+
+**特性**:
+- 自动分析修改内容
+- 使用约定式提交格式（Conventional Commits）
+- 自动识别提交类型（feat/fix/docs/refactor等）
+- 包含 Co-Authored-By 标记
+
+**输出示例**:
+```
+feat(canvas-panel): 修复 Ref 绑定问题
+
+- 使用本地 ref + watch + emit 传递 DOM 元素
+- 移除 canvasRefProp prop
+- 添加 canvas-ref-ready 事件
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+```
+
+---
+
+#### @tdd - 测试驱动开发
+
+**文件**: `.claude/commands/tdd.md`
+
+**功能**: TDD 工作流指导
+
+**使用方法**:
+```bash
+@tdd
+```
+
+**流程**:
+1. **Red** - 编写失败的测试
+2. **Green** - 编写最小实现
+3. **Refactor** - 重构优化
+
+**检查清单**:
+- [ ] 所有测试通过
+- [ ] 测试覆盖率 > 80%
+- [ ] 代码已重构
+- [ ] 文档已更新
+
+---
+
+#### @docs - 文档生成
+
+**文件**: `.claude/commands/docs.md`
+
+**功能**: 生成项目文档
+
+**使用方法**:
+```bash
+@docs                    # 生成整个项目文档
+@docs src/components     # 为特定模块生成文档
+@docs --type=api         # 生成 API 文档
+@docs --type=guide       # 生成使用指南
+```
+
+**输出结构**:
+```
+docs/
+├── api/                  # API 文档
+│   ├── components.md
+│   ├── services.md
+│   └── utils.md
+├── guides/               # 使用指南
+│   ├── getting-started.md
+│   └── deployment.md
+├── architecture/         # 架构文档
+│   └── overview.md
+└── development/          # 开发文档
+    └── setup.md
+```
+
+---
+
+#### @review - 代码审查
+
+**文件**: `.claude/commands/review.md`
+
+**功能**: 智能代码审查
+
+**使用方法**:
+```bash
+@review                  # 审查当前修改
+@review src/App.vue      # 审查特定文件
+@review --all            # 审查整个项目
+@review --security       # 只检查安全问题
+@review --performance    # 只检查性能问题
+```
+
+**审查维度**:
+- 代码质量（命名、复杂度、重复度）
+- 安全性（SQL注入、XSS、CSRF）
+- 性能（算法复杂度、内存泄漏）
+- 最佳实践（框架规范、设计模式）
+
+---
+
+#### @explain - 代码解释
+
+**文件**: `.claude/commands/explain.md`
+
+**功能**: 深入分析代码
+
+**使用方法**:
+```bash
+@explain                    # 解释当前文件
+@explain src/stores/userStore.ts
+@explain --architecture     # 生成架构图
+@explain --flowchart        # 生成流程图
+```
+
+**分析内容**:
+- 代码结构（文件组织、依赖关系）
+- 核心逻辑（算法、数据流、状态变化）
+- 设计模式（识别的设计模式、架构风格）
+- 工作原理（执行流程、关键步骤）
+
+---
+
+#### @refactor - 代码重构
+
+**文件**: `.claude/commands/refactor.md`
+
+**功能**: 智能重构代码
+
+**使用方法**:
+```bash
+@refactor                              # 重构当前文件
+@refactor src/components/UserList.vue
+@refactor --pattern=extract-function   # 应用特定模式
+@refactor --pattern=remove-duplication
+```
+
+**重构模式**:
+- 提取函数 (Extract Function)
+- 提取类 (Extract Class)
+- 引入参数对象 (Introduce Parameter Object)
+- 替换魔法数字 (Replace Magic Number)
+- 简化条件表达式 (Simplify Conditional)
+- 移除重复代码 (Remove Duplication)
+
+---
+
+### 推荐工作流
+
+#### 场景 1: 开发新功能
+
+```bash
+# 1. 编写测试
+@tdd "为图表导出功能编写测试"
+
+# 2. 实现功能
+@tdd "实现图表导出功能"
+
+# 3. 代码审查
+@review src/features/chartExport
+
+# 4. 重构优化
+@refactor src/features/chartExport
+
+# 5. 生成文档
+@docs src/features/chartExport
+
+# 6. 提交代码
+@commit
+```
+
+#### 场景 2: 代码审查
+
+```bash
+# 1. 审查 Pull Request
+@review src/components/UserList.vue
+
+# 2. 理解复杂逻辑
+@explain src/utils/dataProcessor.ts
+
+# 3. 重构问题代码
+@refactor src/utils/dataProcessor.ts
+```
+
+#### 场景 3: Bug 修复
+
+```bash
+# 1. 理解问题代码
+@explain src/services/api.ts
+
+# 2. 编写失败测试
+@tdd "为 API 错误处理编写测试"
+
+# 3. 修复问题
+@tdd "实现 API 错误处理"
+
+# 4. 验证修复
+@review src/services/api.ts
+
+# 5. 提交修复
+@commit
+```
+
+#### 场景 4: 技术债务清理
+
+```bash
+# 1. 识别问题代码
+@review src --all
+
+# 2. 分析代码质量
+@explain src/legacy/oldModule.ts
+
+# 3. 重构代码
+@refactor src/legacy/oldModule.ts
+
+# 4. 添加测试
+@tdd "为重构后的模块添加测试"
+
+# 5. 更新文档
+@docs src/legacy/oldModule.ts
+```
+
+---
+
+### 技术规格
+
+#### Skill 文件格式
+
+```json
+{
+  "name": "skill-name",
+  "description": "技能描述",
+  "prompt": "详细的系统提示词..."
+}
+```
+
+#### Command 文件格式
+
+```markdown
+# Command 名称
+
+命令描述和使用说明。
+
+## 使用方法
+\`\`\`bash
+@command
+\`\`\`
+
+## 功能特性
+1. 特性1
+2. 特性2
+
+## 示例
+\`\`\`bash
+@command --option
+\`\`\`
+```
+
+---
+
+### 最佳实践
+
+1. **合理使用 Skills**
+   - 不要过度依赖自动化工具
+   - 理解生成的代码和文档
+   - 根据项目需求调整
+
+2. **保持代码质量**
+   - 定期运行 `@review` 检查代码
+   - 使用 `@tdd` 确保测试覆盖
+   - 使用 `@refactor` 及时清理技术债务
+
+3. **维护文档**
+   - 使用 `@docs` 保持文档同步
+   - 使用 `@explain` 理解复杂代码
+   - 定期更新 PROJECT_CONTEXT.md
+
+4. **Git 工作流**
+   - 使用 `@commit` 生成规范的提交信息
+   - 在提交前运行 `@review`
+   - 确保 CI 测试通过
+
+---
+
+### 扩展和自定义
+
+#### 添加新 Skill
+
+1. 创建 `.claude/skills/your-skill.claude`
+2. 编写 Skill 配置和提示词
+3. 创建对应的 Command 文件（可选）
+4. 更新 PROJECT_CONTEXT.md
+
+#### 添加新 Command
+
+1. 创建 `.claude/commands/your-command.md`
+2. 编写命令文档和使用说明
+3. 可选：关联到现有 Skill
+
+---
+
+### 注意事项
+
+1. **性能考虑**
+   - 大型项目运行 `@review --all` 可能较慢
+   - 建议针对特定文件或模块使用
+
+2. **上下文限制**
+   - Claude 有上下文窗口限制
+   - 超大文件可能被截断
+
+3. **验证结果**
+   - Skills 生成的内容需要人工验证
+   - 测试必须手动运行确认
+   - 文档需要检查准确性
+
+4. **版本控制**
+   - Skills 和 Commands 应纳入版本控制
+   - 定期更新和优化
+
+---
+
+### 相关资源
+
+- **Claude Code 官方文档**: https://docs.anthropic.com/claude-code
+- **awesome-claude-code**: https://github.com/anthropics/awesome-claude-code
+- **项目 Skills 目录**: `.claude/skills/`
+- **项目 Commands 目录**: `.claude/commands/`
+
+---
+
+**更新历史**:
+- v2.5 - 2026-01-20: 新增 Claude Skills 集成章节
+  - 安装 5 个 Skills（code-reviewer, test-generator, docs-generator, code-explainer, refactor）
+  - 安装 6 个 Commands（commit, tdd, docs, review, explain, refactor）
+  - 提供推荐工作流和最佳实践
+- v2.4 - 2026-01-17: 组件拆分、Canvas Ref 修复、图表更新修复
+- v2.3 - 2026-01-17: 组件命名功能、统一属性面板
+
+---
+
+**💡 提示**: 在新会话中，告诉 Claude：
+```
+"请参考 .claude/PROJECT_CONTEXT.md 中的 Claude Skills 集成章节，了解项目已安装的 Skills 和 Commands。"
+```
+
+这样可以充分利用已安装的自动化工具，提升开发效率！🚀
 

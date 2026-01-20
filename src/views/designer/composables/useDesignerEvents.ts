@@ -35,7 +35,6 @@ export function useDesignerEvents() {
       case 'save':
         designerStore.saveHistory('手动保存');
         // TODO: 实现保存到后端
-        console.log('保存设计:', designerStore.exportDesign());
         break;
       case 'preview':
         // 预览由组件处理
@@ -89,21 +88,13 @@ export function useDesignerEvents() {
    * 处理表单按钮点击
    */
   function handleFormButtonClick(formComponent: FormComponent, item: any) {
-    console.log('[Form Button Click]', {
-      formId: formComponent.id,
-      buttonId: item.id,
-      buttonLabel: item.label,
-    });
-
     // 收集表单数据
     const data = formData.value[formComponent.id] || {};
 
     // TODO: 触发组件联动
-    console.log('Form data:', data);
-
     // TODO: 执行按钮配置的动作
     if (item.actionType === 'submit') {
-      console.log('Submit form:', data);
+      // 提交表单
     } else if (item.actionType === 'reset') {
       formData.value[formComponent.id] = {};
     }

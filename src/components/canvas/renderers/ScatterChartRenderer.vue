@@ -77,7 +77,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-    console.log('[ScatterChartRenderer] 开始获取API数据:', {
       url: dataSource.apiUrl,
       linkageParams: props.component.linkageParams,
     });
@@ -88,10 +87,8 @@ async function fetchApiData() {
       props.component.beforeRequest
     );
 
-    console.log('[ScatterChartRenderer] API数据获取成功:', data);
     apiChartData.value = data;
   } catch (err: any) {
-    console.error('[ScatterChartRenderer] API数据获取失败:', err);
     error.value = err.message || '获取数据失败';
     apiChartData.value = null;
   } finally {
@@ -102,26 +99,21 @@ async function fetchApiData() {
 // 获取图表数据
 function getChartData() {
   const dataSource = props.component.dataSource;
-  console.log('[ScatterChartRenderer] getChartData - dataSource:', dataSource);
 
   // 优先使用API数据
   if (apiChartData.value) {
-    console.log('[ScatterChartRenderer] 使用API数据:', apiChartData.value);
     return apiChartData.value;
   }
 
   // 静态数据格式：{ categories: string[], series: Array<{ name: string, data: number[] }> }
   if (dataSource?.staticData) {
     const staticData = dataSource.staticData;
-    console.log('[ScatterChartRenderer] getChartData - staticData:', staticData);
     if (staticData.categories && staticData.categories.length > 0 &&
         staticData.series && staticData.series.length > 0) {
-      console.log('[ScatterChartRenderer] getChartData - Returning staticData with', staticData.series.length, 'series');
       return staticData;
     }
   }
 
-  console.log('[ScatterChartRenderer] getChartData - Using default data');
   // 默认模拟数据
   return {
     categories: ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
@@ -397,7 +389,6 @@ function generateDefaultOption() {
  * 刷新数据（供联动调用）
  */
 function refresh() {
-  console.log('[ScatterChartRenderer] 刷新数据');
   fetchApiData();
   if (chartInstance) {
     updateChartOptions();
@@ -408,7 +399,6 @@ function refresh() {
  * 处理联动刷新事件
  */
 function handleLinkageRefresh(event: CustomEvent) {
-  console.log('[ScatterChartRenderer] 收到联动刷新事件:', event.detail);
   if (event.detail?.targetComponentId === props.component.id) {
     refresh();
   }
@@ -418,7 +408,6 @@ function handleLinkageRefresh(event: CustomEvent) {
 watch(
   () => props.component.dataSource,
   (newDataSource) => {
-    console.log('[ScatterChartRenderer] 数据源变化:', newDataSource);
     if (newDataSource?.type === 'api') {
       fetchApiData();
     } else {
@@ -435,7 +424,6 @@ watch(
 watch(
   () => props.component.linkageParams,
   (newParams) => {
-    console.log('[ScatterChartRenderer] 联动参数变化:', newParams);
     if (props.component.dataSource?.type === 'api') {
       fetchApiData().then(() => {
         nextTick(() => {
@@ -460,7 +448,6 @@ watch(
 
 // 挂载时添加事件监听
 onMounted(() => {
-  console.log('[ScatterChartRenderer] 挂载，添加联动刷新事件监听');
   window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.addEventListener('resize', handleResize);
   nextTick(() => {
@@ -470,7 +457,6 @@ onMounted(() => {
 
 // 卸载时移除事件监听
 onUnmounted(() => {
-  console.log('[ScatterChartRenderer] 卸载，移除联动刷新事件监听');
   window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {

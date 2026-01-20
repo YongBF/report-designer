@@ -77,7 +77,7 @@ export const useDesignerStore = defineStore('designer', () => {
 
         saveHistory('加载设计');
       } catch (e) {
-        console.error('加载设计失败', e);
+        // 加载设计失败，忽略错误
       }
     } else {
       saveHistory('新建设计');
@@ -189,21 +189,12 @@ export const useDesignerStore = defineStore('designer', () => {
   function updateComponent(id: string, updates: Partial<Component>) {
     const index = currentDesign.value.components.findIndex((c) => c.id === id);
     if (index !== -1) {
-      console.log('[DEBUG] updateComponent - Updating component', id);
-      console.log('[DEBUG] updateComponent - Updates:', updates);
-      console.log('[DEBUG] updateComponent - Old component ref:', currentDesign.value.components[index]);
-      console.log('[DEBUG] updateComponent - Old dataSource:', currentDesign.value.components[index].dataSource);
-
       // 使用 Vue 3 响应式方式：先获取原组件，合并更新
       const oldComponent = currentDesign.value.components[index];
       const updatedComponent = {
         ...oldComponent,
         ...updates,
       };
-
-      console.log('[DEBUG] updateComponent - New component ref:', updatedComponent);
-      console.log('[DEBUG] updateComponent - New dataSource:', updatedComponent.dataSource);
-      console.log('[DEBUG] updateComponent - Same object?', oldComponent === updatedComponent);
 
       // 创建新的 components 数组
       const newComponents = [
@@ -219,12 +210,6 @@ export const useDesignerStore = defineStore('designer', () => {
         components: newComponents,
         updatedAt: new Date().toISOString(),
       };
-
-      console.log('[DEBUG] updateComponent - After full replacement, element:', currentDesign.value.components[index]);
-      console.log('[DEBUG] updateComponent - After full replacement, dataSource:', currentDesign.value.components[index].dataSource);
-      console.log('[DEBUG] updateComponent - Design object reference changed?', oldDesign !== currentDesign.value);
-    } else {
-      console.log('[DEBUG] updateComponent - Component not found:', id);
     }
   }
 

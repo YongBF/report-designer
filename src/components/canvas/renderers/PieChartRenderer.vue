@@ -77,7 +77,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-    console.log('[PieChartRenderer] 开始获取API数据:', {
       url: dataSource.apiUrl,
       linkageParams: props.component.linkageParams,
     });
@@ -88,10 +87,8 @@ async function fetchApiData() {
       props.component.beforeRequest
     );
 
-    console.log('[PieChartRenderer] API数据获取成功:', data);
     apiChartData.value = data;
   } catch (err: any) {
-    console.error('[PieChartRenderer] API数据获取失败:', err);
     error.value = err.message || '获取数据失败';
     apiChartData.value = null;
   } finally {
@@ -105,7 +102,6 @@ function getChartData() {
 
   // 优先使用API数据
   if (apiChartData.value) {
-    console.log('[PieChartRenderer] 使用API数据:', apiChartData.value);
     return apiChartData.value;
   }
 
@@ -155,7 +151,6 @@ function getChartData() {
  * 刷新数据（供联动调用）
  */
 function refresh() {
-  console.log('[PieChartRenderer] 刷新数据');
   fetchApiData();
   if (chartInstance) {
     updateChartOptions();
@@ -166,7 +161,6 @@ function refresh() {
  * 处理联动刷新事件
  */
 function handleLinkageRefresh(event: CustomEvent) {
-  console.log('[PieChartRenderer] 收到联动刷新事件:', event.detail);
   if (event.detail?.targetComponentId === props.component.id) {
     refresh();
   }
@@ -176,7 +170,6 @@ function handleLinkageRefresh(event: CustomEvent) {
 watch(
   () => props.component.dataSource,
   (newDataSource) => {
-    console.log('[PieChartRenderer] 数据源变化:', newDataSource);
     if (newDataSource?.type === 'api') {
       fetchApiData();
     } else {
@@ -193,7 +186,6 @@ watch(
 watch(
   () => props.component.linkageParams,
   (newParams) => {
-    console.log('[PieChartRenderer] 联动参数变化:', newParams);
     if (props.component.dataSource?.type === 'api') {
       fetchApiData().then(() => {
         nextTick(() => {
@@ -207,7 +199,6 @@ watch(
 
 // 挂载时添加事件监听
 onMounted(() => {
-  console.log('[PieChartRenderer] 挂载，添加联动刷新事件监听');
   window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.addEventListener('resize', handleResize);
   nextTick(() => {
@@ -217,7 +208,6 @@ onMounted(() => {
 
 // 卸载时移除事件监听
 onUnmounted(() => {
-  console.log('[PieChartRenderer] 卸载，移除联动刷新事件监听');
   window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {

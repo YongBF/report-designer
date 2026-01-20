@@ -437,11 +437,6 @@ const defaultCustomHandler = `// 可用变量：
 // params - 映射后的参数对象
 // component - 目标组件
 
-console.log('[Custom Linkage] 联动已触发');
-console.log('[Custom Linkage] 源组件:', context.sourceComponent.id);
-console.log('[Custom Linkage] 目标组件:', context.targetComponent.id);
-console.log('[Custom Linkage] 映射参数:', params);
-
 // 示例：发送 API 请求
 // const response = await fetch('/api/search', {
 //   method: 'POST',
@@ -449,13 +444,9 @@ console.log('[Custom Linkage] 映射参数:', params);
 //   body: JSON.stringify(params)
 // });
 // const data = await response.json();
-// console.log('API 返回数据:', data);
 
 // 示例：更新目标组件数据
-// component.customData = data;
-
-// 示例：显示提示
-// console.log('查询参数:', params.name);`;
+// component.customData = data;`;
 
 // 添加联动
 function handleAddLinkage() {

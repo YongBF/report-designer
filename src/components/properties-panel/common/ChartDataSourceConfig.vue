@@ -896,8 +896,6 @@ function handleEditorSave() {
     })),
   };
 
-  console.log('[DEBUG] handleEditorSave - Saving staticData:', staticData);
-
   // 同时更新备份
   backedUpStaticData.value = JSON.parse(JSON.stringify(staticData));
 
@@ -908,8 +906,6 @@ function handleEditorSave() {
       staticData,
     },
   });
-
-  console.log('[DEBUG] handleEditorSave - After updateComponent, dataSource:', props.component.dataSource);
 
   editorVisible.value = false;
   emit('update');

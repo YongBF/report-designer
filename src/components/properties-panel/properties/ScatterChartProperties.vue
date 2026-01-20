@@ -270,10 +270,6 @@ const props = defineProps<{
   component: ScatterChartComponent;
 }>();
 
-onMounted(() => {
-  console.log('ScatterChartProperties mounted with:', props.component);
-});
-
 const emit = defineEmits<{
   (e: 'update'): void;
 }>();

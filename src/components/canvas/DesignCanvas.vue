@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import VueDraggable from 'vue-draggable-plus';
 import {
   currentDesign,
@@ -64,25 +64,9 @@ import FunnelChartRenderer from './renderers/FunnelChartRenderer.vue';
 
 const canvasRef = ref<HTMLElement>();
 
-// 监听 currentDesign 的变化，调试用
-watch(
-  currentDesign,
-  (newVal, oldVal) => {
-    console.log('[DEBUG] DesignCanvas watch - currentDesign changed!');
-    console.log('[DEBUG] DesignCanvas watch - Same reference?', newVal === oldVal);
-    console.log('[DEBUG] DesignCanvas watch - Components count:', newVal.components.length);
-  },
-  { deep: true }
-);
-
 // 按 zIndex 排序的组件
 const sortedComponents = computed(() => {
   const sorted = [...currentDesign.value.components].sort((a, b) => a.zIndex - b.zIndex);
-  console.log('[DEBUG] sortedComponents computed - Recalculating, total components:', sorted.length);
-  const barChart = sorted.find(c => c.id === 'bar-chart-1768528335836');
-  if (barChart) {
-    console.log('[DEBUG] sortedComponents - BarChart dataSource:', barChart.dataSource);
-  }
   return sorted;
 });
 

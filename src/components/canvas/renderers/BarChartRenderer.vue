@@ -77,7 +77,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-    console.log('[BarChartRenderer] 开始获取API数据:', {
       url: dataSource.apiUrl,
       linkageParams: props.component.linkageParams,
     });
@@ -88,10 +87,8 @@ async function fetchApiData() {
       props.component.beforeRequest
     );
 
-    console.log('[BarChartRenderer] API数据获取成功:', data);
     apiChartData.value = data;
   } catch (err: any) {
-    console.error('[BarChartRenderer] API数据获取失败:', err);
     error.value = err.message || '获取数据失败';
     apiChartData.value = null;
   } finally {
@@ -102,26 +99,21 @@ async function fetchApiData() {
 // 获取图表数据
 function getChartData() {
   const dataSource = props.component.dataSource;
-  console.log('[BarChartRenderer] getChartData - dataSource:', dataSource);
 
   // 优先使用API数据
   if (apiChartData.value) {
-    console.log('[BarChartRenderer] 使用API数据:', apiChartData.value);
     return apiChartData.value;
   }
 
   // 静态数据格式：{ categories: string[], series: Array<{ name: string, data: number[] }> }
   if (dataSource?.staticData) {
     const staticData = dataSource.staticData;
-    console.log('[BarChartRenderer] getChartData - staticData:', staticData);
     if (staticData.categories && staticData.categories.length > 0 &&
         staticData.series && staticData.series.length > 0) {
-      console.log('[BarChartRenderer] getChartData - Returning staticData with', staticData.series.length, 'series');
       return staticData;
     }
   }
 
-  console.log('[BarChartRenderer] getChartData - Using default data');
   // 默认模拟数据
   return {
     categories: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
@@ -138,7 +130,6 @@ function getChartData() {
  * 刷新数据（供联动调用）
  */
 function refresh() {
-  console.log('[BarChartRenderer] 刷新数据');
   fetchApiData();
   if (chartInstance) {
     updateChartOptions();
@@ -149,7 +140,6 @@ function refresh() {
  * 处理联动刷新事件
  */
 function handleLinkageRefresh(event: CustomEvent) {
-  console.log('[BarChartRenderer] 收到联动刷新事件:', event.detail);
   if (event.detail?.targetComponentId === props.component.id) {
     refresh();
   }
@@ -159,7 +149,6 @@ function handleLinkageRefresh(event: CustomEvent) {
 watch(
   () => props.component.dataSource,
   (newDataSource) => {
-    console.log('[BarChartRenderer] 数据源变化:', newDataSource);
     if (newDataSource?.type === 'api') {
       fetchApiData();
     } else {
@@ -176,7 +165,6 @@ watch(
 watch(
   () => props.component.linkageParams,
   (newParams) => {
-    console.log('[BarChartRenderer] 联动参数变化:', newParams);
     if (props.component.dataSource?.type === 'api') {
       fetchApiData().then(() => {
         nextTick(() => {
@@ -190,7 +178,6 @@ watch(
 
 // 挂载时添加事件监听
 onMounted(() => {
-  console.log('[BarChartRenderer] 挂载，添加联动刷新事件监听');
   window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.addEventListener('resize', handleResize);
   nextTick(() => {
@@ -200,7 +187,6 @@ onMounted(() => {
 
 // 卸载时移除事件监听
 onUnmounted(() => {
-  console.log('[BarChartRenderer] 卸载，移除联动刷新事件监听');
   window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {
@@ -232,16 +218,12 @@ function initChart() {
 
 // 更新图表配置
 function updateChartOptions() {
-  console.log('[DEBUG] updateChartOptions called');
   if (!chartInstance) {
-    console.log('[DEBUG] updateChartOptions - chartInstance is null');
     return;
   }
 
   const option = generateChartOption();
-  console.log('[DEBUG] updateChartOptions - Generated option with', option.series?.length, 'series');
   chartInstance.setOption(option, { notMerge: true });
-  console.log('[DEBUG] updateChartOptions - Chart updated');
 }
 
 // 生成图表配置
@@ -458,9 +440,6 @@ function generateDefaultOption() {
 watch(
   () => props.component,
   (newVal, oldVal) => {
-    console.log('[DEBUG] watch - Component changed');
-    console.log('[DEBUG] watch - New dataSource:', newVal.dataSource);
-    console.log('[DEBUG] watch - Old dataSource:', oldVal?.dataSource);
     nextTick(() => {
       updateChartOptions();
     });

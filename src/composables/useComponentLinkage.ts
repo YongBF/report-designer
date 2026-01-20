@@ -122,7 +122,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
   ): Record<string, any> {
     // 如果没有配置映射或映射为空，返回源数据的所有字段
     if (!mappings || mappings.length === 0) {
-      console.log('[Linkage] No parameter mappings configured, passing all source data');
       return { ...sourceData };
     }
 
@@ -167,7 +166,7 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
         // 映射参数会覆盖源数据的同名字段
         result[mapping.targetParam] = value;
       } catch (error) {
-        console.error(`Parameter mapping error for ${mapping.targetParam}:`, error);
+        // 参数映射错误，使用默认值
         result[mapping.targetParam] = mapping.defaultValue;
       }
     }
@@ -204,7 +203,7 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
       const func = new Function('data', `return ${expression}`);
       return func(data);
     } catch (error) {
-      console.error('Expression evaluation error:', error);
+      // 表达式求值错误
       return undefined;
     }
   }
@@ -218,19 +217,9 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
   ): Promise<boolean> {
     const { sourceComponent, targetComponent, eventData, sourceValue } = context;
 
-    console.log('[Linkage Execution]', {
-      linkageId: linkage.id,
-      sourceId: linkage.sourceComponentId,
-      targetId: linkage.targetComponentId,
-      actionType: linkage.actionType,
-      sourceValue,
-    });
-
     try {
       // 处理参数映射
       const mappedParams = processParameterMappings(linkage.parameterMappings, sourceValue);
-
-      console.log('[Linkage] Mapped parameters:', mappedParams);
 
       // 延迟执行
       if (linkage.delay && linkage.delay > 0) {
@@ -280,8 +269,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
 
       return true;
     } catch (error: any) {
-      console.error('[Linkage Execution Error]', error);
-
       // 记录失败日志
       executionLogs.value.push({
         linkageId: linkage.id,
@@ -301,8 +288,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
    * 执行刷新动作（用于表格、图表等组件）
    */
   async function executeRefreshAction(component: Component, params: Record<string, any>) {
-    console.log('[Linkage] Refresh action:', { componentId: component.id, params });
-
     // 为目标组件设置触发参数，供组件使用
     if (!component.linkageParams) {
       component.linkageParams = {};
@@ -331,8 +316,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
    * 执行更新配置动作
    */
   async function executeUpdateConfigAction(component: Component, params: Record<string, any>) {
-    console.log('[Linkage] Update config action:', { componentId: component.id, params });
-
     // 更新组件配置
     for (const [key, value] of Object.entries(params)) {
       if (key in component) {
@@ -355,8 +338,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
    * 执行切换可见性动作
    */
   async function executeToggleVisibleAction(component: Component, params: Record<string, any>) {
-    console.log('[Linkage] Toggle visible action:', { componentId: component.id, params });
-
     // 根据参数设置可见性
     if (typeof params.visible === 'boolean') {
       component.visible = params.visible;
@@ -379,8 +360,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
     component: Component,
     params: Record<string, any>
   ) {
-    console.log('[Linkage] Toggle disabled action:', { componentId: component.id, params });
-
     if (typeof params.disabled === 'boolean') {
       (component as any).disabled = params.disabled;
     }
@@ -407,8 +386,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
       throw new Error('Custom handler is not defined');
     }
 
-    console.log('[Linkage] Custom action:', { linkage, context, params });
-
     try {
       let code = linkage.customHandler.trim();
 
@@ -434,7 +411,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
 
       await handler(context, params, context.targetComponent, console, window);
     } catch (error) {
-      console.error('[Linkage] Custom handler error:', error);
       throw new Error(`Custom handler execution failed: ${error}`);
     }
   }
@@ -457,11 +433,8 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
     const matchedLinkages = sourceLinkages.filter((l) => l.triggerEvent === triggerEvent);
 
     if (matchedLinkages.length === 0) {
-      console.log('[Linkage] No matched linkages for trigger:', { sourceId, triggerEvent });
       return;
     }
-
-    console.log(`[Linkage] Triggered ${matchedLinkages.length} linkages`);
 
     // 获取所有组件
     const allComponents = getAllComponents();
@@ -472,7 +445,6 @@ export function useComponentLinkage(currentDesign?: { value: ReportDesign }) {
       const targetComponent = allComponents.find((c) => c.id === linkage.targetComponentId);
 
       if (!sourceComponent || !targetComponent) {
-        console.error('[Linkage] Component not found:', { linkage });
         continue;
       }
 

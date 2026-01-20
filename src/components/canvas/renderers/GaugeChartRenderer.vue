@@ -77,7 +77,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-    console.log('[GaugeChartRenderer] 开始获取API数据:', {
       url: dataSource.apiUrl,
       linkageParams: props.component.linkageParams,
     });
@@ -88,10 +87,8 @@ async function fetchApiData() {
       props.component.beforeRequest
     );
 
-    console.log('[GaugeChartRenderer] API数据获取成功:', data);
     apiChartData.value = data;
   } catch (err: any) {
-    console.error('[GaugeChartRenderer] API数据获取失败:', err);
     error.value = err.message || '获取数据失败';
     apiChartData.value = null;
   } finally {
@@ -102,24 +99,20 @@ async function fetchApiData() {
 // 获取图表数据
 function getChartData() {
   const dataSource = props.component.dataSource;
-  console.log('[GaugeChartRenderer] getChartData - dataSource:', dataSource);
 
   // 优先使用API数据
   if (apiChartData.value) {
-    console.log('[GaugeChartRenderer] 使用API数据:', apiChartData.value);
     return apiChartData.value;
   }
 
   // 静态数据格式：{ value: number }
   if (dataSource?.staticData && dataSource.staticData.length > 0) {
     const data = dataSource.staticData[0];
-    console.log('[GaugeChartRenderer] getChartData - staticData:', data);
     if (data.value !== undefined) {
       return data.value;
     }
   }
 
-  console.log('[GaugeChartRenderer] getChartData - Using default data');
   // 默认模拟数据
   return 50;
 }
@@ -206,7 +199,6 @@ function generateChartOption() {
  * 刷新数据（供联动调用）
  */
 function refresh() {
-  console.log('[GaugeChartRenderer] 刷新数据');
   fetchApiData();
   if (chartInstance) {
     updateChartOptions();
@@ -217,7 +209,6 @@ function refresh() {
  * 处理联动刷新事件
  */
 function handleLinkageRefresh(event: CustomEvent) {
-  console.log('[GaugeChartRenderer] 收到联动刷新事件:', event.detail);
   if (event.detail?.targetComponentId === props.component.id) {
     refresh();
   }
@@ -227,7 +218,6 @@ function handleLinkageRefresh(event: CustomEvent) {
 watch(
   () => props.component.dataSource,
   (newDataSource) => {
-    console.log('[GaugeChartRenderer] 数据源变化:', newDataSource);
     if (newDataSource?.type === 'api') {
       fetchApiData();
     } else {
@@ -244,7 +234,6 @@ watch(
 watch(
   () => props.component.linkageParams,
   (newParams) => {
-    console.log('[GaugeChartRenderer] 联动参数变化:', newParams);
     if (props.component.dataSource?.type === 'api') {
       fetchApiData().then(() => {
         nextTick(() => {
@@ -269,7 +258,6 @@ watch(
 
 // 挂载时添加事件监听
 onMounted(() => {
-  console.log('[GaugeChartRenderer] 挂载，添加联动刷新事件监听');
   window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.addEventListener('resize', handleResize);
   nextTick(() => {
@@ -279,7 +267,6 @@ onMounted(() => {
 
 // 卸载时移除事件监听
 onUnmounted(() => {
-  console.log('[GaugeChartRenderer] 卸载，移除联动刷新事件监听');
   window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {

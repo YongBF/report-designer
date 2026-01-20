@@ -46,12 +46,11 @@ const routes: RouteRecordRaw[] = [
                 return true;
               }
             } catch (e) {
-              console.error('加载设计失败', e);
+              // 加载设计失败
             }
           }
 
           // 没有找到匹配的设计，重定向到设计器
-          console.warn(`设计 ID ${targetId} 不存在，重定向到设计器`);
           return { name: 'designer', query: { error: 'design_not_found' } };
         }
       }

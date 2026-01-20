@@ -116,7 +116,6 @@ async function fetchApiData() {
   error.value = null;
 
   try {
-    console.log('[TableRenderer] 开始获取API数据:', {
       url: dataSource.apiUrl,
       linkageParams: props.component.linkageParams,
     });
@@ -127,10 +126,8 @@ async function fetchApiData() {
       props.component.beforeRequest
     );
 
-    console.log('[TableRenderer] API数据获取成功:', data);
     apiData.value = Array.isArray(data) ? data : [data];
   } catch (err: any) {
-    console.error('[TableRenderer] API数据获取失败:', err);
     error.value = err.message || '获取数据失败';
     apiData.value = [];
   } finally {
@@ -142,13 +139,11 @@ async function fetchApiData() {
 const tableData = computed(() => {
   // 优先使用API数据
   if (apiData.value !== null) {
-    console.log('[TableRenderer] 使用API数据:', apiData.value.length, '条');
     return apiData.value;
   }
 
   // 使用静态数据
   if (props.component.dataSource?.staticData) {
-    console.log('[TableRenderer] 使用静态数据:', props.component.dataSource.staticData.length, '条');
     return props.component.dataSource.staticData;
   }
 
@@ -160,7 +155,6 @@ const tableData = computed(() => {
     });
     return row;
   });
-  console.log('[TableRenderer] 使用示例数据:', data.length, '条');
   return data;
 });
 
@@ -168,7 +162,6 @@ const tableData = computed(() => {
  * 刷新数据（供联动调用）
  */
 function refresh() {
-  console.log('[TableRenderer] 刷新数据');
   fetchApiData();
 }
 
@@ -176,7 +169,6 @@ function refresh() {
  * 处理联动刷新事件
  */
 function handleLinkageRefresh(event: CustomEvent) {
-  console.log('[TableRenderer] 收到联动刷新事件:', event.detail);
   if (event.detail?.targetComponentId === props.component.id) {
     refresh();
   }
@@ -186,7 +178,6 @@ function handleLinkageRefresh(event: CustomEvent) {
 watch(
   () => props.component.dataSource,
   (newDataSource) => {
-    console.log('[TableRenderer] 数据源变化:', newDataSource);
     if (newDataSource?.type === 'api') {
       fetchApiData();
     } else {
@@ -200,7 +191,6 @@ watch(
 watch(
   () => props.component.linkageParams,
   (newParams) => {
-    console.log('[TableRenderer] 联动参数变化:', newParams);
     if (props.component.dataSource?.type === 'api') {
       fetchApiData();
     }
@@ -210,13 +200,11 @@ watch(
 
 // 挂载时添加事件监听
 onMounted(() => {
-  console.log('[TableRenderer] 挂载，添加联动刷新事件监听');
   window.addEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
 });
 
 // 卸载时移除事件监听
 onUnmounted(() => {
-  console.log('[TableRenderer] 卸载，移除联动刷新事件监听');
   window.removeEventListener('component-linkage-refresh', handleLinkageRefresh as EventListener);
 });
 
@@ -239,7 +227,6 @@ const paginatedData = computed(() => {
   const currentPage = props.component.currentPage ?? 1;
   const pageSize = props.component.pageSize ?? 10;
 
-  console.log('分页配置:', {
     pagination,
     currentPage,
     pageSize,
@@ -253,17 +240,14 @@ const paginatedData = computed(() => {
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize;
   const result = tableData.value.slice(start, end);
-  console.log('分页结果:', { start, end, displayCount: result.length }, result);
   return result;
 });
 
 function handlePageChange(page: number) {
-  console.log('页码变化:', page);
   emit('update', props.component.id, { currentPage: page });
 }
 
 function handleSizeChange(size: number) {
-  console.log('每页条数变化:', size);
   emit('update', props.component.id, { pageSize: size, currentPage: 1 });
 }
 
@@ -271,7 +255,6 @@ function handleSizeChange(size: number) {
 watch(
   () => [props.component.pagination, props.component.pageSize, props.component.currentPage],
   () => {
-    console.log('分页配置更新:', {
       pagination: props.component.pagination,
       pageSize: props.component.pageSize,
       currentPage: props.component.currentPage,

@@ -172,10 +172,6 @@ const props = defineProps<{
   component: GaugeChartComponent;
 }>();
 
-onMounted(() => {
-  console.log('GaugeChartProperties mounted with:', props.component);
-});
-
 const emit = defineEmits<{
   (e: 'update'): void;
 }>();

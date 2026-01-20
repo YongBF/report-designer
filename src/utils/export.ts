@@ -91,7 +91,6 @@ async function exportCanvas(): Promise<HTMLCanvasElement | null> {
     });
     return canvas;
   } catch (error) {
-    console.error('导出失败:', error);
     return null;
   }
 }

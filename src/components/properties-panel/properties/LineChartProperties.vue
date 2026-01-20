@@ -308,10 +308,6 @@ const props = defineProps<{
   component: LineChartComponent;
 }>();
 
-onMounted(() => {
-  console.log('LineChartProperties mounted with:', props.component);
-});
-
 const emit = defineEmits<{
   (e: 'update'): void;
 }>();
