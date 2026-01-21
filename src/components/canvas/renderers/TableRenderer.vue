@@ -13,7 +13,7 @@
       <DataLoadingState
         :loading="loading"
         :error="error"
-        :error-details="error"
+        :error-details="error || undefined"
         :empty="!loading && !error && tableData.length === 0"
         empty-text="暂无数据"
         :fullscreen="false"

@@ -11,7 +11,7 @@
     <DataLoadingState
       :loading="loading"
       :error="error"
-      :error-details="error"
+      :error-details="error || undefined"
       :empty="!loading && !error && !hasData"
       empty-text="暂无数据"
       :fullscreen="false"

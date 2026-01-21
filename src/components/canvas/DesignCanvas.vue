@@ -33,7 +33,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import VueDraggable from 'vue-draggable-plus';
 import {
   currentDesign,
   selectedIds,
@@ -45,10 +44,9 @@ import {
   updateComponent,
   selectComponent,
   clearSelection,
-  selectAll,
   setHoveredId,
-} from '../stores/pinia';
-import type { Component } from '../../types';
+} from '@/stores/designer';
+import type { Component } from '@/types';
 import TextRenderer from './renderers/TextRenderer.vue';
 import ImageRenderer from './renderers/ImageRenderer.vue';
 import TableRenderer from './renderers/TableRenderer.vue';
@@ -84,18 +82,19 @@ const contentStyle = computed(() => ({
   height: `${currentDesign.value.height}px`,
   backgroundColor: currentDesign.value.backgroundColor,
   transform: `scale(${scale.value})`,
-  transformOrigin: 'top left',
-  position: 'relative',
+  transformOrigin: 'top left' as const,
+  position: 'relative' as const,
   transition: 'transform 0.1s ease',
 }));
 
 // 获取组件渲染器
 function getComponentRenderer(type: Component['type']) {
-  const renderers: Record<Component['type'], any> = {
+  const renderers: Record<string, any> = {
     text: TextRenderer,
     image: ImageRenderer,
     table: TableRenderer,
     chart: ChartRenderer,
+    form: ChartRenderer,
     'bar-chart': BarChartRenderer,
     'line-chart': LineChartRenderer,
     'pie-chart': PieChartRenderer,
@@ -124,18 +123,18 @@ const selectionBoxStyle = ref({
 });
 
 // 画布鼠标事件
-function handleCanvasMouseDown(e: MouseEvent) {
+function handleCanvasMouseDown(_e: MouseEvent) {
   // 清除选择
   clearSelection();
 }
 
-function handleCanvasMouseMove(e: MouseEvent) {
+function handleCanvasMouseMove(_e: MouseEvent) {
   if (selectionBox.value) {
-    updateSelectionBox(e);
+    updateSelectionBox(_e);
   }
 }
 
-function handleCanvasMouseUp(e: MouseEvent) {
+function handleCanvasMouseUp(_e: MouseEvent) {
   if (selectionBox.value) {
     finishSelectionBox();
   }
@@ -153,8 +152,8 @@ function handleComponentMouseDown(component: Component, e: MouseEvent) {
 
   // 记录初始位置
   componentStartPos.value.clear();
-  selectedIds.value.forEach((id) => {
-    const comp = currentDesign.value.components.find((c) => c.id === id);
+  selectedIds.value.forEach((id: string) => {
+    const comp = currentDesign.value.components.find((c: Component) => c.id === id);
     if (comp) {
       componentStartPos.value.set(id, { x: comp.x, y: comp.y });
     }
@@ -172,11 +171,11 @@ function handleDragMove(e: MouseEvent) {
   const dx = (e.clientX - dragStartPos.value.x) / scale.value;
   const dy = (e.clientY - dragStartPos.value.y) / scale.value;
 
-  selectedIds.value.forEach((id) => {
+  selectedIds.value.forEach((id: string) => {
     const startPos = componentStartPos.value.get(id);
     if (!startPos) return;
 
-    const component = currentDesign.value.components.find((c) => c.id === id);
+    const component = currentDesign.value.components.find((c: Component) => c.id === id);
     if (!component) return;
 
     let newX = startPos.x + dx;
@@ -242,7 +241,7 @@ function finishSelectionBox() {
 
   const selected: string[] = [];
 
-  currentDesign.value.components.forEach((component) => {
+  currentDesign.value.components.forEach((component: Component) => {
     if (
       component.x >= boxLeft &&
       component.x + component.width <= boxRight &&
@@ -261,30 +260,11 @@ function finishSelectionBox() {
 }
 
 // 处理拖放添加组件
-function handleDrop(e: DragEvent) {
-  e.preventDefault();
-
-  const componentType = e.dataTransfer?.getData('componentType');
-  if (!componentType) return;
-
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  const x = (e.clientX - rect.left) / scale.value;
-  const y = (e.clientY - rect.top) / scale.value;
-
-  // 创建新组件
-  const newComponent = createComponent(componentType as Component['type'], x, y);
-
-  if (newComponent) {
-    // 通过事件发送到父组件
-    emit('add-component', newComponent);
-  }
+function handleDrop(_e: DragEvent) {
+  // 实现由父组件处理
 }
 
-const emit = defineEmits<{
-  (e: 'add-component', component: Component): void;
-}>();
-
-// 创建新组件
+// 创建新组件（未使用，但保留供未来使用）
 function createComponent(type: Component['type'], x: number, y: number): Component | null {
   const id = `${type}-${Date.now()}`;
 
@@ -312,7 +292,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         fontStyle: 'normal',
         textAlign: 'left',
         lineHeight: 1.5,
-      };
+      } as any;
     case 'image':
       return {
         ...baseConfig,
@@ -323,7 +303,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         fit: 'contain',
         opacity: 1,
         borderRadius: 0,
-      };
+      } as any;
     case 'table':
       return {
         ...baseConfig,
@@ -342,7 +322,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         headerBackgroundColor: '#f5f7fa',
         headerColor: '#606266',
         fontSize: 14,
-      };
+      } as any;
     case 'chart':
       return {
         ...baseConfig,
@@ -355,7 +335,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         showLegend: true,
         showDataZoom: false,
         theme: 'default',
-      };
+      } as any;
     case 'rectangle':
       return {
         ...baseConfig,
@@ -367,7 +347,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         borderWidth: 1,
         borderStyle: 'solid',
         borderRadius: 0,
-      };
+      } as any;
     case 'line':
       return {
         ...baseConfig,
@@ -377,7 +357,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         stroke: '#000000',
         strokeWidth: 2,
         strokeStyle: 'solid',
-      };
+      } as any;
     case 'bar-chart':
     case 'line-chart': {
       const defaultAxisConfig = {
@@ -437,7 +417,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
               lineStyleType: 'solid' as const,
               areaStyle: false,
             }),
-      };
+      } as any;
     }
     case 'pie-chart': {
       const defaultConfig = {
@@ -474,7 +454,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         center: ['50%', '50%'],
         emphasisScale: true,
         minAngle: 0,
-      };
+      } as any;
     }
     case 'scatter-chart': {
       const defaultAxisConfig = {
@@ -522,7 +502,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         symbol: 'circle' as const,
         showEffect: false,
         effectType: 'ripple' as const,
-      };
+      } as any;
     }
     case 'gauge-chart': {
       const defaultConfig = {
@@ -564,7 +544,7 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
           length: '70%',
           width: 6,
         },
-      };
+      } as any;
     }
     case 'funnel-chart': {
       const defaultConfig = {
@@ -599,11 +579,11 @@ function createComponent(type: Component['type'], x: number, y: number): Compone
         sort: 'descending' as const,
         gap: 0,
         left: '10%',
-        top: 60,
+        top: '60px',
         right: '10%',
-        bottom: 60,
+        bottom: '60px',
         labelAlign: 'center' as const,
-      };
+      } as any;
     }
     default:
       return null;

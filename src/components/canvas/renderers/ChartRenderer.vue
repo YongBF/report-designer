@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import BaseRenderer from './BaseRenderer.vue';
 import type { ChartComponent } from '../../../types';

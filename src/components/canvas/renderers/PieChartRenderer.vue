@@ -11,7 +11,7 @@
     <DataLoadingState
       :loading="loading"
       :error="error"
-      :error-details="error"
+      :error-details="error || undefined"
       :empty="!loading && !error && !hasData"
       empty-text="暂无数据"
       :fullscreen="false"
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import BaseRenderer from './BaseRenderer.vue';
 import DataLoadingState from '../../common/DataLoadingState.vue';
